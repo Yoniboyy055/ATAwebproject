@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run image variant check (fail CI if missing AVIF/WebP variants)
+        run: npm run check:variants
+      - name: Run blur placeholder check
+        run: npm run check:blurs
+      - name: Build (run prebuild first)
+        run: npm run build

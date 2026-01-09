@@ -1,0 +1,32 @@
+{
+  "name": "amannual-travel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "images:optimize": "node scripts/optimize-images.js",
+    "images:optimize:dry": "node scripts/optimize-images-dryrun.js",
+    "check:blurs": "node scripts/check-blurs.js",
+    "check:variants": "node scripts/check-variants.js",
+    "prebuild": "npm run check:blurs && npm run check:variants"
+  },
+  "dependencies": {
+    "next": "^14.2.35",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.21",
+    "@types/react-dom": "18.2.7",
+    "autoprefixer": "10.4.14",
+    "eslint": "8.47.0",
+    "eslint-config-next": "14.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "3.4.8",
+    "typescript": "5.3.3",
+    "sharp": "^0.32.1"
+  }
+}
