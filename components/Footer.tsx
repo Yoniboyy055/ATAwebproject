@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { BRAND } from '../lib/config'
 
 export default function Footer(){

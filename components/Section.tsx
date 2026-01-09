@@ -19,6 +19,6 @@ export default function Section({children, className='', ...props}:{children:Rea
   },[])
 
   return (
-    <section ref={ref as any} data-visible="false" className={`section ${className}`} {...props}>{children}</section>
+    <section ref={(el)=>{ ref.current = el }} data-visible="false" className={`section ${className}`} {...props}>{children}</section>
   )
 }

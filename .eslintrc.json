@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "rules": {},
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint"],
+      "extends": ["plugin:@typescript-eslint/recommended"]
+    }
+  ]
+}
