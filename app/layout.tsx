@@ -1,6 +1,8 @@
 import '../styles/globals.css'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { QuoteProvider } from '../components/QuoteProvider'
+import { LangProvider } from '../components/LangProvider'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -19,9 +21,13 @@ export default function RootLayout({children}:{children:React.ReactNode}){
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <LangProvider>
+          <QuoteProvider>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </QuoteProvider>
+        </LangProvider>
       </body>
     </html>
   )

@@ -19,7 +19,7 @@ export default function DestinationsGrid({ blurMap }: { blurMap?: Record<string,
     <div>
       <div className="flex gap-3 items-center">
         <div className="flex space-x-2">
-          {['All','Eritrea','Ethiopia'].map((t: 'All'|'Eritrea'|'Ethiopia')=> (
+          {(['All','Eritrea','Ethiopia'] as const).map((t)=> (
             <button key={t} onClick={()=>setTab(t)} className={`px-3 py-1 rounded-md ${tab===t? 'bg-primary text-white' : 'border border-slate-200'}`}>{t}</button>
           ))}
         </div>
