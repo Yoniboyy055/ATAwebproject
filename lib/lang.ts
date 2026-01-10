@@ -180,6 +180,24 @@ export const translations = {
     footerLocal: 'Local Travelers',
     footerDiaspora: 'Diaspora Travelers',
     
+    // Chatbot UI
+    chat: {
+      title: 'Help & FAQs',
+      subtitle: 'Quick answers. For booking → WhatsApp.',
+      placeholder: 'Ask a question…',
+      send: 'Send',
+      fallback: 'I couldn\'t find an exact answer. Let me connect you with our team!',
+      whatsappCta: 'Chat on WhatsApp',
+      quickReplies: {
+        flights: 'Flights',
+        visa: 'Visa Assistance',
+        packages: 'Packages',
+        baggage: 'Baggage / Changes',
+        contact: 'Contact & Hours',
+        whatsapp: 'Chat with Agent'
+      }
+    },
+    
     // Buttons
     buttons: {
       quote: 'Request a Quote',
@@ -371,6 +389,24 @@ export const translations = {
     footerLocal: 'ሓያል ተጓዥ',
     footerDiaspora: 'ሕዋስ ተጓዥ',
     
+    // Chatbot UI
+    chat: {
+      title: 'ሓገዝ ወ ምልላይ',
+      subtitle: 'ፈጣሪ መልስ። ምዝገባ ላ WhatsApp.',
+      placeholder: 'ሕቶ ጻሕፍ…',
+      send: 'ይላክ',
+      fallback: 'ግዞት ትረክብ ዩ። ክትወከስ ኣው።',
+      whatsappCta: 'WhatsApp ላይ ምወከስ',
+      quickReplies: {
+        flights: 'ዛሪ',
+        visa: 'ምልክት ምግባር',
+        packages: 'ምርጫታት',
+        baggage: 'ሳቅ / ውሕደት',
+        contact: 'ማግኛ ሰዓት',
+        whatsapp: 'ምስ ሰራሕ ምወከስ'
+      }
+    },
+    
     // Buttons
     buttons: {
       quote: 'ሽቅልቅላት ወስድ',
@@ -561,6 +597,24 @@ export const translations = {
     footerQuickContact: 'ፈጣን ግንኙነት',
     footerLocal: 'ሰራዊት ተጓዥ',
     footerDiaspora: 'ዲያስፖራ ተጓዥ',
+    
+    // Chatbot UI
+    chat: {
+      title: 'እርዳታ ও ጥያቄዎች',
+      subtitle: 'ፈጣን መልሶች። ለቦታ መያዣ → WhatsApp።',
+      placeholder: 'ጥያቄ ይጻፉ…',
+      send: 'ይላኩ',
+      fallback: 'ትክክለኛ መልስ አላገኘሁም። ከቴሌግራም ጋር ያገናኙ!',
+      whatsappCta: 'በWhatsApp ላይ ይወሩ',
+      quickReplies: {
+        flights: 'ቢሮ',
+        visa: 'ቪዛ እርዳታ',
+        packages: 'ጥቅሞች',
+        baggage: 'ሳቅ / ለውጥ',
+        contact: 'ግንኙነት ሰዓት',
+        whatsapp: 'ከወኪለ ጋር ይወሩ'
+      }
+    },
     
     // Buttons
     buttons: {

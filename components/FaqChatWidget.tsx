@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useLang } from './LangProvider'
 import { getTranslation } from '@/lib/lang'
 import { BRAND } from '@/lib/config'
@@ -92,18 +92,25 @@ interface Message {
 export default function FaqChatWidget() {
   const { lang } = useLang()
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      text: lang === 'en' ? 'Hi! 👋 I\'m the FAQ Helper. Ask me about bookings, visas, baggage, or anything else. Or chat with our team directly on WhatsApp!' : 
-            lang === 'ti' ? 'ሰላም! 👋 ኣነ FAQ ሓገዝ ስራሕ ኢዩ። ስለ ምዝገባ፣ ቪዛ፣ ሳቅ ወይ ካልእ ሕቶ።' :
-            'ሰላም! 👋 ኣነ FAQ ሓገዝ ስራሕ ኢዬ። ስለ ምዝገባ፣ ቪዛ፣ ሳቅ ወይ ካልእ ሕቶ።'
-    }
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showChips, setShowChips] = useState(true)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const findBestMatch = (question: string): string => {
+  // Initialize greeting message on first load
+  useEffect(() => {
+    if (messages.length === 0) {
+      const greeting = getTranslation(lang, 'chat.subtitle')
+      setMessages([{
+        role: 'assistant',
+        text: greeting
+      }])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const findBestMatch = (question: string): { answer: string, score: number } => {
     const normalized = question.toLowerCase()
     
     // Score each FAQ entry
@@ -133,12 +140,10 @@ export default function FaqChatWidget() {
       }
     })
 
-    // If no good match, return helpful fallback
-    if (highestScore === 0) {
-      return `I couldn't find an exact match for that. For personalized help, reach out to our team on WhatsApp at ${BRAND.phoneMobile} or email ${BRAND.email}. We respond within 1-2 hours! 😊`
+    return {
+      answer: bestMatch.a,
+      score: highestScore
     }
-
-    return bestMatch.a
   }
 
   const handleSend = async () => {
@@ -146,15 +151,46 @@ export default function FaqChatWidget() {
 
     const userMessage = input.trim()
     setInput('')
+    setShowChips(false)
     setMessages(prev => [...prev, { role: 'user', text: userMessage }])
     setIsLoading(true)
 
     // Simulate slight delay for natural feel
     setTimeout(() => {
-      const answer = findBestMatch(userMessage)
-      setMessages(prev => [...prev, { role: 'assistant', text: answer }])
+      const { answer, score } = findBestMatch(userMessage)
+      
+      // Use fallback message if score is too low
+      let responseText = answer
+      if (score === 0) {
+        const fallbackMsg = getTranslation(lang, 'chat.fallback')
+        responseText = fallbackMsg
+      }
+      
+      setMessages(prev => [...prev, { role: 'assistant', text: responseText }])
       setIsLoading(false)
     }, 300)
+  }
+
+  const handleQuickReply = (topic: string) => {
+    setInput(topic)
+    setShowChips(false)
+    // Trigger send after state updates
+    setTimeout(() => {
+      const userMessage = topic
+      setMessages(prev => [...prev, { role: 'user', text: userMessage }])
+      setIsLoading(true)
+
+      setTimeout(() => {
+        const { answer, score } = findBestMatch(userMessage)
+        let responseText = answer
+        if (score === 0) {
+          const fallbackMsg = getTranslation(lang, 'chat.fallback')
+          responseText = fallbackMsg
+        }
+        setMessages(prev => [...prev, { role: 'assistant', text: responseText }])
+        setIsLoading(false)
+      }, 300)
+    }, 0)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -181,10 +217,10 @@ export default function FaqChatWidget() {
           {/* Header */}
           <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4 text-white">
             <h3 className="font-bold text-lg">
-              {lang === 'en' ? 'FAQ Helper' : lang === 'ti' ? 'ምልላይ ሓገዝ' : 'ጥያቄ ሓገዝ'}
+              {getTranslation(lang, 'chat.title')}
             </h3>
             <p className="text-sm text-emerald-100">
-              {lang === 'en' ? 'Ask anything, I\'ll help!' : lang === 'ti' ? 'ሕቶ ምስ መልሲ' : 'ሕቶ ምስ መልሲ'}
+              {getTranslation(lang, 'chat.subtitle')}
             </p>
           </div>
 
@@ -213,7 +249,55 @@ export default function FaqChatWidget() {
                 </div>
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
+
+          {/* Quick Reply Chips */}
+          {showChips && messages.length <= 1 && (
+            <div className="border-t border-slate-200 bg-white px-4 py-3 space-y-2">
+              <p className="text-xs text-slate-500 font-medium">
+                {getTranslation(lang, 'chat.subtitle')}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleQuickReply(getTranslation(lang, 'chat.quickReplies.flights'))}
+                  className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-200 transition"
+                >
+                  ✈️ {getTranslation(lang, 'chat.quickReplies.flights')}
+                </button>
+                <button
+                  onClick={() => handleQuickReply(getTranslation(lang, 'chat.quickReplies.visa'))}
+                  className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-200 transition"
+                >
+                  📋 {getTranslation(lang, 'chat.quickReplies.visa')}
+                </button>
+                <button
+                  onClick={() => handleQuickReply(getTranslation(lang, 'chat.quickReplies.packages'))}
+                  className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-200 transition"
+                >
+                  🎁 {getTranslation(lang, 'chat.quickReplies.packages')}
+                </button>
+                <button
+                  onClick={() => handleQuickReply(getTranslation(lang, 'chat.quickReplies.baggage'))}
+                  className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-200 transition"
+                >
+                  🧳 {getTranslation(lang, 'chat.quickReplies.baggage')}
+                </button>
+                <button
+                  onClick={() => handleQuickReply(getTranslation(lang, 'chat.quickReplies.contact'))}
+                  className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-200 transition"
+                >
+                  ☎️ {getTranslation(lang, 'chat.quickReplies.contact')}
+                </button>
+                <button
+                  onClick={() => window.open(BRAND.whatsappLink, '_blank')}
+                  className="px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold rounded-full border border-green-200 transition"
+                >
+                  💬 {getTranslation(lang, 'chat.quickReplies.whatsapp')}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Input */}
           <div className="border-t border-slate-200 p-4 bg-white space-y-2">
@@ -221,7 +305,7 @@ export default function FaqChatWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder={lang === 'en' ? 'Type your question...' : lang === 'ti' ? 'ሕቶ ጻሕፍ...' : 'ሕቶ ጻሕፍ...'}
+              placeholder={getTranslation(lang, 'chat.placeholder')}
               className="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
               rows={2}
             />
@@ -230,7 +314,7 @@ export default function FaqChatWidget() {
               disabled={!input.trim() || isLoading}
               className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 text-white font-semibold py-2 rounded-lg transition text-sm"
             >
-              {lang === 'en' ? 'Send' : lang === 'ti' ? 'ይላክ' : 'ላክ'}
+              {getTranslation(lang, 'chat.send')}
             </button>
           </div>
 
