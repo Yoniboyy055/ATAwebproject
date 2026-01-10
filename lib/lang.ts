@@ -71,6 +71,41 @@ export const translations = {
     bestForDiaspora: 'Best for diaspora travelers returning home',
     packagesMicroLine: 'Send cities + dates → we reply with options + steps',
     
+    // Navigation
+    nav: {
+      about: 'About',
+      faq: 'FAQ',
+      policies: 'Policies',
+    },
+    
+    // About Page
+    aboutTitle: 'About Amanuel Travel',
+    aboutBody: 'We&apos;re a WhatsApp-first travel agency built for diaspora families and local travelers.',
+    
+    // FAQ Page
+    faqTitle: 'Frequently Asked Questions',
+    faqBody: 'Got questions? We&apos;ve got answers. If something&apos;s not here, WhatsApp us anytime.',
+    
+    // Policies Hub
+    policiesTitle: 'Policies',
+    policiesBody: 'Transparency is trust. Read our policies and privacy practices.',
+    
+    // Privacy Policy
+    privacyTitle: 'Privacy Policy',
+    privacyBody: 'How we handle your data and protect your privacy.',
+    
+    // Terms of Service
+    termsTitle: 'Terms of Service',
+    termsBody: 'How we work together — scope, limitations, and what to expect.',
+    
+    // Changes & Refunds
+    refundsTitle: 'Changes & Refunds',
+    refundsBody: 'How airline changes, cancellations, and refunds work.',
+    
+    // Copyright
+    copyrightTitle: 'Copyright & Attribution',
+    copyrightBody: 'Site content ownership and usage rights.',
+    
     // Buttons
     buttons: {
       quote: 'Request a Quote',
@@ -79,6 +114,8 @@ export const translations = {
       exploreDest: 'Explore Destinations',
       chatWhatsApp: 'Chat on WhatsApp',
       getOptions: 'Get Options',
+      readPolicy: 'Read Policy',
+      backToPolicies: 'Back to Policies',
     }
   },
   
@@ -151,6 +188,41 @@ export const translations = {
     bestForDiaspora: 'ሳሕ ስሪት ተመጋገሪ ምርጫ',
     packagesMicroLine: 'ከተማ + ቀንታት ላዕ → ምርጫትን ዞ ምስ',
     
+    // Navigation
+    nav: {
+      about: 'ብዛዕባ ኡስ',
+      faq: 'ሕቝቅ ሕቝቅ',
+      policies: 'ፖሊሲ',
+    },
+    
+    // About Page
+    aboutTitle: 'ብዛዕባ ኣማንዌል ጽዋር',
+    aboutBody: 'ኔውና WhatsApp-ብቅድሚት ጽዋር ተሳተፍ ንሕዋስ ቤተ-ሰብ ወ ሓያል ተጓዥ ዘገበርናያ።',
+    
+    // FAQ Page
+    faqTitle: 'ተደጋጋሚ ሕቝቅ ሕቝቅ',
+    faqBody: 'ሕቝቅ ሕቝቅ ሒዘኩም? ሕቋ እንዒ ሓበናኩም። ሎ ነገር መስለወይ ወይ ኢለይ ሓነ ነገር ሒዘወይ፣ WhatsApp ክስዔ።',
+    
+    // Policies Hub
+    policiesTitle: 'ፖሊሲ',
+    policiesBody: 'ግሉጽነት ምዃን ምርጋ። ፖሊሲ ወ ግሉጽነት ተርእዮ ታሓተ።',
+    
+    // Privacy Policy
+    privacyTitle: 'ሚስጥር ፖሊሲ',
+    privacyBody: 'ከመ ዝገበርናያ ሚስጥር ወ ሕቋ ተከላክል።',
+    
+    // Terms of Service
+    termsTitle: 'ስርዓት ምስሕግር',
+    termsBody: 'ከመ ኢና ዝሰርሕ ምስ ንወለ—ወሰን፣ ዝመሰኪተ፣ ወ እንታይ ክእለታ።',
+    
+    // Changes & Refunds
+    refundsTitle: 'ለውጦ ወ ምስጋር',
+    refundsBody: 'ከመ ሰንሰለት ለውጦ፣ ሓርስ፣ ወ ምስጋር ይሰርሓ።',
+    
+    // Copyright
+    copyrightTitle: 'ሙሉእ-ሕክመት ወ ምድላዋ',
+    copyrightBody: 'ሳይት ይሕተት ምልክት ወ ኣገልግሎት መብቲ።',
+    
     // Buttons
     buttons: {
       quote: 'ሽቅልቅላት ወስድ',
@@ -159,6 +231,8 @@ export const translations = {
       exploreDest: 'ከተማታት ታሙር',
       chatWhatsApp: 'WhatsApp ላዕ ምዝራብ',
       getOptions: 'ምርጫታት ወስድ',
+      readPolicy: 'ፖሊሲ ታሓተ',
+      backToPolicies: 'ፖሊሲ ሳሕ ምለስ',
     }
   },
   
@@ -231,6 +305,41 @@ export const translations = {
     bestForDiaspora: 'ለሳህ ተመለሱ ተጓዥ ተስማሚ',
     packagesMicroLine: 'ከተማ + ቀናት ላከሉ → ምርጫ + እርምጃ ምልስ',
     
+    // Navigation
+    nav: {
+      about: 'ስለ ኡስ',
+      faq: 'FAQ',
+      policies: 'ፖሊሲዎች',
+    },
+    
+    // About Page
+    aboutTitle: 'ስለ ኣማንኤል ጉዞ',
+    aboutBody: 'ሰለ ወደ ልጆች ወ ሰራተኛ ተጓዥ ለመገንባት በ WhatsApp-ይህ ዓይነት ጉዞ ኤጀንሲ።',
+    
+    // FAQ Page
+    faqTitle: 'በተደጋጋሚ የሚቀሱ ጥያቄዎች',
+    faqBody: 'ጥያቄዎች አሉዎት? መልስ አሉ። ሥቅ ለስቁ ከላይ ከሚታየ ስቅ የተወጡ ከሆነ ወይም ያለ የተወሰነ ጥያቄ ይወሩ።',
+    
+    // Policies Hub
+    policiesTitle: 'ፖሊሲዎች',
+    policiesBody: 'ግልጽነት ትምህርት ነው። ፖሊሲ ወ ሚስጥር ግበዮ ያንብቡ።',
+    
+    // Privacy Policy
+    privacyTitle: 'የግላዊነት ፖሊሲ',
+    privacyBody: 'እንዴት ሚስጥር ሠራተኛ ይሰራ እና ይጠበቃ።',
+    
+    // Terms of Service
+    termsTitle: 'ሁኔታዎች',
+    termsBody: 'እንደ ተሰር ጋር ሰር— ጥቅሞች፣ ሥጋትን ወ ከታሪካት።',
+    
+    // Changes & Refunds
+    refundsTitle: 'ለውጦች እና መመለሻ',
+    refundsBody: 'ምንግዜ አውሮፕላን ለውጦች፣ ሰርዓትት ወ ክምችት ሠራ።',
+    
+    // Copyright
+    copyrightTitle: 'ሙሉ-መብት ወ ሌላ',
+    copyrightBody: 'ይህ ሳይት ትሪ ትሪ ይዤ ስሪ።',
+    
     // Buttons
     buttons: {
       quote: 'ዋቢት ጠይቅ',
@@ -239,6 +348,8 @@ export const translations = {
       exploreDest: 'መስሪያ ቦታዎች ይመልከቱ',
       chatWhatsApp: 'በWhatsApp ላይ ይወሩ',
       getOptions: 'ምርጫ ያግኙ',
+      readPolicy: 'ፖሊሲ ያንብቡ',
+      backToPolicies: 'ፖሊሲ ወደ ይመለሱ',
     }
   }
 }

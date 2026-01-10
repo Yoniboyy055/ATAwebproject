@@ -12,6 +12,8 @@ export default function Navbar(){
         <nav className="hidden md:flex gap-6 items-center text-sm">
           <Link href="/services" className="hover:underline">Services</Link>
           <Link href="/destinations" className="hover:underline">Destinations</Link>
+          <Link href="/about" className="hover:underline">About</Link>
+          <Link href="/faq" className="hover:underline">FAQ</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
           <a className="ml-2 inline-flex items-center rounded-md bg-accent/90 text-white px-3 py-1 text-sm" href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}>WhatsApp</a>
         </nav>
@@ -25,6 +27,8 @@ export default function Navbar(){
           <div className="container py-4 flex flex-col gap-3">
             <Link href="/services">Services</Link>
             <Link href="/destinations">Destinations</Link>
+            <Link href="/about">About</Link>
+            <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
             <a href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`} className="inline-flex items-center rounded-md bg-accent/90 text-white px-3 py-1 text-sm w-max">Chat on WhatsApp</a>
           </div>
