@@ -64,6 +64,13 @@ export const translations = {
     // Destinations Trust Banner
     destinationsTrustBanner: 'Every destination is handled by real agents with WhatsApp-first support. Request a quote for any city—we&apos;ll guide you through visa, flights, and logistics.',
     
+    // Packages Section
+    packagesTitle: 'Packages Tailored for You',
+    packagesBody: 'Whether you&apos;re leaving Eritrea or returning from abroad, we have a package built for your journey.',
+    bestForLocal: 'Best for travelers leaving Eritrea',
+    bestForDiaspora: 'Best for diaspora travelers returning home',
+    packagesMicroLine: 'Send cities + dates → we reply with options + steps',
+    
     // Buttons
     buttons: {
       quote: 'Request a Quote',
@@ -71,6 +78,7 @@ export const translations = {
       diasporaSupport: 'Get Diaspora Support',
       exploreDest: 'Explore Destinations',
       chatWhatsApp: 'Chat on WhatsApp',
+      getOptions: 'Get Options',
     }
   },
   
@@ -136,6 +144,13 @@ export const translations = {
     // Destinations Trust Banner
     destinationsTrustBanner: 'ንእንቋቐስ ከተማ ብህሩይ ገበር ስሩዓዊ WhatsApp-ብቅድሚት ምግባር ስሩዓ። ኣይ ከተማ ዘቢጦ ወስድ—ምልክት፣ ሰንሰለት፣ ስሩዓ ነገሪ ብሓጐስ።',
     
+    // Packages Section
+    packagesTitle: 'ምርጫታት ንናተይ ዘቐሪበታ',
+    packagesBody: 'ካብ ኤርትራ ወ ሳሕ ካብ ወጻኢ ተመጊቅካ፣ ንግዞት ምስ ዘገበርናያ ምርጫ ሓበናኩም።',
+    bestForLocal: 'ኤርትራ ትውጹእ ተግባር ኣብ ምርጫ',
+    bestForDiaspora: 'ሳሕ ስሪት ተመጋገሪ ምርጫ',
+    packagesMicroLine: 'ከተማ + ቀንታት ላዕ → ምርጫትን ዞ ምስ',
+    
     // Buttons
     buttons: {
       quote: 'ሽቅልቅላት ወስድ',
@@ -143,6 +158,7 @@ export const translations = {
       diasporaSupport: 'ሕዋስ ምግባር ወስድ',
       exploreDest: 'ከተማታት ታሙር',
       chatWhatsApp: 'WhatsApp ላዕ ምዝራብ',
+      getOptions: 'ምርጫታት ወስድ',
     }
   },
   
@@ -208,6 +224,13 @@ export const translations = {
     // Destinations Trust Banner
     destinationsTrustBanner: 'እያንዳንዱ ስሪ ያለ ወኪሎች በ WhatsApp-የመጀመሪያ ድጋፍ ተይዞ ይዘ። ለአንዳንድ ከተማ ዋቢት ጠይቁ—ቪዛ፣ ፈጣን እና ምህንዳ ላይ ምክር።',
     
+    // Packages Section
+    packagesTitle: 'ጥቅሞች ለእርስዎ የዘጋጀ',
+    packagesBody: 'ከኤርትራ ይወጡም ወይም ከውጪ ይመለሱም፣ ለጉዞዎ ሁለት አሉ።',
+    bestForLocal: 'ከኤርትራ ለወጪ ተጓዥ ተስማሚ',
+    bestForDiaspora: 'ለሳህ ተመለሱ ተጓዥ ተስማሚ',
+    packagesMicroLine: 'ከተማ + ቀናት ላከሉ → ምርጫ + እርምጃ ምልስ',
+    
     // Buttons
     buttons: {
       quote: 'ዋቢት ጠይቅ',
@@ -215,6 +238,7 @@ export const translations = {
       diasporaSupport: 'ዲያስፖራ ድጋፍ ያግኙ',
       exploreDest: 'መስሪያ ቦታዎች ይመልከቱ',
       chatWhatsApp: 'በWhatsApp ላይ ይወሩ',
+      getOptions: 'ምርጫ ያግኙ',
     }
   }
 }

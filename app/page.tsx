@@ -3,6 +3,7 @@ import Section from '../components/Section'
 import SectionHeading from '../components/SectionHeading'
 import Card from '../components/Card'
 import QuoteForm from '../components/QuoteForm'
+import PackagesSection from '../components/PackagesSection'
 import { services, destinations, trustBullets, testimonials } from '../lib/data'
 import { BRAND } from '../lib/config'
 import { getBlurByBase } from '../lib/images'
@@ -76,6 +77,9 @@ export default function Home(){
           </div>
         </div>
       </Section>
+
+      {/* PACKAGES */}
+      <PackagesSection />
 
       {/* TRUST & TESTIMONIALS */}
       <Section>

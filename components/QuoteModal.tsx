@@ -28,6 +28,8 @@ export default function QuoteModal() {
       `*To:* ${draft.toCity}`,
     ]
 
+    if (draft.package) lines.push(`*Package:* ${draft.package}`)
+    if (draft.intent) lines.push(`*Trip Intent:* ${draft.intent}`)
     if (draft.tripType) lines.push(`*Trip Type:* ${draft.tripType}`)
     if (draft.service) lines.push(`*Service:* ${draft.service}`)
     if (draft.travelDate) lines.push(`*Travel Date:* ${draft.travelDate}`)
@@ -147,10 +149,10 @@ export default function QuoteModal() {
                 className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
                 <option value="">Select service...</option>
-                <option value="Flights">Flights</option>
-                <option value="Tours">Tours</option>
-                <option value="Visa Assistance">Visa Assistance</option>
-                <option value="Travel Support">Travel Support</option>
+                <option value="Trip Planning">Trip Planning</option>
+                <option value="Visa & Documents">Visa & Documents</option>
+                <option value="Coordination">Coordination</option>
+                <option value="WhatsApp Support">WhatsApp Support</option>
               </select>
             </div>
 

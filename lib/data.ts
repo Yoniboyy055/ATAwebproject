@@ -1,8 +1,8 @@
 export const services = [
-  {title:'Flights', desc:'International and regional ticketing with clear pricing and flexible options.'},
-  {title:'Tours', desc:'Personalized tours and curated experiences with trusted local partners.'},
-  {title:'Visa Assistance', desc:'Practical guidance, document checklists, and embassy support.'},
-  {title:'Travel Support', desc:'24/7 support for rebookings, baggage and travel emergencies.'}
+  {title:'Trip Planning', desc:'Flight routing, dates, options — we plan the whole trip with you.'},
+  {title:'Visa & Documents', desc:'Guidance, checklists, reminders — everything you need to travel smoothly.'},
+  {title:'Coordination', desc:'Hotels, transport, stopovers — we coordinate the details.'},
+  {title:'WhatsApp Support', desc:'Real answers until your trip is locked and you&apos;re ready to go.'}
 ]
 
 export const destinations = [

@@ -10,9 +10,11 @@ export type QuoteDraft = {
   travelDate?: string
   passengers?: string
   tripType?: 'Local outbound' | 'Diaspora inbound'
-  service?: 'Flights' | 'Tours' | 'Visa Assistance' | 'Travel Support'
+  service?: 'Flights' | 'Tours' | 'Visa Assistance' | 'Travel Support' | 'Trip Planning' | 'Visa & Documents' | 'Coordination' | 'WhatsApp Support'
   notes?: string
   source?: string
+  package?: string
+  intent?: string
 }
 
 type QuoteContextType = {
