@@ -2,10 +2,28 @@ import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import Card from '../../components/Card'
 import { BRAND } from '../../lib/config'
+import { Metadata } from 'next'
 
-export const metadata = {
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
+
+export const metadata: Metadata = {
   title: 'About Amanuel Travel — Diaspora & Local Travel Support',
-  description: 'Learn about Amanuel Travel: WhatsApp-first service for diaspora travelers and local outbound journeys from Eritrea.'
+  description: 'Learn about Amanuel Travel: WhatsApp-first service for diaspora travelers and local outbound journeys from Eritrea.',
+  keywords: ['about', 'travel agency', 'diaspora', 'Eritrea', 'travel support'],
+  openGraph: {
+    title: 'About Amanuel Travel Agency',
+    description: 'Your trusted WhatsApp-first travel partner for diaspora and local travel from Eritrea',
+    url: `${baseUrl}/about`,
+    type: 'website',
+    images: [
+      {
+        url: '/images/hero-1200.webp',
+        width: 1200,
+        height: 630,
+        alt: 'About Amanuel Travel',
+      }
+    ]
+  }
 }
 
 export default function About() {

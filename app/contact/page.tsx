@@ -2,10 +2,28 @@ import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import EnhancedContactForm from '../../components/EnhancedContactForm'
 import { BRAND } from '../../lib/config'
+import { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Contact — Amanuel Travel',
-  description: 'Get in touch via WhatsApp, phone or email for travel bookings and visa help.'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
+
+export const metadata: Metadata = {
+  title: 'Contact Us — Get Travel Help Now',
+  description: 'Get in touch via WhatsApp, phone or email for travel bookings and visa help. We respond within 1-2 hours.',
+  keywords: ['contact', 'travel support', 'customer service', 'WhatsApp'],
+  openGraph: {
+    title: 'Contact Amanuel Travel Agency',
+    description: 'Reach us via WhatsApp, phone, or email for immediate travel assistance',
+    url: `${baseUrl}/contact`,
+    type: 'website',
+    images: [
+      {
+        url: '/images/hero-1200.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Contact Amanuel Travel',
+      }
+    ]
+  }
 }
 
 export default function Contact(){

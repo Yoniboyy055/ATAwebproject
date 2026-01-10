@@ -3,10 +3,28 @@ import SectionHeading from '../../components/SectionHeading'
 import Card from '../../components/Card'
 import { services } from '../../lib/data'
 import { BRAND } from '../../lib/config'
+import { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Services — Amanuel Travel',
-  description: 'Flight coordination, visa guidance, airport support, and WhatsApp-first travel assistance for diaspora and local travelers.'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
+
+export const metadata: Metadata = {
+  title: 'Services — Flight Booking, Visa Assistance & Travel Support',
+  description: 'Flight coordination, visa guidance, airport support, and WhatsApp-first travel assistance for diaspora and local travelers.',
+  keywords: ['travel services', 'flight booking', 'visa assistance', 'travel support'],
+  openGraph: {
+    title: 'Our Travel Services',
+    description: 'Complete travel solutions for Africa routes — flights, visas, packages & support',
+    url: `${baseUrl}/services`,
+    type: 'website',
+    images: [
+      {
+        url: '/images/hero-1200.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Amanuel Travel Services',
+      }
+    ]
+  }
 }
 
 export default function ServicesPage(){

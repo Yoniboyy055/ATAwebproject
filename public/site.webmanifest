@@ -1,0 +1,61 @@
+{
+  "name": "Amanuel Travel Agency",
+  "short_name": "Amanuel Travel",
+  "description": "Premium travel services and visa assistance for Africa routes",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/hero-800.webp",
+      "sizes": "800x600",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["travel", "business"],
+  "shortcuts": [
+    {
+      "name": "Book a Flight",
+      "short_name": "Book Flight",
+      "description": "Quick access to flight booking",
+      "url": "/services?type=flights",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Visa Assistance",
+      "short_name": "Visa Help",
+      "description": "Get visa assistance",
+      "url": "/services?type=visa",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}

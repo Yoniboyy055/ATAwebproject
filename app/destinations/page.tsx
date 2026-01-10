@@ -2,10 +2,28 @@ import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import DestinationsGrid from '../../components/DestinationsGrid'
 import { BLUR_MAP } from '../../lib/images'
+import { Metadata } from 'next'
 
-export const metadata = {
-  title: 'Destinations — Amanuel Travel',
-  description: 'Explore destinations in Eritrea and Ethiopia — discover our curated itineraries.'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
+
+export const metadata: Metadata = {
+  title: 'Destinations — Eritrea, Ethiopia & More',
+  description: 'Explore destinations in Eritrea and Ethiopia — discover our curated itineraries and travel options.',
+  keywords: ['destinations', 'Eritrea', 'Ethiopia', 'travel', 'cities'],
+  openGraph: {
+    title: 'Top Travel Destinations',
+    description: 'Explore curated cities in Eritrea and Ethiopia with expert travel guides',
+    url: `${baseUrl}/destinations`,
+    type: 'website',
+    images: [
+      {
+        url: '/images/dest-800.webp',
+        width: 1200,
+        height: 630,
+        alt: 'Travel Destinations',
+      }
+    ]
+  }
 }
 
 export default function Destinations(){

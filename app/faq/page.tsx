@@ -1,10 +1,28 @@
 import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import { BRAND } from '../../lib/config'
+import { Metadata } from 'next'
 
-export const metadata = {
-  title: 'FAQ — Amanuel Travel',
-  description: 'Common questions about flights, visas, diaspora travel, and how we work.'
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
+
+export const metadata: Metadata = {
+  title: 'FAQ — Flights, Visas & Travel Help',
+  description: 'Common questions about flights, visas, diaspora travel, and how we work.',
+  keywords: ['FAQ', 'frequently asked questions', 'travel help', 'flight booking'],
+  openGraph: {
+    title: 'Frequently Asked Questions',
+    description: 'Get answers to common questions about travel booking, visas, and our services',
+    url: `${baseUrl}/faq`,
+    type: 'website',
+    images: [
+      {
+        url: '/images/hero-1200.webp',
+        width: 1200,
+        height: 630,
+        alt: 'FAQ',
+      }
+    ]
+  }
 }
 
 export default function FAQ() {
