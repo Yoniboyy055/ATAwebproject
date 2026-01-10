@@ -25,12 +25,20 @@ export default function Contact(){
       <Section>
         <div className="container max-w-3xl">
           <div className="bg-white border border-slate-200 rounded-lg p-6 mb-8">
-            <h3 className="font-semibold text-slate-900 mb-4">Quick Contact Info</h3>
-            <div className="space-y-3 text-sm text-slate-700">
-              <div><span className="font-semibold">Phone:</span> {BRAND.phone}</div>
-              <div><span className="font-semibold">Email:</span> {BRAND.email}</div>
-              <div><span className="font-semibold">WhatsApp:</span> {BRAND.whatsapp}</div>
-              <div><span className="font-semibold">Based:</span> {BRAND.location}</div>
+            <div className="mb-6">
+              <h3 className="font-semibold text-slate-900 mb-3 text-lg">Our Office</h3>
+              <div className="text-sm text-slate-700 space-y-1">
+                <div>{BRAND.addressLine2}</div>
+                <div>{BRAND.name}</div>
+                <div>{BRAND.addressLine1}</div>
+                <div>{BRAND.city}</div>
+              </div>
+            </div>
+            <div className="border-t border-slate-200 pt-6 space-y-2 text-sm">
+              <div><span className="font-semibold">Office Phone:</span> <a href={`tel:${BRAND.phoneOffice}`} className="text-blue-600 hover:underline">{BRAND.phoneOffice}</a></div>
+              <div><span className="font-semibold">Mobile:</span> <a href={`tel:${BRAND.phoneMobile}`} className="text-blue-600 hover:underline">{BRAND.phoneMobile}</a></div>
+              <div><span className="font-semibold">Email:</span> <a href={`mailto:${BRAND.email}`} className="text-blue-600 hover:underline">{BRAND.email}</a></div>
+              <div className="pt-2"><a href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`} className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium text-sm transition">💬 Chat on WhatsApp</a></div>
             </div>
           </div>
 

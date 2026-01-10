@@ -16,8 +16,9 @@ export default function Footer(){
           <div>
             <div className="font-semibold mb-3 text-sm">Contact</div>
             <div className="text-sm text-slate-700 space-y-2">
-              <div>Phone: <a href={`tel:${BRAND.phone}`} className="text-accent/90 hover:underline">{BRAND.phone}</a></div>
-              <div>Email: <a href={`mailto:${BRAND.email}`} className="text-accent/90 hover:underline">{BRAND.email}</a></div>
+              <div><a href={`tel:${BRAND.phoneOffice}`} className="text-accent/90 hover:underline">Office: {BRAND.phoneOffice}</a></div>
+              <div><a href={`tel:${BRAND.phoneMobile}`} className="text-accent/90 hover:underline">Mobile: {BRAND.phoneMobile}</a></div>
+              <div><a href={`mailto:${BRAND.email}`} className="text-accent/90 hover:underline">{BRAND.email}</a></div>
               <div><a href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`} className="inline-block bg-accent/90 text-white px-3 py-1 rounded text-xs font-semibold mt-2">Chat</a></div>
             </div>
           </div>

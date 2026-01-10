@@ -168,6 +168,11 @@ export const translations = {
     contactFormSubmit: 'Send to WhatsApp',
     contactFormInfo: 'We&apos;ll reply within 1-2 hours. Your message will be sent via WhatsApp.',
     
+    // Contact Information Labels
+    contactOfficePhone: 'Office Phone',
+    contactMobilePhone: 'Mobile Phone',
+    contactEmailLabel: 'Email',
+    
     // Footer - New sections
     footerPopularPackages: 'Popular Packages',
     footerWhoWeServe: 'Who We Serve',
@@ -354,6 +359,11 @@ export const translations = {
     contactFormSubmit: 'ናብ WhatsApp ይጠብሮ',
     contactFormInfo: 'በ1-2 ሰዓት ውስጥ ስለምላሽ። ንግዲ WhatsApp ይሕጽብ።',
     
+    // Contact Information Labels
+    contactOfficePhone: 'ቤት ጽሕፈት ስልክ',
+    contactMobilePhone: 'ሞባይል',
+    contactEmailLabel: 'ኢ-መይል',
+    
     // Footer - New sections
     footerPopularPackages: 'ተዓምዲ ምርጫታት',
     footerWhoWeServe: 'ሰባት ንነገራ',
@@ -539,6 +549,11 @@ export const translations = {
     contactFormNotes: 'ማስታወሻ',
     contactFormSubmit: 'ወደ WhatsApp ላክ',
     contactFormInfo: 'በ 1-2 ሰዓት ውስጥ መልስ እንሰጣለን። ራስ WhatsApp በኩል ይላከዋል።',
+    
+    // Contact Information Labels
+    contactOfficePhone: 'ቢሮ ስልክ',
+    contactMobilePhone: 'ሞባይል',
+    contactEmailLabel: 'ኢሜይል',
     
     // Footer - New sections
     footerPopularPackages: 'ታዋቂ ጥቅሞች',

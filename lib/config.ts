@@ -1,9 +1,13 @@
 export const BRAND = {
   name: 'Amanuel Travel Agency',
-  location: 'Asmara, Eritrea',
+  addressLine1: 'Alfa Building, 1st Floor, Office #5',
+  addressLine2: 'Managing Director',
+  city: 'Asmara, Eritrea',
+  phoneOffice: '002911180240',
+  phoneMobile: '002917197086',
+  email: 'amanueltravel@gmail.com',
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || '+291912345678', // set NEXT_PUBLIC_WHATSAPP in production
-  email: 'hello@amanualtravel.example',
-  phone: process.env.NEXT_PUBLIC_PHONE || '+291912345678'
+  location: 'Asmara, Eritrea' // legacy field for backward compatibility
 }
 
 export const packages = [
