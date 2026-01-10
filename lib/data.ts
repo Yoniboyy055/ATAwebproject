@@ -1,8 +1,12 @@
 export const services = [
-  {title:'Trip Planning', desc:'Flight routing, dates, options — we plan the whole trip with you.'},
-  {title:'Visa & Documents', desc:'Guidance, checklists, reminders — everything you need to travel smoothly.'},
-  {title:'Coordination', desc:'Hotels, transport, stopovers — we coordinate the details.'},
-  {title:'WhatsApp Support', desc:'Real answers until your trip is locked and you&apos;re ready to go.'}
+  {title:'Flights + Full Trip Support', desc:'Flight routing, dates, options — we plan the whole trip with you.'},
+  {title:'Visa & Document Guidance', desc:'Checklists, reminders, visa support — everything you need to travel smoothly.'},
+  {title:'Airport Pickup & Drop-off', desc:'Coordination in Asmara & Addis Ababa for seamless arrivals and departures.'},
+  {title:'Baggage & Special Requests', desc:'Help with baggage allowances, seat selection and airline special requests.'},
+  {title:'Student Travel Support', desc:'Dedicated guidance for student visas, travel documentation and group bookings.'},
+  {title:'Medical & Emergency Travel', desc:'Urgent travel planning and coordination for medical appointments or emergencies.'},
+  {title:'Group & Family Bookings', desc:'Multi-passenger routing, coordination and special handling for families and groups.'},
+  {title:'WhatsApp-First Support', desc:'Real answers across time zones until your trip is locked and confirmed.'}
 ]
 
 export const destinations = [

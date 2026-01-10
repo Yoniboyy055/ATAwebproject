@@ -9,6 +9,26 @@ export const translations = {
     // Section Headings
     servicesTitle: 'Services',
     servicesBody: 'We provide straightforward, diaspora-friendly services focused on speed and clarity.',
+    
+    // Service Names
+    serviceFlights: 'Flights + Full Trip Support',
+    serviceVisa: 'Visa & Document Guidance',
+    servicePickup: 'Airport Pickup & Drop-off',
+    serviceBaggage: 'Baggage & Special Requests',
+    serviceStudent: 'Student Travel Support',
+    serviceMedical: 'Medical & Emergency Travel',
+    serviceGroup: 'Group & Family Bookings',
+    serviceWhatsApp: 'WhatsApp-First Support',
+    
+    // Packages Section
+    packagesTitle: 'Packages Tailored for You',
+    packagesBody: 'Whether you&apos;re leaving Eritrea or returning from abroad, we have a package built for your journey.',
+    packagesHeadingLocal: 'Best for travelers leaving Eritrea',
+    packagesHeadingDiaspora: 'Best for diaspora travelers returning home',
+    packagesMicroLine: 'Send cities + dates → we reply with options + steps',
+    packagesViewAll: 'View all packages',
+    
+    // Popular Destinations
     popularDestinationsTitle: 'Popular Destinations',
     popularDestinationsBody: 'Fast-loading, simple cards — request a quote directly via WhatsApp.',
     
@@ -64,15 +84,11 @@ export const translations = {
     // Destinations Trust Banner
     destinationsTrustBanner: 'Every destination is handled by real agents with WhatsApp-first support. Request a quote for any city—we&apos;ll guide you through visa, flights, and logistics.',
     
-    // Packages Section
-    packagesTitle: 'Packages Tailored for You',
-    packagesBody: 'Whether you&apos;re leaving Eritrea or returning from abroad, we have a package built for your journey.',
-    bestForLocal: 'Best for travelers leaving Eritrea',
-    bestForDiaspora: 'Best for diaspora travelers returning home',
-    packagesMicroLine: 'Send cities + dates → we reply with options + steps',
-    
     // Navigation
     nav: {
+      services: 'Services',
+      destinations: 'Destinations',
+      packages: 'Packages',
       about: 'About',
       faq: 'FAQ',
       policies: 'Policies',
@@ -126,6 +142,17 @@ export const translations = {
     // Section Headings
     servicesTitle: 'ስርዓታት',
     servicesBody: 'ቀላል፣ ንኡስ ምሩኽ ስርዓታት ብኩርናዕ ሕብረት ምህንጻጽ.',
+    
+    // Service Names
+    serviceFlights: 'ሰንሰለት + ሙሉእ ግዞት ግበይ',
+    serviceVisa: 'ምልክት ወ ወረቀት ገበይ',
+    servicePickup: 'ረሳሌት ወዲሕ ወ ወርደ',
+    serviceBaggage: 'ሓግዛ ወ ምልክት ሓይሊ',
+    serviceStudent: 'ተምሃሮ ምሕጻር ምግባር',
+    serviceMedical: 'ሓክሌ ወ ግዝያዊ ምሕጻር',
+    serviceGroup: 'ወረቓኒ ወ ቤተ-ሰብ ትእዛዞ',
+    serviceWhatsApp: 'WhatsApp-ብቅድሚት ምግባር',
+    
     popularDestinationsTitle: 'ተዓምዲ ከተማታት',
     popularDestinationsBody: 'ብጣዕሙ ዝጅምር ካርድታት—WhatsApp ዝሕተት ሒዝ።',
     
@@ -187,9 +214,14 @@ export const translations = {
     bestForLocal: 'ኤርትራ ትውጹእ ተግባር ኣብ ምርጫ',
     bestForDiaspora: 'ሳሕ ስሪት ተመጋገሪ ምርጫ',
     packagesMicroLine: 'ከተማ + ቀንታት ላዕ → ምርጫትን ዞ ምስ',
+    packagesHeadingLocal: 'ኤርትራ ትወጽእ ተግባር ኣብ ምርጫ',
+    packagesHeadingDiaspora: 'ሳሕ ስሪት ተመጋገሪ ምርጫ',
     
     // Navigation
     nav: {
+      services: 'ስራሓት',
+      destinations: 'ግብራት',
+      packages: 'ምርጫታት',
       about: 'ብዛዕባ ኡስ',
       faq: 'ሕቝቅ ሕቝቅ',
       policies: 'ፖሊሲ',
@@ -243,6 +275,17 @@ export const translations = {
     // Section Headings
     servicesTitle: 'አገልግሎቶች',
     servicesBody: 'ቀላል፣ ዲያስፖራ-ወተሃደራዊ አገልግሎቶች በሚዛን ፍሰት ላይ ያተኩራሉ።',
+    
+    // Service Names
+    serviceFlights: 'ብረታ + ሙሉ ጉዞ ድጋፍ',
+    serviceVisa: 'ቪዛ እና ሰነድ መመሪያ',
+    servicePickup: ' አየር ማረፊያ ድውቅ እና ሽርሖ',
+    serviceBaggage: 'ዖጡ እና ልዩ ጥያቄዎች',
+    serviceStudent: 'ተማሪ ጉዞ ድጋፍ',
+    serviceMedical: 'ህክምና እና ድንገተኛ ጉዞ',
+    serviceGroup: 'ቡድን እና ወገን መጠይቆች',
+    serviceWhatsApp: 'WhatsApp-የመጀመሪያ ድጋፍ',
+    
     popularDestinationsTitle: 'ታዋቂ መስሪያ ቦታዎች',
     popularDestinationsBody: 'በፍጥነት ተጭነው የሚገቡ ትናንሽ ካርዶች—WhatsApp ያለ ቃለ-መጠይቅ።',
     
@@ -304,9 +347,14 @@ export const translations = {
     bestForLocal: 'ከኤርትራ ለወጪ ተጓዥ ተስማሚ',
     bestForDiaspora: 'ለሳህ ተመለሱ ተጓዥ ተስማሚ',
     packagesMicroLine: 'ከተማ + ቀናት ላከሉ → ምርጫ + እርምጃ ምልስ',
+    packagesHeadingLocal: 'ከኤርትራ ለወጪ ተጓዥ ተስማሚ',
+    packagesHeadingDiaspora: 'ለሳህ ተመለሱ ተጓዥ ተስማሚ',
     
     // Navigation
     nav: {
+      services: 'አገልግሎቶች',
+      destinations: 'መስሪያ ቦታዎች',
+      packages: 'ጥቅሞች',
       about: 'ስለ ኡስ',
       faq: 'FAQ',
       policies: 'ፖሊሲዎች',

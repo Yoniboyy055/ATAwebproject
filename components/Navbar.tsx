@@ -12,6 +12,7 @@ export default function Navbar(){
         <nav className="hidden md:flex gap-6 items-center text-sm">
           <Link href="/services" className="hover:underline">Services</Link>
           <Link href="/destinations" className="hover:underline">Destinations</Link>
+          <Link href="/packages" className="hover:underline">Packages</Link>
           <Link href="/about" className="hover:underline">About</Link>
           <Link href="/faq" className="hover:underline">FAQ</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
@@ -27,6 +28,7 @@ export default function Navbar(){
           <div className="container py-4 flex flex-col gap-3">
             <Link href="/services">Services</Link>
             <Link href="/destinations">Destinations</Link>
+            <Link href="/packages">Packages</Link>
             <Link href="/about">About</Link>
             <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
