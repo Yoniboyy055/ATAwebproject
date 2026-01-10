@@ -122,6 +122,59 @@ export const translations = {
     copyrightTitle: 'Copyright & Attribution',
     copyrightBody: 'Site content ownership and usage rights.',
     
+    // Who We Serve (Home conversion section)
+    whoWeServeTitle: 'Who We Serve',
+    whoWeServeBody: 'Whether you&apos;re leaving Eritrea or returning home, we have a pathway built for you.',
+    
+    whoWeServeLocalTitle: 'Local Travelers (Outbound)',
+    whoWeServeLocalBul1: 'Fast booking without confusion—direct WhatsApp support',
+    whoWeServeLocalBul2: 'Clear document requirements and baggage help',
+    whoWeServeLocalBul3: 'Regional flight options with transparent pricing',
+    whoWeServeLocalCta: 'Book Fast on WhatsApp',
+    
+    whoWeServeDiasporaTitle: 'Diaspora Travelers (Return Home)',
+    whoWeServeDiasporaBul1: 'Multi-city routes and flexible date planning',
+    whoWeServeDiasporaBul2: 'Family coordination and document reminders',
+    whoWeServeDiasporaBul3: 'WhatsApp support across all time zones',
+    whoWeServeDiasporaCta: 'Plan Diaspora Trip',
+    
+    // Trust Proof Strip
+    trustProofTitle: 'Why Travelers Trust Us',
+    trustProof1: 'WhatsApp-first responses during your time zone',
+    trustProof2: 'Clear document reminders—no surprises',
+    trustProof3: 'Diaspora-friendly multi-city route planning',
+    trustProof4: 'Transparent guidance (never fake promises)',
+    trustProof5: 'Local partners in Eritrea & Ethiopia',
+    
+    // Contact Page - Request Type
+    contactRequestTypeLabel: 'What do you need?',
+    contactRequestQuickQuote: 'Quick Flight Quote',
+    contactRequestFullTrip: 'Full Trip Support',
+    contactRequestPackage: 'Packages',
+    contactRequestVisa: 'Visa Assistance',
+    contactRequestOther: 'Other',
+    
+    contactTravelerTypeLabel: 'I&apos;m traveling as a',
+    contactTravelerLocal: 'Local (from Eritrea)',
+    contactTravelerDiaspora: 'Diaspora (returning home)',
+    
+    // Contact Form
+    contactFormRequestType: 'What type of request?',
+    contactFormFrom: 'FROM',
+    contactFormTo: 'TO',
+    contactFormDates: 'DATES',
+    contactFormPassengers: 'PASSENGERS',
+    contactFormNotes: 'NOTES',
+    contactFormSubmit: 'Send to WhatsApp',
+    contactFormInfo: 'We&apos;ll reply within 1-2 hours. Your message will be sent via WhatsApp.',
+    
+    // Footer - New sections
+    footerPopularPackages: 'Popular Packages',
+    footerWhoWeServe: 'Who We Serve',
+    footerQuickContact: 'Quick Contact',
+    footerLocal: 'Local Travelers',
+    footerDiaspora: 'Diaspora Travelers',
+    
     // Buttons
     buttons: {
       quote: 'Request a Quote',
@@ -255,6 +308,59 @@ export const translations = {
     copyrightTitle: 'ሙሉእ-ሕክመት ወ ምድላዋ',
     copyrightBody: 'ሳይት ይሕተት ምልክት ወ ኣገልግሎት መብቲ።',
     
+    // Who We Serve (Home conversion section)
+    whoWeServeTitle: 'ሰባት ንነገራ',
+    whoWeServeBody: 'ካብ ኤርትራ ወ ሳሕ ካብ ወጻኢ ተመጊቅካ፣ ምስ ገበርናያ ወሰን ሒዝ።',
+    
+    whoWeServeLocalTitle: 'ሓያል ተጓዥ (ወጻኢ)',
+    whoWeServeLocalBul1: 'ፈጣሪ ዘቢጦ ብ WhatsApp ገበይ ብግላዊ ስርዓት',
+    whoWeServeLocalBul2: 'ግሉጽ ወረቐት ንፈለጥ ወ ሓግዛ ገበይ',
+    whoWeServeLocalBul3: 'ኩሊ ሰንሰለት ምርጫ ዋጋ ግሉጽ',
+    whoWeServeLocalCta: 'ፈጣሪ ዘቢጦ WhatsApp ላዕ',
+    
+    whoWeServeDiasporaTitle: 'ሕዋስ ተጓዥ (ሳሕ ምለስ)',
+    whoWeServeDiasporaBul1: 'ብዙ ከተማ ምጉድዓ ወ ዕለት ተሃላሊ',
+    whoWeServeDiasporaBul2: 'ስድ ምስ ወረቐት ሓባር',
+    whoWeServeDiasporaBul3: 'WhatsApp ምግባር ሙሉእ ሰዓት ዓውድ',
+    whoWeServeDiasporaCta: 'ሕዋስ ግዞት ውጁድ',
+    
+    // Trust Proof Strip
+    trustProofTitle: 'ወደ ዝሕተት ወለ',
+    trustProof1: 'WhatsApp-ብቅድሚት ምስ ሰዓተይ ሕቝቅ',
+    trustProof2: 'ግሉጽ ወረቐት ሓባር—ስንክሊ ኣይቁመጦስ',
+    trustProof3: 'ሕዋስ-ወተሃደራዊ ብዙ ከተማ ምጉድዓ',
+    trustProof4: 'ግሉጽ ገበይ (ሐሊም ሕሊና ኣይ)',
+    trustProof5: 'ሓያል ብሂወ ኤርትራ ወ ኢትዮጵያ',
+    
+    // Contact Page - Request Type
+    contactRequestTypeLabel: 'እንታይ ግዞት?',
+    contactRequestQuickQuote: 'ፈጣሪ ሰንሰለት ሒዝ',
+    contactRequestFullTrip: 'ሙሉእ ግዞት ቅድሚት',
+    contactRequestPackage: 'ምርጫታት',
+    contactRequestVisa: 'ምልክት ምግባር',
+    contactRequestOther: 'ሌላ',
+    
+    contactTravelerTypeLabel: 'ኣነ ተጓዥ ምዃን ፍትውታት',
+    contactTravelerLocal: 'ሓያል (ካብ ኤርትራ)',
+    contactTravelerDiaspora: 'ሕዋስ (ሳሕ ምለስ)',
+    
+    // Contact Form
+    contactFormRequestType: 'እንታይ ምይይት ምርጫ?',
+    contactFormFrom: 'ካብ',
+    contactFormTo: 'ላዕ',
+    contactFormDates: 'ሕቝቅ ሕቝቅ',
+    contactFormPassengers: 'ተጓዥ ብልጫ',
+    contactFormNotes: 'ሓባር',
+    contactFormSubmit: 'ናብ WhatsApp ይጠብሮ',
+    contactFormInfo: 'በ1-2 ሰዓት ውስጥ ስለምላሽ። ንግዲ WhatsApp ይሕጽብ።',
+    
+    // Footer - New sections
+    footerPopularPackages: 'ተዓምዲ ምርጫታት',
+    footerWhoWeServe: 'ሰባት ንነገራ',
+    footerQuickContact: 'ፈጣሪ ስእለት',
+    footerLocal: 'ሓያል ተጓዥ',
+    footerDiaspora: 'ሕዋስ ተጓዥ',
+    
     // Buttons
     buttons: {
       quote: 'ሽቅልቅላት ወስድ',
@@ -387,6 +493,59 @@ export const translations = {
     // Copyright
     copyrightTitle: 'ሙሉ-መብት ወ ሌላ',
     copyrightBody: 'ይህ ሳይት ትሪ ትሪ ይዤ ስሪ።',
+    
+    // Who We Serve (Home conversion section)
+    whoWeServeTitle: 'ማን ተገልግለናል',
+    whoWeServeBody: 'ከኤርትራ ወይም ውጪ ሳህ ወስደው፣ ለእርስዎ መሰላል ይዤ።',
+    
+    whoWeServeLocalTitle: 'ሰራዊት ተጓዥ (ወጪ)',
+    whoWeServeLocalBul1: 'ፈጣን ቦታ ሳህ መተራመር በ WhatsApp',
+    whoWeServeLocalBul2: 'ግልጽ ሰነድ ወ ቦታ ውስጥ ድጋፍ',
+    whoWeServeLocalBul3: 'የ ወለ ለመብረር ዋጋ ግልጽ',
+    whoWeServeLocalCta: 'ፈጣን ቦታ በWhatsApp',
+    
+    whoWeServeDiasporaTitle: 'ዲያስፖራ ተጓዥ (ወደ ቤት)',
+    whoWeServeDiasporaBul1: 'በርካታ ከተማ መንገድ እና ቀናት ተለዋዋጭ',
+    whoWeServeDiasporaBul2: 'ቤተ-ሰብ ስምምነት ወ ሰነድ ማሪያ',
+    whoWeServeDiasporaBul3: 'WhatsApp ድጋፍ ሁሉ ሰዓት ዞን',
+    whoWeServeDiasporaCta: 'ዲያስፖራ ጉዞ ዝግጅት',
+    
+    // Trust Proof Strip
+    trustProofTitle: 'ለምን ተጓዥ ያሳምናሉ',
+    trustProof1: 'WhatsApp-መጀመሪያ ምላሽ ለእርስዎ ሰዓት ዞን',
+    trustProof2: 'ግልጽ ሰነድ ማሪያ—ምንም የጤንነት ጉዳይ',
+    trustProof3: 'ዲያስፖራ-ወተሃደራዊ በርካታ ከተማ አቅደ',
+    trustProof4: 'ግልጽ ስልጠና (ሐሊም ሐሊም ሠራ)',
+    trustProof5: 'ሰራዊት ውትወት ኤርትራ ወ ኢትዮጵያ',
+    
+    // Contact Page - Request Type
+    contactRequestTypeLabel: 'እንዲህ ያስፈልግዎ?',
+    contactRequestQuickQuote: 'ፈጣን ወለ ዋቢት',
+    contactRequestFullTrip: 'ሙሉ ጉዞ ድጋፍ',
+    contactRequestPackage: 'ጥቅሞች',
+    contactRequestVisa: 'ቪዛ ድጋፍ',
+    contactRequestOther: 'ሌላ',
+    
+    contactTravelerTypeLabel: 'ዕቅድ ቀርዬ ነኝ',
+    contactTravelerLocal: 'ሰራዊት (ከኤርትራ)',
+    contactTravelerDiaspora: 'ዲያስፖራ (ወደ ቤት)',
+    
+    // Contact Form
+    contactFormRequestType: 'የ request ዓይነት?',
+    contactFormFrom: 'ከ',
+    contactFormTo: 'ወደ',
+    contactFormDates: 'ቀናት',
+    contactFormPassengers: 'ተጓዥ ብዛት',
+    contactFormNotes: 'ማስታወሻ',
+    contactFormSubmit: 'ወደ WhatsApp ላክ',
+    contactFormInfo: 'በ 1-2 ሰዓት ውስጥ መልስ እንሰጣለን። ራስ WhatsApp በኩል ይላከዋል።',
+    
+    // Footer - New sections
+    footerPopularPackages: 'ታዋቂ ጥቅሞች',
+    footerWhoWeServe: 'ማን ተገልግለናል',
+    footerQuickContact: 'ፈጣን ግንኙነት',
+    footerLocal: 'ሰራዊት ተጓዥ',
+    footerDiaspora: 'ዲያስፖራ ተጓዥ',
     
     // Buttons
     buttons: {

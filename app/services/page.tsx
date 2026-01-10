@@ -73,7 +73,7 @@ export default function ServicesPage(){
         <div className="container max-w-2xl text-center">
           <h3 className="text-2xl font-semibold mb-4">Ready to Plan Your Journey?</h3>
           <p className="text-slate-700 mb-6">
-            Tell us your route and dates on WhatsApp. We'll respond within 1-2 hours with options and guidance.
+            Tell us your route and dates on WhatsApp. We&apos;ll respond within 1-2 hours with options and guidance.
           </p>
           <a
             href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}

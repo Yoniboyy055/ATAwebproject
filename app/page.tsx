@@ -4,6 +4,9 @@ import SectionHeading from '../components/SectionHeading'
 import Card from '../components/Card'
 import QuoteForm from '../components/QuoteForm'
 import PackagesSection from '../components/PackagesSection'
+import WhoWeServeSection from '../components/WhoWeServeSection'
+import HowItWorksSection from '../components/HowItWorksSection'
+import TrustProofStrip from '../components/TrustProofStrip'
 import { services, destinations, trustBullets, testimonials } from '../lib/data'
 import { BRAND } from '../lib/config'
 import { getBlurByBase } from '../lib/images'
@@ -45,6 +48,9 @@ export default function Home(){
         </div>
       </Section>
 
+      {/* WHO WE SERVE */}
+      <WhoWeServeSection />
+
       {/* DESTINATIONS preview */}
       <Section>
         <div className="container">
@@ -81,6 +87,9 @@ export default function Home(){
       {/* PACKAGES */}
       <PackagesSection />
 
+      {/* HOW IT WORKS */}
+      <HowItWorksSection />
+
       {/* TRUST & TESTIMONIALS */}
       <Section>
         <div className="container">
@@ -98,7 +107,8 @@ export default function Home(){
           </div>
         </div>
       </Section>
-
+      {/* TRUST PROOF STRIP */}
+      <TrustProofStrip />
       {/* CTA BAND */}
       <Section className="bg-slate-50">
         <div className="container">

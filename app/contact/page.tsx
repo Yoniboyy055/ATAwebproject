@@ -1,6 +1,6 @@
 import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
-import QuoteForm from '../../components/QuoteForm'
+import EnhancedContactForm from '../../components/EnhancedContactForm'
 import { BRAND } from '../../lib/config'
 
 export const metadata = {
@@ -11,22 +11,31 @@ export const metadata = {
 export default function Contact(){
   return (
     <div>
-      <Section>
-        <div className="container">
-          <h1 className="text-2xl font-semibold">Contact</h1>
+      {/* Header */}
+      <Section className="bg-gradient-to-b from-blue-50 to-white">
+        <div className="container max-w-3xl">
           <SectionHeading>Contact Us</SectionHeading>
-          <div className="space-y-3">
-            <p className="text-slate-700 max-w-xl">We prioritize WhatsApp for fast replies. Provide a few details and we’ll get back to you promptly.</p>
-            <div className="text-sm text-slate-700">Business: <strong>Asmara, Eritrea</strong> — Serving Eritrea & Ethiopia routes worldwide</div>
-            <div className="mt-2">
-              <a href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`} className="inline-flex items-center rounded-md bg-accent/90 text-white px-4 py-2">Chat on WhatsApp</a>
+          <p className="text-lg text-slate-700">
+            We prioritize WhatsApp for fast replies across all time zones. Tell us what you need, and we&apos;ll respond within 1-2 hours.
+          </p>
+        </div>
+      </Section>
+
+      {/* Contact Info */}
+      <Section>
+        <div className="container max-w-3xl">
+          <div className="bg-white border border-slate-200 rounded-lg p-6 mb-8">
+            <h3 className="font-semibold text-slate-900 mb-4">Quick Contact Info</h3>
+            <div className="space-y-3 text-sm text-slate-700">
+              <div><span className="font-semibold">Phone:</span> {BRAND.phone}</div>
+              <div><span className="font-semibold">Email:</span> {BRAND.email}</div>
+              <div><span className="font-semibold">WhatsApp:</span> {BRAND.whatsapp}</div>
+              <div><span className="font-semibold">Based:</span> {BRAND.location}</div>
             </div>
           </div>
 
-          {/* Client-side form for contact */}
-          <div className="mt-6 max-w-xl">
-            <QuoteForm className="grid grid-cols-1 md:grid-cols-2 gap-3" />
-          </div>
+          {/* Enhanced Form */}
+          <EnhancedContactForm />
         </div>
       </Section>
     </div>
