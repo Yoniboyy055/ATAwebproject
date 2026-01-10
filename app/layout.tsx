@@ -1,6 +1,7 @@
 import '../styles/globals.css'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import FaqChatWidget from '../components/FaqChatWidget'
 import { QuoteProvider } from '../components/QuoteProvider'
 import { LangProvider } from '../components/LangProvider'
 import { Metadata } from 'next'
@@ -26,6 +27,7 @@ export default function RootLayout({children}:{children:React.ReactNode}){
             <Navbar />
             <main>{children}</main>
             <Footer />
+            <FaqChatWidget />
           </QuoteProvider>
         </LangProvider>
       </body>
