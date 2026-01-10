@@ -1,6 +1,4 @@
-import Section from '../../components/Section'
-import SectionHeading from '../../components/SectionHeading'
-import { BRAND } from '../../lib/config'
+import { BRAND } from '@/lib/config'
 import { Metadata } from 'next'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
@@ -14,14 +12,6 @@ export const metadata: Metadata = {
     description: 'Get answers to common questions about travel booking, visas, and our services',
     url: `${baseUrl}/faq`,
     type: 'website',
-    images: [
-      {
-        url: '/images/hero-1200.webp',
-        width: 1200,
-        height: 630,
-        alt: 'FAQ',
-      }
-    ]
   }
 }
 
@@ -29,7 +19,7 @@ export default function FAQ() {
   const faqs = [
     {
       q: 'How do I request a quote?',
-      a: 'Send us a message on WhatsApp with your origin city, destination, travel dates, and number of passengers. We&apos;ll reply with options, pricing, and guidance.'
+      a: 'Send us a message on WhatsApp with your origin city, destination, travel dates, and number of passengers. We\'ll reply with options, pricing, and guidance.'
     },
     {
       q: 'What information do you need from me?',
@@ -41,7 +31,7 @@ export default function FAQ() {
     },
     {
       q: 'Can you help with visa requirements?',
-      a: 'Yes—we provide practical guidance, checklists, and timelines. However, we&apos;re not lawyers. Visa rules vary by nationality and destination. We help you prepare; official embassies make final decisions.'
+      a: 'Yes—we provide practical guidance, checklists, and timelines. However, we\'re not lawyers. Visa rules vary by nationality and destination. We help you prepare; official embassies make final decisions.'
     },
     {
       q: 'How fast do you respond on WhatsApp?',
@@ -49,7 +39,7 @@ export default function FAQ() {
     },
     {
       q: 'Can you plan stopovers or multi-city routes?',
-      a: 'Absolutely. Complex routing is one of our strengths, especially for diaspora travelers. Tell us your needs, and we&apos;ll explore options.'
+      a: 'Absolutely. Complex routing is one of our strengths, especially for diaspora travelers. Tell us your needs, and we\'ll explore options.'
     },
     {
       q: 'Can you help with family or group travel?',
@@ -57,11 +47,11 @@ export default function FAQ() {
     },
     {
       q: 'Can you help diaspora travelers returning home?',
-      a: 'Yes—that&apos;s a core focus. Whether you&apos;re flying from Canada, US, or Europe back to Eritrea or Ethiopia, we specialize in diaspora journeys and the unique coordination they need.'
+      a: 'Yes—that\'s a core focus. Whether you\'re flying from Canada, US, or Europe back to Eritrea or Ethiopia, we specialize in diaspora journeys and the unique coordination they need.'
     },
     {
       q: 'How do changes and cancellations work?',
-      a: 'Airline rules vary by fare type and airline. We explain what&apos;s possible before you book. Changes and refunds depend on your ticket rules. We handle coordination via WhatsApp and guide you through the process.'
+      a: 'Airline rules vary by fare type and airline. We explain what\'s possible before you book. Changes and refunds depend on your ticket rules. We handle coordination via WhatsApp and guide you through the process.'
     },
     {
       q: 'Do you charge service fees?',
@@ -76,52 +66,66 @@ export default function FAQ() {
       a: 'We provide guidance on baggage rules and seat options based on airline policy. However, airline websites and check-in agents have final authority. We help clarify, but recommend confirming directly with your airline.'
     },
     {
-      q: 'What if I don&apos;t see my question here?',
-      a: 'WhatsApp us anytime. We love questions, and we&apos;ll answer honestly even if the answer is &ldquo;I don&apos;t know&rdquo; or &ldquo;You&apos;ll need to ask the airline.&rdquo;'
+      q: 'What if I don\'t see my question here?',
+      a: 'WhatsApp us anytime. We love questions, and we\'ll answer honestly even if the answer is "I don\'t know" or "You\'ll need to ask the airline."'
     }
   ]
 
   return (
-    <div>
-      {/* Header */}
-      <Section className="bg-gradient-to-b from-blue-50 to-white">
-        <div className="container">
-          <SectionHeading>Frequently Asked Questions</SectionHeading>
-          <p className="text-lg text-slate-700 max-w-2xl">
-            Got questions? We&apos;ve got answers. If something&apos;s not here, WhatsApp us anytime.
+    <main className="bg-white">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-12 md:py-20">
+        <div className="container max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h1>
+          <p className="text-lg md:text-xl text-emerald-50 max-w-2xl mx-auto">
+            Get answers to common questions about travel booking, visas, and our services
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* FAQs */}
-      <Section>
-        <div className="container max-w-3xl">
-          <div className="space-y-6">
+      <section className="py-16 md:py-24">
+        <div className="container max-w-3xl mx-auto px-4">
+          <div className="space-y-4">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="border-b border-slate-200 pb-6 last:border-b-0">
-                <h3 className="text-lg font-semibold text-slate-900 mb-2">{faq.q}</h3>
-                <p className="text-slate-700">{faq.a}</p>
-              </div>
+              <details
+                key={idx}
+                className="group rounded-lg border border-slate-200 hover:border-emerald-300 transition cursor-pointer"
+              >
+                <summary className="p-5 md:p-6 font-semibold text-slate-900 flex items-center justify-between hover:bg-slate-50 transition">
+                  <span>{faq.q}</span>
+                  <span className="text-2xl text-emerald-600 group-open:rotate-180 transition">
+                    +
+                  </span>
+                </summary>
+                <div className="px-5 md:px-6 pb-5 md:pb-6 pt-0 text-slate-700 border-t border-slate-200">
+                  {faq.a}
+                </div>
+              </details>
             ))}
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* CTA */}
-      <Section className="bg-slate-50">
-        <div className="container max-w-2xl text-center">
-          <h3 className="text-2xl font-semibold mb-4">Still Have Questions&quest;</h3>
-          <p className="text-slate-700 mb-6">
-            Don&apos;t see your answer&quest; Reach out on WhatsApp—we&apos;re here to help.
+      <section className="py-16 md:py-24 bg-emerald-50">
+        <div className="container max-w-6xl mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">
+            Still Have Questions?
+          </h2>
+          <p className="text-lg text-slate-700 mb-8 max-w-2xl mx-auto">
+            Don&rsquo;t see your answer? Reach out on WhatsApp&mdash;we&rsquo;re here to help.
           </p>
           <a
-            href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
-            className="inline-block bg-accent/90 text-white px-6 py-3 rounded-md font-semibold hover:bg-accent transition"
+            href={`https://wa.me/${BRAND.whatsappNumber}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-lg font-bold transition shadow-lg"
           >
-            Chat on WhatsApp
+            💬 WhatsApp Us
           </a>
         </div>
-      </Section>
-    </div>
+      </section>
+    </main>
   )
 }

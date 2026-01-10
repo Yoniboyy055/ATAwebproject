@@ -1,9 +1,11 @@
-import HeroSection from '../components/home/HeroSection'
-import CategoryTiles from '../components/home/CategoryTiles'
-import FeaturedDeals from '../components/home/FeaturedDeals'
-import DestinationsMap from '../components/home/DestinationsMap'
-import Testimonials from '../components/home/Testimonials'
-import CTASection from '../components/home/CTASection'
+import LovableHero from '@/components/lovable/LovableHero'
+import LovableServices from '@/components/lovable/LovableServices'
+import LovablePackages from '@/components/lovable/LovablePackages'
+import LovableDestinations from '@/components/lovable/LovableDestinations'
+import LovableTestimonials from '@/components/lovable/LovableTestimonials'
+import LovableTrust from '@/components/lovable/LovableTrust'
+import LovableFaqPreview from '@/components/lovable/LovableFaqPreview'
+import LovableFinalCta from '@/components/lovable/LovableFinalCta'
 
 export const metadata = {
   title: 'Amanuel Travel — Travel Home & Beyond',
@@ -13,12 +15,14 @@ export const metadata = {
 export default function Home() {
   return (
     <main>
-      <HeroSection />
-      <CategoryTiles />
-      <FeaturedDeals />
-      <DestinationsMap />
-      <Testimonials />
-      <CTASection />
+      <LovableHero />
+      <LovableServices />
+      <LovablePackages />
+      <LovableDestinations />
+      <LovableTrust />
+      <LovableTestimonials />
+      <LovableFaqPreview />
+      <LovableFinalCta />
     </main>
   )
 }
