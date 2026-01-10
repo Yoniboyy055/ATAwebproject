@@ -19,7 +19,7 @@ export default function Footer(){
               <div><a href={`tel:${BRAND.phoneOffice}`} className="text-accent/90 hover:underline">Office: {BRAND.phoneOffice}</a></div>
               <div><a href={`tel:${BRAND.phoneMobile}`} className="text-accent/90 hover:underline">Mobile: {BRAND.phoneMobile}</a></div>
               <div><a href={`mailto:${BRAND.email}`} className="text-accent/90 hover:underline">{BRAND.email}</a></div>
-              <div><a href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`} className="inline-block bg-accent/90 text-white px-3 py-1 rounded text-xs font-semibold mt-2">Chat</a></div>
+              <div><a href={`https://wa.me/${encodeURIComponent(BRAND.whatsappNumber)}`} className="inline-block bg-accent/90 text-white px-3 py-1 rounded text-xs font-semibold mt-2">Chat</a></div>
             </div>
           </div>
 
@@ -58,7 +58,8 @@ export default function Footer(){
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-slate-100 pt-6 text-center text-xs text-slate-600">
+        <div className="border-t border-slate-100 pt-6 text-center text-xs text-slate-600 space-y-2">
+          <p>Prices vary by season and availability. Please WhatsApp or email for live quotes.</p>
           <p>© 2025–2026 {BRAND.name}. All rights reserved.</p>
         </div>
       </div>
