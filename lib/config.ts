@@ -6,7 +6,9 @@ export const BRAND = {
   phoneOffice: '002911180240',
   phoneMobile: '002917197086',
   email: 'amanueltravel@gmail.com',
-  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP || '+291912345678', // set NEXT_PUBLIC_WHATSAPP in production
+  whatsappNumber: '2917197086',
+  whatsappLink: 'https://wa.me/2917197086',
+  whatsapp: '2917197086', // legacy field for backward compatibility
   location: 'Asmara, Eritrea' // legacy field for backward compatibility
 }
 
