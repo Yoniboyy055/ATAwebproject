@@ -31,7 +31,7 @@ export default function FAQ() {
     },
     {
       q: 'Can you help with visa requirements?',
-      a: 'Yes—we provide practical guidance, checklists, and timelines. However, we\'re not lawyers. Visa rules vary by nationality and destination. We help you prepare; official embassies make final decisions.'
+      a: 'Yes — we provide practical guidance, checklists, and timelines. However, we\'re not lawyers. Visa rules vary by nationality and destination. We help you prepare; official embassies make final decisions.'
     },
     {
       q: 'How fast do you respond on WhatsApp?',
@@ -43,11 +43,11 @@ export default function FAQ() {
     },
     {
       q: 'Can you help with family or group travel?',
-      a: 'Yes. Groups, families, multi-passenger bookings—we handle it all. In fact, we have a dedicated package for families: Family/Group Trip Builder.'
+      a: 'Yes. Groups, families, multi-passenger bookings — we handle it all. In fact, we have a dedicated package for families: Family/Group Trip Builder.'
     },
     {
       q: 'Can you help diaspora travelers returning home?',
-      a: 'Yes—that\'s a core focus. Whether you\'re flying from Canada, US, or Europe back to Eritrea or Ethiopia, we specialize in diaspora journeys and the unique coordination they need.'
+      a: 'Yes — that\'s a core focus. Whether you\'re flying from Canada, US, or Europe back to Eritrea or Ethiopia, we specialize in diaspora journeys and the unique coordination they need.'
     },
     {
       q: 'How do changes and cancellations work?',
@@ -114,7 +114,7 @@ export default function FAQ() {
             Still Have Questions?
           </h2>
           <p className="text-lg text-slate-700 mb-8 max-w-2xl mx-auto">
-            Don&rsquo;t see your answer? Reach out on WhatsApp&mdash;we&rsquo;re here to help.
+            Don&apos;t see your answer? Reach out on WhatsApp — we&apos;re here to help.
           </p>
           <a
             href={`https://wa.me/${BRAND.whatsappNumber}`}

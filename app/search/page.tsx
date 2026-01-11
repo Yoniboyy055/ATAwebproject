@@ -21,7 +21,7 @@ export default function SearchPage() {
     setIsLoading(true);
     // Simulate API call delay
     setTimeout(() => {
-      const searchResults = searchPackages(filters, sortBy as any);
+      const searchResults = searchPackages(filters, sortBy as 'price-low' | 'price-high' | 'rating' | 'duration');
       setResults(searchResults);
       setIsLoading(false);
     }, 500);
@@ -37,7 +37,7 @@ export default function SearchPage() {
     setSortBy(newSort);
     if (results.length > 0) {
       const filters: SearchFilters = {}; // Would need to track current filters
-      const newResults = searchPackages(filters, newSort as any);
+      const newResults = searchPackages(filters, newSort as 'price-low' | 'price-high' | 'rating' | 'duration');
       setResults(newResults);
     }
   };
