@@ -1,14 +1,40 @@
-'use client'
-
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
 import { getBlogPost, blogPosts } from '@/lib/blog'
 import StructuredData from '@/components/StructuredData'
+import { generateBlogPostMetaTags } from '@/lib/meta-tags'
 
 interface BlogPostPageProps {
   params: {
     slug: string
   }
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const post = getBlogPost(params.slug)
+  
+  if (!post) {
+    return { title: 'Not Found' }
+  }
+
+  return generateBlogPostMetaTags({
+    title: post.title,
+    excerpt: post.excerpt,
+    slug: post.slug,
+    author: post.author,
+    publishedAt: post.publishedAt,
+    image: post.image,
+    tags: post.tags,
+  })
+}
+
+// Generate static params for blog posts (SEO friendly)
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({
+    slug: post.slug,
+  }))
 }
 
 export default function BlogPostPage({ params }: BlogPostPageProps) {
@@ -147,11 +173,4 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
     </>
   )
-}
-
-// Generate static params for blog posts (SEO friendly)
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({
-    slug: post.slug,
-  }))
 }

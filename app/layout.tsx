@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import FaqChatWidget from '../components/FaqChatWidget'
+import LiveChat from '../components/LiveChat'
 import { QuoteProvider } from '../components/QuoteProvider'
 import { LangProvider } from '../components/LangProvider'
 import { AuthProvider } from '../components/AuthProvider'
@@ -109,6 +110,7 @@ export default function RootLayout({children}:{children:React.ReactNode}){
               <main>{children}</main>
               <Footer />
               <FaqChatWidget />
+              <LiveChat />
             </QuoteProvider>
           </LangProvider>
         </AuthProvider>
