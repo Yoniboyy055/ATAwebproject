@@ -67,7 +67,7 @@ export default function FAQ() {
     },
     {
       q: 'What if I don\'t see my question here?',
-      a: 'WhatsApp us anytime. We love questions, and we\'ll answer honestly even if the answer is "I don\'t know" or "You\'ll need to ask the airline."'
+      a: "WhatsApp us anytime. We love questions, and we'll answer honestly even if the answer is \"I don't know\" or \"You'll need to ask the airline.\""
     }
   ]
 
@@ -114,7 +114,7 @@ export default function FAQ() {
             Still Have Questions?
           </h2>
           <p className="text-lg text-slate-700 mb-8 max-w-2xl mx-auto">
-            Don&apos;t see your answer? Reach out on WhatsApp — we&apos;re here to help.
+            Don't see your answer? Reach out on WhatsApp — we're here to help.
           </p>
           <a
             href={`https://wa.me/${BRAND.whatsappNumber}`}
