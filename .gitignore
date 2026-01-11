@@ -5,6 +5,10 @@ node_modules
 out
 dist
 
+# CSS build artifacts (from external tools/bots)
+*.css
+!styles/**/*.css
+
 # Env
 .env
 .env.local

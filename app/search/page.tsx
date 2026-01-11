@@ -112,7 +112,7 @@ export default function SearchPage() {
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">Start Your Search</h3>
                 <p className="text-slate-600 mb-4">
                   Use the advanced search form to filter by destination, budget, duration, and travel style.
-                  We'll show you the best matching packages.
+                  We&apos;ll show you the best matching packages.
                 </p>
                 <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-6">
                   <p className="text-sm text-emerald-800">
