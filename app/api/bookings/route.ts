@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 const CreateBookingSchema = z.object({
   packageId: z.string().min(1),
   departureDate: z.string().datetime(),

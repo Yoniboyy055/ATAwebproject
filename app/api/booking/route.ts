@@ -4,6 +4,9 @@ import { sendBookingConfirmation } from '@/lib/email'
 import { sendBookingSMS } from '@/lib/sms'
 import { generateBookingPDF } from '@/lib/pdf'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 interface BookingRequestBody {
   tripType: 'one-way' | 'round-trip'
   passengers: number

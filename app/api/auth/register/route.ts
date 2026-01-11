@@ -3,6 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { hashPassword } from '@/lib/password'
 import { z } from 'zod'
 
+// Force dynamic rendering - this is an API route, not a page
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 const RegisterSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),

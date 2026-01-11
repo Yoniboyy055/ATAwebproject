@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 // Mock analytics data
 const mockAnalytics = {
   totalEvents: 12450,
