@@ -1,5 +1,11 @@
 import Script from 'next/script';
 
+declare global {
+  interface Window {
+    $crisp: Record<string, unknown>;
+  }
+}
+
 // SETUP INSTRUCTIONS:
 // 1. Create a Crisp account at https://crisp.chat
 // 2. Get your Website ID from: Settings > Integrations > Crisp Chat
@@ -13,9 +19,7 @@ export default function LiveChat() {
         src="https://client.crisp.chat/l.js"
         strategy="afterInteractive"
         onLoad={() => {
-          // @ts-expect-error Crisp chat library
           if (window.$crisp) {
-            // @ts-expect-error Crisp chat library
             window.$crisp.push(['config', 'website:id', CRISP_WEBSITE_ID]);
             // Customize appearance (emerald-600)
             window.$crisp.push(['config', 'color:theme', '#059669']);

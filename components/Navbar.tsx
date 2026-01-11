@@ -16,6 +16,7 @@ export default function Navbar(){
           <Link href="/services" className="hover:underline">Services</Link>
           <Link href="/destinations" className="hover:underline">Destinations</Link>
           <Link href="/packages" className="hover:underline">Packages</Link>
+          <Link href="/search" className="hover:underline font-semibold text-emerald-600">Search</Link>
           <Link href="/about" className="hover:underline">About</Link>
           <Link href="/faq" className="hover:underline">FAQ</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
@@ -51,6 +52,7 @@ export default function Navbar(){
             <Link href="/services">Services</Link>
             <Link href="/destinations">Destinations</Link>
             <Link href="/packages">Packages</Link>
+            <Link href="/search" className="font-semibold text-emerald-600">🔍 Advanced Search</Link>
             <Link href="/about">About</Link>
             <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
