@@ -2,7 +2,10 @@ import Script from 'next/script';
 
 declare global {
   interface Window {
-    $crisp: Record<string, unknown>;
+    $crisp: {
+      push: (args: unknown[]) => void;
+      [key: string]: unknown;
+    };
   }
 }
 
