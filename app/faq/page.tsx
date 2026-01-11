@@ -114,7 +114,7 @@ export default function FAQ() {
             Still Have Questions?
           </h2>
           <p className="text-lg text-slate-700 mb-8 max-w-2xl mx-auto">
-            Don't see your answer? Reach out on WhatsApp — we're here to help.
+            Don&apos;t see your answer? Reach out on WhatsApp — we&apos;re here to help.
           </p>
           <a
             href={`https://wa.me/${BRAND.whatsappNumber}`}
