@@ -4,6 +4,7 @@ import Footer from '../components/Footer'
 import FaqChatWidget from '../components/FaqChatWidget'
 import { QuoteProvider } from '../components/QuoteProvider'
 import { LangProvider } from '../components/LangProvider'
+import { AuthProvider } from '../components/AuthProvider'
 import { Metadata, Viewport } from 'next'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
@@ -101,14 +102,16 @@ export default function RootLayout({children}:{children:React.ReactNode}){
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        <LangProvider>
-          <QuoteProvider>
-            <Navbar />
-            <main>{children}</main>
-            <Footer />
-            <FaqChatWidget />
-          </QuoteProvider>
-        </LangProvider>
+        <AuthProvider>
+          <LangProvider>
+            <QuoteProvider>
+              <Navbar />
+              <main>{children}</main>
+              <Footer />
+              <FaqChatWidget />
+            </QuoteProvider>
+          </LangProvider>
+        </AuthProvider>
       </body>
     </html>
   )
