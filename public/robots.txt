@@ -1,0 +1,32 @@
+# Robots.txt for Amanuel Travel Agency
+# Controls search engine crawler access
+
+User-agent: *
+Allow: /
+Allow: /blog/
+Allow: /destinations/
+Allow: /about
+Allow: /faq
+Allow: /dashboard/
+
+# Disallow private/admin areas
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /.next/
+
+# Disallow duplicate content
+Disallow: *?sort=
+Disallow: *?filter=
+
+# Allow specific important pages
+Allow: /auth/signin
+Allow: /policies
+
+# Sitemap location
+Sitemap: https://amanueltravel.com/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
+# Comment: This file optimizes crawling efficiency and prevents indexing of duplicate content

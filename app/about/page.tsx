@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { BRAND } from '@/lib/config'
 import { Metadata } from 'next'
+import StructuredData from '@/components/StructuredData'
+import { generateOrganizationSchema } from '@/lib/schema'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
 
@@ -17,7 +19,11 @@ export const metadata: Metadata = {
 }
 
 export default function About() {
+  const organizationSchema = generateOrganizationSchema()
+
   return (
+    <>
+      <StructuredData data={organizationSchema} />
     <main className="bg-white">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-12 md:py-20">
@@ -215,5 +221,6 @@ export default function About() {
         </div>
       </section>
     </main>
+    </>
   )
 }
