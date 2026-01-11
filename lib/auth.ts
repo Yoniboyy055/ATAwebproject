@@ -1,4 +1,5 @@
-import { type NextAuthOptions } from 'next-auth'
+import { type NextAuthOptions, type Session } from 'next-auth'
+import { type JWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import EmailProvider from 'next-auth/providers/email'
@@ -27,7 +28,7 @@ function getUsers() {
   return [] as UserRecord[]
 }
 
-function saveUsers(users: Record<string, unknown>[]) {
+function saveUsers(users: UserRecord[]) {
   ensureDataDir()
   writeFileSync(usersFilePath, JSON.stringify(users, null, 2))
 }
@@ -114,9 +115,9 @@ export const authOptions: NextAuthOptions = {
       }
       return true
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT & { sub?: string } }) {
       if (session.user) {
-        session.user.id = token.sub || ''
+        (session.user as any).id = token.sub || ''
       }
       return session
     },

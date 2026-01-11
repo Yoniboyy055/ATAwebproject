@@ -18,11 +18,9 @@ const CATEGORIES = [
 ];
 
 export default function AdvancedSearchForm({ onSearch, onSaveSearch }: AdvancedSearchFormProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [destination, setDestination] = useState('');
-  // Note: checkIn and checkOut are prepared for future date-range functionality
-  // const [checkIn, setCheckIn] = useState('');
-  // const [checkOut, setCheckOut] = useState('');
+  // Note: isExpanded is prepared for future expandable advanced options
+  // const [isExpanded, setIsExpanded] = useState(false);
   const [travelers, setTravelers] = useState(1);
   const [minBudget, setMinBudget] = useState(500);
   const [maxBudget, setMaxBudget] = useState(5000);
@@ -71,8 +69,6 @@ export default function AdvancedSearchForm({ onSearch, onSaveSearch }: AdvancedS
 
   const resetFilters = () => {
     setDestination('');
-    setCheckIn('');
-    setCheckOut('');
     setTravelers(1);
     setMinBudget(500);
     setMaxBudget(5000);
