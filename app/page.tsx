@@ -1,4 +1,5 @@
 import LovableHero from '@/components/lovable/LovableHero'
+import ModernTrustStrip from '@/components/ModernTrustStrip'
 import LovableServices from '@/components/lovable/LovableServices'
 import LovablePackages from '@/components/lovable/LovablePackages'
 import LovableDestinations from '@/components/lovable/LovableDestinations'
@@ -28,6 +29,7 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
       <LovableHero />
+      <ModernTrustStrip />
       <LovableServices />
       <LovablePackages />
       <LovableDestinations />

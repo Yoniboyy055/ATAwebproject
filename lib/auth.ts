@@ -1,123 +1,72 @@
-import { type NextAuthOptions, type Session } from 'next-auth'
-import { type JWT } from 'next-auth/jwt'
+import { type NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
-import EmailProvider from 'next-auth/providers/email'
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
-import { join } from 'path'
+import { PrismaAdapter } from '@auth/prisma-adapter'
+import { prisma } from './prisma'
+import { comparePasswords } from './password'
 
-// Simple file-based user storage (for demo)
-const usersFilePath = join(process.cwd(), 'data', 'users.json')
-
-function ensureDataDir() {
-  const dataDir = join(process.cwd(), 'data')
-  if (!existsSync(dataDir)) {
-    mkdirSync(dataDir, { recursive: true })
-  }
-}
-
-function getUsers() {
-  ensureDataDir()
-  try {
-    if (existsSync(usersFilePath)) {
-      return JSON.parse(readFileSync(usersFilePath, 'utf-8')) as UserRecord[]
+// Extend NextAuth types to include id
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id?: string
+      name?: string | null
+      email?: string | null
+      image?: string | null
     }
-  } catch (error) {
-    console.error('Error reading users file:', error)
   }
-  return [] as UserRecord[]
-}
-
-function saveUsers(users: UserRecord[]) {
-  ensureDataDir()
-  writeFileSync(usersFilePath, JSON.stringify(users, null, 2))
-}
-
-interface UserRecord {
-  id: string
-  email: string
-  name: string
-  image: string | null
-  createdAt: string
-  bookings: Record<string, unknown>[]
-  savedPackages: Record<string, unknown>[]
-  quotes: Record<string, unknown>[]
-  reviews: Record<string, unknown>[]
-}
-
-function findOrCreateUser(email: string, name?: string, image?: string): UserRecord {
-  const users = getUsers() as UserRecord[]
-  const existingUser = users.find((u) => u.email === email)
-
-  if (existingUser) {
-    return existingUser
-  }
-
-  const newUser: UserRecord = {
-    id: Date.now().toString(),
-    email,
-    name: name || email.split('@')[0],
-    image: image || null,
-    createdAt: new Date().toISOString(),
-    bookings: [],
-    savedPackages: [],
-    quotes: [],
-    reviews: [],
-  }
-
-  users.push(newUser)
-  saveUsers(users)
-  return newUser
 }
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-    }),
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM || 'noreply@amanueltravel.com',
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
-      name: 'Quick Login',
+      name: 'Email & Password',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        email: { label: 'Email', type: 'email', placeholder: 'you@example.com' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email) {
-          throw new Error('Email required')
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password required')
         }
-        // For demo: accept any email, create user on login
-        const user = findOrCreateUser(credentials.email, undefined)
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        })
+
+        if (!user || !user.password) {
+          throw new Error('Invalid email or password')
+        }
+
+        const isPasswordValid = await comparePasswords(credentials.password, user.password)
+
+        if (!isPasswordValid) {
+          throw new Error('Invalid email or password')
+        }
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
+          image: user.image,
         }
       },
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      if (user.email) {
-        const userData = findOrCreateUser(user.email, user.name || undefined, user.image || undefined)
-        user.id = userData.id
-      }
+    async signIn() {
+      // Allow sign in
       return true
     },
-    async session({ session, token }: { session: Session; token: JWT & { sub?: string } }) {
+    async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.sub || ''
+        session.user.id = token.sub || ''
       }
       return session
     },
@@ -134,6 +83,7 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
 }

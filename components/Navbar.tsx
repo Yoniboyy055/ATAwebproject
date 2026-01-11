@@ -16,6 +16,9 @@ export default function Navbar(){
           <Link href="/services" className="hover:underline">Services</Link>
           <Link href="/destinations" className="hover:underline">Destinations</Link>
           <Link href="/packages" className="hover:underline">Packages</Link>
+          <Link href="/flights" className="hover:underline font-semibold text-blue-600">✈️ Flights</Link>
+          <Link href="/content" className="hover:underline">Resources</Link>
+          <Link href="/book" className="hover:underline font-semibold text-blue-600">Book</Link>
           <Link href="/search" className="hover:underline font-semibold text-emerald-600">Search</Link>
           <Link href="/about" className="hover:underline">About</Link>
           <Link href="/faq" className="hover:underline">FAQ</Link>
@@ -25,6 +28,8 @@ export default function Navbar(){
           {/* Auth Links */}
           {status === 'authenticated' && session?.user ? (
             <div className="flex items-center gap-2 ml-4 pl-4 border-l border-slate-200">
+              <Link href="/reviews" className="hover:underline">Reviews</Link>
+              <Link href="/dashboard/wishlist" className="hover:underline">❤️ Wishlist</Link>
               <Link href="/dashboard" className="text-emerald-600 hover:text-emerald-700 font-medium">
                 Dashboard
               </Link>
@@ -52,10 +57,15 @@ export default function Navbar(){
             <Link href="/services">Services</Link>
             <Link href="/destinations">Destinations</Link>
             <Link href="/packages">Packages</Link>
+            <Link href="/flights" className="font-semibold text-blue-600">✈️ Flights</Link>
+            <Link href="/content">Resources</Link>
+            <Link href="/book" className="font-semibold text-blue-600">📅 Book Trip</Link>
             <Link href="/search" className="font-semibold text-emerald-600">🔍 Advanced Search</Link>
             <Link href="/about">About</Link>
             <Link href="/faq">FAQ</Link>
             <Link href="/contact">Contact</Link>
+            <Link href="/reviews">Reviews</Link>
+            <Link href="/dashboard/wishlist" className="font-semibold text-red-600">❤️ Wishlist</Link>
             {status === 'authenticated' && session?.user ? (
               <>
                 <Link href="/dashboard">Dashboard</Link>

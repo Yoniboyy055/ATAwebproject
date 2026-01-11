@@ -1,33 +1,202 @@
-# Amanual Travel Agency — Next.js App Router (TypeScript + Tailwind)
+# Amanuel Travel Agency Platform
 
-A minimal, performance-minded starter tailored for low-bandwidth users and WhatsApp-first contact.
+**Modern travel booking platform built with Next.js 14, TypeScript, Tailwind CSS, and Prisma ORM.**
 
-## Local run
+> Phase 6 Complete: Admin Dashboard, User Features, Analytics, and Full Backend Integration
 
-1. Install dependencies
+## 🚀 Quick Start
 
-   npm install
+### Prerequisites
+- Node.js 18+
+- PostgreSQL 12+
+- npm or yarn
 
-2. Start development server
+### Installation
 
-   npm run dev
+```bash
+# 1. Install dependencies
+npm install
 
-3. Build production
+# 2. Setup environment variables
+cp .env.example .env.local
+# Edit .env.local with your API keys and database URL
 
-   npm run build
-   npm start
+# 3. Setup database
+npx prisma migrate dev
+npx prisma db push
 
-## Recommendations for production
+# 4. Start development server
+npm run dev
+```
 
-- Deploy to Vercel for best Next.js support (App Router + image optimization).
-- Use environment variables to store the WhatsApp phone number (e.g. `WHATSAPP=+291...`) and any other secret.
-- Replace placeholder images in `/public/images/` with optimized WebP/AVIF images at multiple sizes and add OpenGraph images.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Generating optimized images (recommended)
+## 📋 Key Features
 
-Use an image tool like `sharp` or Squoosh CLI to create WebP and AVIF variants at multiple sizes. Example using `sharp` (Node):
+### For Users
+- ✅ **Package Browsing** - Search & filter travel packages
+- ✅ **Booking System** - Multi-step booking with validation
+- ✅ **User Dashboard** - Booking history, profile management
+- ✅ **Wishlist** - Save & share favorite packages
+- ✅ **Reviews** - Rate packages and read traveler reviews
+- ✅ **Flights Search** - Quick airline search integration
+- ✅ **Mobile Optimized** - Responsive design, 48px touch targets
 
-```js
+### For Business
+- ✅ **Admin Dashboard** - Complete management interface
+- ✅ **Booking Management** - Filter, track, and manage bookings
+- ✅ **Payment Tracking** - Revenue analytics with refund capability
+- ✅ **Package CRUD** - Create/edit/delete travel packages
+- ✅ **Blog Management** - Publish articles and content
+- ✅ **User Management** - Search users, track activity
+- ✅ **Analytics** - GTM/GA integration, conversion tracking, A/B tests
+- ✅ **Email Automation** - Confirmation, reminders, follow-ups
+
+### Integration & Communication
+- ✅ **Payment Processing** - Stripe integration with webhooks
+- ✅ **Email** - Resend for transactional emails & newsletters
+- ✅ **SMS** - Twilio for SMS notifications
+- ✅ **WhatsApp** - Direct messaging integration
+- ✅ **Google Analytics** - Complete event tracking
+- ✅ **PDF Receipts** - Auto-generated booking receipts
+
+## 📁 Project Structure
+
+```
+app/
+├── admin/              # Admin dashboard & management
+├── api/                # API endpoints & webhooks
+├── auth/               # Authentication pages
+├── dashboard/          # User dashboard
+├── blog/               # Blog pages
+├── [other pages]/      # Public pages
+components/
+├── admin/              # Admin-specific components
+├── home/               # Home page sections
+lib/
+├── auth.ts             # NextAuth configuration
+├── admin.ts            # Admin role utilities
+├── analytics.ts        # Event tracking
+├── ab-testing.ts       # A/B testing framework
+├── email.ts            # Email templates
+├── pdf.ts              # PDF generation
+prisma/
+├── schema.prisma       # Database schema (12 models)
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+**Database:**
+```
+DATABASE_URL=postgresql://user:password@localhost:5432/amanuel_travel
+```
+
+**Authentication:**
+```
+NEXTAUTH_SECRET=your-secret-key
+NEXTAUTH_URL=http://localhost:3000
+```
+
+**Payments & APIs:**
+```
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxx
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+```
+
+**Communication:**
+```
+RESEND_API_KEY=re_xxxxx
+TWILIO_ACCOUNT_SID=AC_xxxxx
+TWILIO_AUTH_TOKEN=your_token
+TWILIO_PHONE_NUMBER=+1234567890
+```
+
+**Analytics:**
+```
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_GTM_ID=GTM-XXXXXX
+```
+
+See `.env.example` for complete list.
+
+## 📦 Build & Deployment
+
+### Local Build
+```bash
+npm run build
+npm start
+```
+
+### Deploy to Vercel (Recommended)
+```bash
+vercel deploy
+```
+
+## 🧪 Quality Assurance
+
+```bash
+# Build verification
+npm run build
+
+# Type checking
+npx tsc --noEmit
+
+# Linting
+npm run lint
+```
+
+## 📊 Database
+
+**12 Prisma Models:**
+- User, Session, VerificationToken (Auth)
+- Package, Destination (Travel)
+- Booking, Quote (Reservations)
+- Review, Review_Like (Community)
+- Payment, Webhook_Event (Transactions)
+- Newsletter_Subscriber (Marketing)
+
+## 🔐 Security
+
+- NextAuth.js authentication
+- Role-based access control
+- Protected API routes
+- Environment variables for secrets
+- HTTPS for production
+
+## 📈 Analytics & Tracking
+
+- Event tracking (clicks, forms, bookings)
+- Google Analytics & GTM integration
+- A/B testing framework
+- Conversion tracking
+- Payment analytics
+
+## 📚 Documentation
+
+- **[START_HERE.md](START_HERE.md)** - Getting started guide
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - System architecture
+- **[API_REFERENCE.md](API_REFERENCE.md)** - API documentation
+- **[DATABASE_SETUP.md](DATABASE_SETUP.md)** - Database setup
+- **[PHASE_6_COMPLETION.md](PHASE_6_COMPLETION.md)** - Latest features
+
+## 🎯 Development Status
+
+| Component | Status |
+|-----------|--------|
+| Backend & API | ✅ Complete |
+| Frontend UI | ✅ Complete |
+| Admin Dashboard | ✅ Complete |
+| Analytics | ✅ Complete |
+| Payments | ✅ Complete |
+| Email System | ✅ Complete |
+
+---
+
+**Version:** 2.0.0 | **Status:** Production Ready ✅  
+**Last Updated:** January 11, 2026
 // generate-sizes.js
 const sharp = require('sharp')
 const sizes = [400, 800]

@@ -6,7 +6,7 @@ export default function LovableHero() {
   return (
     <section className="relative w-full overflow-hidden">
       {/* Hero Background */}
-      <div className="relative h-[600px] md:h-[700px] w-full">
+      <div className="relative h-[500px] md:h-[600px] w-full">
         <Image
           src="/images/hero.svg"
           alt="Tropical paradise beach"
@@ -15,46 +15,60 @@ export default function LovableHero() {
           className="object-cover"
           sizes="100vw"
         />
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40" />
+        {/* Gradient Overlay - stronger */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/40 via-slate-900/30 to-black/50" />
       </div>
 
       {/* Hero Content */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-10">
-        <div className="mb-6">
-          <p className="text-sm md:text-base font-semibold text-emerald-300 mb-2 tracking-wide">✈️ 🌴 🧳 🌏</p>
-          <p className="text-white/90 text-sm md:text-base">Over 50,000+ happy travelers</p>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 z-10">
+        <div className="mb-4 sm:mb-6 animate-fade-in">
+          <div className="inline-block px-4 py-2 bg-emerald-500/20 border border-emerald-400/50 rounded-full mb-3">
+            <p className="text-xs sm:text-sm font-semibold text-emerald-300 tracking-wide">✈️ Fast Flights • Visa Help • WhatsApp Support</p>
+          </div>
         </div>
         
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 leading-tight max-w-3xl">
-          Discover Your Next Adventure
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight max-w-4xl animate-fade-in-delay-1">
+          Travel Home or Explore the World
         </h1>
         
-        <p className="text-white/80 text-lg md:text-xl max-w-2xl mb-8">
-          Explore extraordinary destinations for diaspora & local travelers. From pristine beaches to vibrant cities, your dream vacation awaits.
+        <p className="text-white/90 text-base sm:text-lg md:text-xl max-w-3xl mb-6 sm:mb-10 animate-fade-in-delay-2">
+          Get your flights, visas, and travel arranged in minutes. Trusted by Eritrean diaspora and locals for 10+ years.
         </p>
 
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        {/* CTA Buttons - Two Clear Paths */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto animate-fade-in-delay-3">
+          {/* Diaspora CTA */}
           <a
-            href={`https://wa.me/${BRAND.whatsappNumber}`}
+            href={`https://wa.me/${BRAND.whatsappNumber}?text=Hi! I'm diaspora looking to visit home soon. Can you help me plan my trip?`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-lg transition duration-300 shadow-lg"
+            className="flex-1 sm:flex-none px-6 sm:px-8 py-3 sm:py-4 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform"
           >
-            WhatsApp: Book Now
+            💬 Chat on WhatsApp (Diaspora)
           </a>
-          <Link
-            href="/packages"
-            className="px-8 py-4 bg-white/20 hover:bg-white/30 text-white font-bold rounded-lg transition duration-300 border border-white/40"
+          
+          {/* Local CTA */}
+          <a
+            href={`https://wa.me/${BRAND.whatsappNumber}?text=Hi! I'm looking to book a flight. What are the available options?`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 sm:flex-none px-6 sm:px-8 py-3 sm:py-4 bg-blue-500 hover:bg-blue-600 active:scale-95 text-white font-bold rounded-lg transition duration-200 shadow-lg hover:shadow-xl transform"
           >
-            Explore Packages
+            ✈️ Book Flight (Local)
+          </a>
+
+          {/* Explore Alternative */}
+          <Link
+            href="/flights"
+            className="flex-1 sm:flex-none px-6 sm:px-8 py-3 sm:py-4 bg-white/15 hover:bg-white/25 active:scale-95 text-white font-bold rounded-lg transition duration-200 border border-white/40 transform"
+          >
+            🔍 Browse Options
           </Link>
         </div>
       </div>
 
       {/* Search Widget (simplified for Eritrea focus) */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/50 to-transparent pt-12 pb-8">
+      <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-12 pb-8 hidden md:block">
         <div className="container max-w-4xl mx-auto px-4">
           <div className="bg-white rounded-xl shadow-2xl p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

@@ -1,159 +1,153 @@
 import Link from 'next/link'
 
-interface PackageCardProps {
-  id: string
-  title: string
-  location: string
-  rating: number
-  reviews: number
-  duration: string
-  price: number
-  discountedPrice: number
-  tags: string[]
-  image: string
-  discount?: number
-  countdown?: string
+interface TierPackage {
+  name: 'Basic' | 'Standard' | 'Premium'
+  emoji: string
+  description: string
+  price: string
+  features: string[]
+  cta: string
+  popular?: boolean
 }
 
-const packages: PackageCardProps[] = [
+const packageTiers: TierPackage[] = [
   {
-    id: 'asmara-city',
-    title: 'Asmara City Break',
-    location: 'Asmara, Eritrea',
-    rating: 4.9,
-    reviews: 142,
-    duration: '3 days',
-    price: 899,
-    discountedPrice: 699,
-    discount: 22,
-    countdown: '47h 59m left',
-    tags: ['Culture', 'History', 'Food'],
-    image: '/images/hero.svg'
+    name: 'Basic',
+    emoji: '✈️',
+    description: 'Flight + Hotel booking',
+    price: '$599',
+    features: [
+      'Flight booking',
+      'Hotel recommendations',
+      'WhatsApp support',
+      'Travel insurance info',
+      'Basic itinerary',
+    ],
+    cta: 'Get Started'
   },
   {
-    id: 'massawa-escape',
-    title: 'Massawa Red Sea Escape',
-    location: 'Massawa, Eritrea',
-    rating: 4.8,
-    reviews: 98,
-    duration: '4 days',
-    price: 799,
-    discountedPrice: 599,
-    discount: 25,
-    countdown: '23h 59m left',
-    tags: ['Beach', 'Diving', 'Relax'],
-    image: '/images/hero.svg'
+    name: 'Standard',
+    emoji: '🌟',
+    description: 'Complete trip arrangement',
+    price: '$899',
+    features: [
+      'All from Basic',
+      'Visa assistance',
+      'Airport transfers',
+      'Guided tours',
+      'Restaurant bookings',
+      ' 24/7 WhatsApp support',
+      'Detailed itinerary',
+    ],
+    cta: 'Most Popular',
+    popular: true
   },
   {
-    id: 'keren-heritage',
-    title: 'Keren Heritage Tour',
-    location: 'Keren, Eritrea',
-    rating: 5.0,
-    reviews: 67,
-    duration: '2 days',
-    price: 499,
-    discountedPrice: 379,
-    discount: 24,
-    countdown: '18h 30m left',
-    tags: ['Heritage', 'Adventure', 'Culture'],
-    image: '/images/hero.svg'
+    name: 'Premium',
+    emoji: '👑',
+    description: 'VIP concierge service',
+    price: '$1,299',
+    features: [
+      'All from Standard',
+      'Personal travel consultant',
+      'Luxury accommodations',
+      'Private transfers',
+      'VIP experiences',
+      'Travel insurance included',
+      'Emergency assistance',
+      'Post-trip support',
+    ],
+    cta: 'Go Premium'
   },
 ]
 
-function PackageCard({ pkg }: { pkg: PackageCardProps }) {
-  return (
-    <div className="group rounded-xl overflow-hidden bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-xl transition duration-300">
-      {/* Image */}
-      <div className="relative h-48 md:h-56 overflow-hidden bg-slate-100">
-        <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white text-sm font-semibold">
-          {pkg.location}
-        </div>
-        {pkg.discount && (
-          <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-            -{pkg.discount}%
-          </div>
-        )}
-        {pkg.countdown && (
-          <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded-lg text-xs font-semibold">
-            {pkg.countdown}
-          </div>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-5 md:p-6">
-        {/* Rating */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-yellow-400">⭐</span>
-          <span className="font-bold text-slate-900">{pkg.rating}</span>
-          <span className="text-slate-600 text-sm">({pkg.reviews})</span>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">
-          {pkg.title}
-        </h3>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1 mb-3">
-          {pkg.tags.map((tag, i) => (
-            <span key={i} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full">
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Duration & Price */}
-        <div className="border-t border-slate-200 pt-3 mt-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-600">{pkg.duration}</span>
-            <div className="text-right">
-              <div className="line-through text-slate-400 text-sm">${pkg.price}</div>
-              <div className="text-xl font-bold text-emerald-600">${pkg.discountedPrice}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <Link
-          href={`/packages#${pkg.id}`}
-          className="mt-4 w-full block text-center bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-semibold transition"
-        >
-          View Details
-        </Link>
-      </div>
-    </div>
-  )
-}
-
 export default function LovablePackages() {
   return (
-    <section className="py-16 md:py-24 bg-white">
-      <div className="container max-w-6xl mx-auto px-4">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white">
+      <div className="container max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-            Featured Packages
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+            Choose Your Travel Package
           </h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-            Handpicked destinations with exclusive offers. Book now before they&rsquo;re gone!
+          <p className="text-slate-600 text-lg max-w-3xl mx-auto">
+            Simple, transparent pricing. Everything you need, nothing you don&rsquo;t.
           </p>
         </div>
 
-        {/* Package Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {packages.map(pkg => (
-            <PackageCard key={pkg.id} pkg={pkg} />
+        {/* Pricing Tiers Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 mb-12">
+          {packageTiers.map((tier) => (
+            <div
+              key={tier.name}
+              className={`relative rounded-2xl overflow-hidden transition duration-300 ${
+                tier.popular
+                  ? 'md:scale-105 border-2 border-emerald-500 shadow-2xl'
+                  : 'border border-slate-200 hover:border-slate-300 hover:shadow-lg'
+              }`}
+            >
+              {/* Popular badge */}
+              {tier.popular && (
+                <div className="absolute top-0 right-0 bg-emerald-500 text-white px-4 py-1 text-sm font-bold rounded-bl-lg">
+                  POPULAR
+                </div>
+              )}
+
+              <div className={`p-8 h-full flex flex-col ${
+                tier.popular ? 'bg-gradient-to-br from-emerald-50 to-white' : 'bg-white'
+              }`}>
+                {/* Icon & Name */}
+                <div className="mb-6">
+                  <div className="text-5xl mb-3">{tier.emoji}</div>
+                  <h3 className="text-3xl font-bold text-slate-900">{tier.name}</h3>
+                  <p className="text-slate-600 text-sm mt-1">{tier.description}</p>
+                </div>
+
+                {/* Price */}
+                <div className="mb-8">
+                  <div className="text-5xl font-bold text-slate-900">{tier.price}</div>
+                  <p className="text-slate-600 text-sm mt-1">per trip</p>
+                </div>
+
+                {/* Features List */}
+                <ul className="space-y-3 mb-8 flex-1">
+                  {tier.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-slate-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA Button */}
+                <Link
+                  href={`/book?package=${tier.name.toLowerCase()}`}
+                  className={`w-full py-3 rounded-lg font-bold transition duration-200 text-center ${
+                    tier.popular
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg hover:shadow-xl'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
+                  }`}
+                >
+                  {tier.cta}
+                </Link>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* View All CTA */}
-        <div className="text-center">
+        {/* Bottom CTA */}
+        <div className="bg-gradient-to-r from-blue-600 to-emerald-600 rounded-2xl p-8 md:p-12 text-center text-white">
+          <h3 className="text-2xl md:text-3xl font-bold mb-4">Not sure which package is right for you?</h3>
+          <p className="text-blue-100 text-lg mb-6 max-w-2xl mx-auto">
+            Chat with our travel experts on WhatsApp. They&rsquo;ll help you find the perfect package for your needs.
+          </p>
           <Link
-            href="/packages"
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-lg font-bold transition shadow-lg hover:shadow-xl"
+            href="/contact"
+            className="inline-block bg-white text-emerald-600 hover:bg-slate-100 px-8 py-4 rounded-lg font-bold transition duration-200"
           >
-            View All Packages →
+            💬 Chat with Experts
           </Link>
         </div>
       </div>

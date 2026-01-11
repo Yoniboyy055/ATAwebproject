@@ -15,6 +15,151 @@ body{
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
+/* Micro-animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 600ms ease-out;
+}
+
+.animate-fade-in-delay-1 {
+  animation: fade-in 600ms ease-out 100ms both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fade-in 600ms ease-out 200ms both;
+}
+
+.animate-fade-in-delay-3 {
+  animation: fade-in 600ms ease-out 300ms both;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 600ms ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 600ms ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 600ms ease-out;
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up 600ms ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 600ms ease-out;
+}
+
+/* Button & Interactive Animations */
+button, a {
+  @apply transition-all duration-200;
+}
+
+button:active, a:active {
+  @apply scale-95;
+}
+
+/* Hover Effects */
+.btn-hover {
+  @apply transition-all duration-300;
+}
+
+.btn-hover:hover {
+  @apply translate-y-[-2px] shadow-lg;
+}
+
+/* Link underline animation */
+.link-underline {
+  @apply relative;
+  text-decoration: none;
+}
+
+.link-underline::after {
+  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-300;
+  content: '';
+}
+
+.link-underline:hover::after {
+  @apply w-full;
+}
+
+/* Card hover lift */
+.card-hover {
+  @apply transition-all duration-300 cursor-pointer;
+}
+
+.card-hover:hover {
+  @apply translate-y-[-6px] shadow-xl;
+}
+
+/* Smooth appearance animations */
+.appear-on-scroll {
+  @apply opacity-0;
+  animation: fade-in-up 600ms ease-out forwards;
+}
+
 /* subtle utility classes */
 .section { padding: 4rem 1rem; }
 .container { max-width: var(--max-width); margin: 0 auto; }
@@ -30,6 +175,71 @@ body{
 
 /* small forms */
 .input, .textarea{ @apply border border-slate-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary }
+
+/* Mobile-optimized form inputs */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+  @apply min-h-[48px];
+  @apply text-base;
+  @apply px-4;
+  @apply py-3;
+}
+
+@media (min-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="number"],
+  select,
+  textarea {
+    min-height: auto;
+    @apply text-sm;
+    @apply px-3;
+    @apply py-2;
+  }
+}
+
+/* Ensure input focus states are visible */
+input:focus,
+select:focus,
+textarea:focus {
+  @apply ring-2 ring-offset-0;
+  outline: none;
+}
+
+/* Better form group spacing */
+label {
+  @apply block text-sm font-medium text-gray-700 mb-2;
+}
+
+@media (min-width: 768px) {
+  label {
+    @apply mb-1;
+  }
+}
+
+/* Button touch target optimization */
+button, a.btn {
+  @apply min-h-[48px];
+  @apply text-base;
+  @apply px-4;
+  @apply py-3;
+}
+
+@media (min-width: 768px) {
+  button, a.btn {
+    min-height: auto;
+    @apply text-sm;
+    @apply px-3;
+    @apply py-2;
+  }
+}
 
 /* minimal accessibility helpers */
 .sr-only{ position: absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden; }

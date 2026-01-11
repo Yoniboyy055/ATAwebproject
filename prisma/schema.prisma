@@ -1,0 +1,256 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and profile
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  name          String?
+  password      String?    // hashed password for credentials login
+  image         String?
+  phone         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  bookings      Booking[]
+  quotes        Quote[]
+  reviews       Review[]
+  savedPackages SavedPackage[]
+  payments      Payment[]
+
+  @@map("users")
+}
+
+// NextAuth Account model (for OAuth providers)
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Verification token for email-based auth
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Package model
+model Package {
+  id          String   @id @default(cuid())
+  type        String   // "Local" or "Diaspora"
+  title       String
+  description String?  @db.Text
+  price       Float?   // optional price
+  recommended Boolean  @default(false)
+  includes    String[] // array of included services
+  note        String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  bookings    Booking[]
+  quotes      Quote[]
+
+  @@map("packages")
+}
+
+// Booking model
+model Booking {
+  id               String   @id @default(cuid())
+  userId           String
+  packageId        String
+  status           String   @default("pending") // pending, confirmed, completed, cancelled
+  
+  // Trip details
+  departureDate    DateTime
+  returnDate       DateTime?
+  passengers       Int      @default(1)
+  
+  // Contact info
+  phoneNumber      String?
+  notes            String?  @db.Text
+  
+  // Pricing
+  totalPrice       Float?
+  currency         String   @default("USD")
+  
+  // Travel details (to be collected)
+  destination      String?
+  airline          String?
+  flightDetails    String?  @db.Text
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package          Package  @relation(fields: [packageId], references: [id])
+  payment          Payment?
+
+  @@index([userId])
+  @@index([packageId])
+  @@map("bookings")
+}
+
+// Quote request model
+model Quote {
+  id           String   @id @default(cuid())
+  userId       String
+  packageId    String?
+  
+  // Quote details
+  type         String   // "flight", "package", "custom"
+  description  String?  @db.Text
+  requirements String?  @db.Text
+  
+  // Contact
+  phoneNumber  String?
+  email        String?
+  
+  status       String   @default("pending") // pending, responded, accepted, rejected
+  quote        Float?   // quoted price
+  currency     String   @default("USD")
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package      Package? @relation(fields: [packageId], references: [id])
+
+  @@index([userId])
+  @@index([packageId])
+  @@map("quotes")
+}
+
+// Saved Package model
+model SavedPackage {
+  id        String   @id @default(cuid())
+  userId    String
+  packageId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, packageId])
+  @@map("saved_packages")
+}
+
+// Review/Testimonial model
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  rating    Int      // 1-5
+  title     String?
+  text      String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("reviews")
+}
+
+// Payment model (Stripe integration)
+model Payment {
+  id               String   @id @default(cuid())
+  bookingId        String   @unique
+  userId           String
+  
+  stripePaymentId  String   @unique  // Stripe payment intent ID
+  stripeSessionId  String?  @unique  // Stripe session ID (for checkout)
+  
+  amount           Float
+  currency         String   @default("USD")
+  status           String   @default("pending") // pending, processing, completed, failed
+  
+  paymentMethod    String?  // card, bank_transfer, etc
+  
+  metadata         String?  @db.Text // JSON metadata
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  booking          Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([bookingId])
+  @@map("payments")
+}
+
+// Newsletter subscription model
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  subscribed Boolean  @default(true)
+
+  @@map("newsletters")
+}
+
+// Booking request from frontend form (public visitors)
+model BookingRequest {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  tripType      String   // "one-way" or "round-trip"
+  passengers    Int
+  fromCity      String
+  toCity        String
+  departDate    DateTime?
+  returnDate    DateTime?
+  fullName      String
+  phone         String
+  email         String?
+  notes         String?  @db.Text
+  contactMethod String   // "whatsapp", "phone", or "email"
+  status        String   @default("new") // "new", "contacted", "closed"
+
+  @@index([phone])
+  @@index([email])
+  @@index([createdAt])
+  @@map("booking_requests")
+}
