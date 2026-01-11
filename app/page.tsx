@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import LovableHero from '@/components/lovable/LovableHero'
 import LovableServices from '@/components/lovable/LovableServices'
