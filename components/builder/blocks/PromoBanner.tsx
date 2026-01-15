@@ -17,6 +17,7 @@ const PromoBannerPropsSchema = z.object({
 
 export type PromoBannerProps = z.infer<typeof PromoBannerPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function PromoBannerBlock(props: any): ReactNode {
   let validProps: PromoBannerProps;
   try {

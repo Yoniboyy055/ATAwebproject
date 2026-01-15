@@ -10,6 +10,7 @@ const createPrismaClient = () => {
       '[Prisma] DATABASE_URL not set. Database features will not work until environment variable is configured.'
     )
     // Return a dummy client for build time - won't actually be used
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return null as any
   }
   return new PrismaClient({

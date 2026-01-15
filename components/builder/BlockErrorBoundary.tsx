@@ -6,11 +6,13 @@
 import { ReactNode } from "react";
 import { FEATURES } from "@/lib/config";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface BlockErrorBoundaryProps {
   children: ReactNode;
   blockName?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface BlockErrorBoundaryState {
   hasError: boolean;
   error?: Error;

@@ -3,7 +3,10 @@
  * Allows Builder webhooks to trigger ISR cache invalidation
  */
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidateTag } from "next/cache";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +21,7 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Revalidate based on what changed
-    const { modelId, modelName } = body;
+    const { modelName } = body;
 
     if (modelName === "page") {
       // Revalidate all pages

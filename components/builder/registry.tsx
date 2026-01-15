@@ -7,11 +7,11 @@
 import dynamic from "next/dynamic";
 import { ApprovedBlockType, APPROVED_BLOCKS } from "@/lib/config";
 import { SafeBlockRenderer, BlockErrorFallback } from "./BlockErrorBoundary";
-
 /**
  * Dynamically import approved blocks
  * Using dynamic imports for better code splitting and safety
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blockComponents: Partial<Record<ApprovedBlockType, React.ComponentType<any>>> = {
   Hero: dynamic(
     () => import("./blocks/Hero").then((mod) => mod.HeroBlock),
@@ -67,6 +67,7 @@ const blockComponents: Partial<Record<ApprovedBlockType, React.ComponentType<any
  * Render a single block from Builder data
  * Validates block type before rendering
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function renderBlock(block: any): React.ReactNode {
   if (!block) return null;
 
@@ -108,6 +109,7 @@ export function renderBlock(block: any): React.ReactNode {
 /**
  * Render multiple blocks from a Blocks field
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function renderBlocks(blocks: any[] | undefined): React.ReactNode[] {
   if (!Array.isArray(blocks)) return [];
   return blocks.map((block, idx) => (

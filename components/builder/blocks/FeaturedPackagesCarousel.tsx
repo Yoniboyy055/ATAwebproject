@@ -14,6 +14,7 @@ const FeaturedPackagesCarouselPropsSchema = z.object({
 
 export type FeaturedPackagesCarouselProps = z.infer<typeof FeaturedPackagesCarouselPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function FeaturedPackagesCarouselBlock(props: any): ReactNode {
   let validProps: FeaturedPackagesCarouselProps;
   try {

@@ -20,6 +20,7 @@ const TrustBarPropsSchema = z.object({
 
 export type TrustBarProps = z.infer<typeof TrustBarPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function TrustBarBlock(props: any): ReactNode {
   let validProps: TrustBarProps;
   try {

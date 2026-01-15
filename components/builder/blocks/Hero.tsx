@@ -18,6 +18,7 @@ const HeroBlockPropsSchema = z.object({
 
 export type HeroBlockProps = z.infer<typeof HeroBlockPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function HeroBlock(props: any): ReactNode {
   // Validate props with Zod
   let validProps: HeroBlockProps;

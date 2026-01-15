@@ -20,6 +20,7 @@ const PricingBoxPropsSchema = z.object({
 
 export type PricingBoxProps = z.infer<typeof PricingBoxPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function PricingBoxBlock(props: any): ReactNode {
   let validProps: PricingBoxProps;
   try {

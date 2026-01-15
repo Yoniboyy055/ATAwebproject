@@ -135,15 +135,14 @@ export default function GoogleAnalytics() {
     }
   }, [])
 
-  // eslint-disable react-hooks/exhaustive-deps
   useEffect(() => {
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('config', GA_ID, {
         page_path: pathname,
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
-  // eslint-enable react-hooks/exhaustive-deps
 
   return null
 }

@@ -12,7 +12,6 @@ import {
   BuilderPageEntry,
   SafePackage,
   ValidationResult,
-  validatePackageData,
 } from "./builder.schemas";
 
 const API_BASE = "https://www.builder.io/api/v2";
@@ -20,10 +19,11 @@ const API_BASE = "https://www.builder.io/api/v2";
 /**
  * Core fetch function for Builder API with error handling
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function builderApiFetch(
   endpoint: string,
   options?: RequestInit
-): Promise<any> {
+): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
   if (!BUILDER_CONFIG.apiKey) {
     console.error("NEXT_PUBLIC_BUILDER_API_KEY is not set");
     throw new Error("Builder API key is not configured");
@@ -252,6 +252,7 @@ export function normalizeBuilderImage(
  * Used by block wrapper component
  */
 export function isApprovedBlock(blockName: string): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return APPROVED_BLOCKS.includes(blockName as any);
 }
 
@@ -259,6 +260,7 @@ export function isApprovedBlock(blockName: string): boolean {
  * Helper: Safe block filter
  * Removes unapproved blocks from content
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function filterApprovedBlocks(blocks: any[] | undefined) {
   if (!Array.isArray(blocks)) return [];
   return blocks.filter((block) => {

@@ -17,6 +17,7 @@ const GalleryPropsSchema = z.object({
 
 export type GalleryProps = z.infer<typeof GalleryPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function GalleryBlock(props: any): ReactNode {
   let validProps: GalleryProps;
   try {

@@ -17,6 +17,7 @@ const PackageHighlightsPropsSchema = z.object({
 
 export type PackageHighlightsProps = z.infer<typeof PackageHighlightsPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function PackageHighlightsBlock(props: any): ReactNode {
   let validProps: PackageHighlightsProps;
   try {

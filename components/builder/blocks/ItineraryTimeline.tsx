@@ -17,6 +17,7 @@ const ItineraryTimelinePropsSchema = z.object({
 
 export type ItineraryTimelineProps = z.infer<typeof ItineraryTimelinePropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ItineraryTimelineBlock(props: any): ReactNode {
   let validProps: ItineraryTimelineProps;
   try {

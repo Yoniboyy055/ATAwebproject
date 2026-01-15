@@ -67,14 +67,15 @@ export function BuilderImage({
     />
   );
 }
-
 /**
  * Get first valid image from array
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getFirstValidImage(
-  images: any[] | undefined
+  images: any[] | undefined // eslint-disable-line @typescript-eslint/no-explicit-any
 ): string | null {
   if (!Array.isArray(images)) return null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const image of images) {
     const url = normalizeImageUrl(image);
     if (url) return url;

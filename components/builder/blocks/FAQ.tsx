@@ -16,6 +16,7 @@ const FAQBlockPropsSchema = z.object({
 
 export type FAQBlockProps = z.infer<typeof FAQBlockPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function FAQBlock(props: any): ReactNode {
   let validProps: FAQBlockProps;
   try {

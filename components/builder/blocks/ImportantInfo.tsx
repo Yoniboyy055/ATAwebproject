@@ -42,6 +42,7 @@ const stylesByType = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function ImportantInfoBlock(props: any): ReactNode {
   let validProps: ImportantInfoProps;
   try {

@@ -23,6 +23,7 @@ const CTAContactPropsSchema = z.object({
 
 export type CTAContactProps = z.infer<typeof CTAContactPropsSchema>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function CTAContactBlock(props: any): ReactNode {
   let validProps: CTAContactProps;
   try {

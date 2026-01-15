@@ -4,7 +4,6 @@
  */
 
 import { z } from "zod";
-import { ReactNode } from "react";
 import { fetchPackages } from "@/lib/builder";
 import { SafePackage } from "@/lib/builder.schemas";
 import { BuilderImage } from "../ImageHelper";
@@ -29,12 +28,6 @@ interface PackageCardProps {
 }
 
 function PackageCard({ package: pkg, showPrice, showExcerpt }: PackageCardProps) {
-  const gridColsClass = {
-    "2-col": "md:col-span-1 lg:col-span-6",
-    "3-col": "md:col-span-1 lg:col-span-4",
-    "4-col": "md:col-span-1 lg:col-span-3",
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
       {/* Image */}
@@ -93,6 +86,7 @@ function PackageCard({ package: pkg, showPrice, showExcerpt }: PackageCardProps)
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function PackagesGridBlock(props: any) {
   // Validate props
   let validProps: PackagesGridProps;
