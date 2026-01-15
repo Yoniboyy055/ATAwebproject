@@ -29,7 +29,9 @@ async function builderApiFetch(
     throw new Error("Builder API key is not configured");
   }
 
-  const url = `${API_BASE}${endpoint}`;
+  // Add API key to the endpoint URL
+  const separator = endpoint.includes("?") ? "&" : "?";
+  const url = `${API_BASE}${endpoint}${separator}apiKey=${BUILDER_CONFIG.apiKey}`;
   const headers = {
     "Accept": "application/json",
     ...options?.headers,
@@ -114,7 +116,7 @@ export const fetchPackages = cache(
       }
 
       const response = await builderApiFetch(
-        `/content?apiKey=${BUILDER_CONFIG.apiKey}&${query}`,
+        `/content?${query}`,
         {
           next: {
             revalidate: BUILDER_CONFIG.revalidate.packagesList,
@@ -176,7 +178,7 @@ export const fetchPackageBySlug = cache(
   async (slug: string): Promise<ValidationResult<BuilderPackageEntry>> => {
     try {
       const response = await builderApiFetch(
-        `/content?apiKey=${BUILDER_CONFIG.apiKey}&model=${BUILDER_CONFIG.models.package}&query.data.slug=${encodeURIComponent(slug)}`,
+        `/content?model=${BUILDER_CONFIG.models.package}&query.data.slug=${encodeURIComponent(slug)}`,
         {
           next: {
             revalidate: BUILDER_CONFIG.revalidate.packageDetail,
