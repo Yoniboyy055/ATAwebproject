@@ -49,6 +49,11 @@ async function builderApiFetch(
     });
 
     if (!response.ok) {
+      // For 404 errors on content queries, return empty results instead of throwing
+      // This handles cases where models/pages don't exist yet in Builder.io
+      if (response.status === 404 && endpoint.includes("/content")) {
+        return { results: [], data: [] };
+      }
       throw new Error(`Builder API error: ${response.status} ${response.statusText}`);
     }
 
