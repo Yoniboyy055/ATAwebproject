@@ -3,7 +3,18 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: [],
+    remotePatterns: [
+      // Builder.io images
+      {
+        protocol: "https",
+        hostname: "cdn.builder.io",
+      },
+      // Builder project images
+      {
+        protocol: "https",
+        hostname: "**.builder.io",
+      },
+    ],
   },
   eslint: {
     // ESLint warnings won't block the build in production

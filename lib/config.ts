@@ -68,3 +68,50 @@ export const packages = [
     note: 'Built for diaspora travelers who want full support.'
   }
 ]
+
+// Builder.io Configuration
+export const BUILDER_CONFIG = {
+  // API Key - should be NEXT_PUBLIC_BUILDER_API_KEY in environment
+  apiKey: process.env.NEXT_PUBLIC_BUILDER_API_KEY || "",
+  
+  // Site URL for Builder.io project
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  
+  // Model names in Builder.io Data Models
+  models: {
+    page: "page",
+    package: "package",
+  },
+  
+  // ISR Revalidation times (in seconds)
+  revalidate: {
+    pages: 300, // 5 minutes
+    packagesList: 3600, // 1 hour
+    packageDetail: 3600, // 1 hour
+    homepage: 300, // 5 minutes
+  },
+};
+
+// Allowed Builder block types for safety
+export const APPROVED_BLOCKS = [
+  "Hero",
+  "TrustBar",
+  "PromoBanner",
+  "PackagesGrid",
+  "FeaturedPackagesCarousel",
+  "PackageHighlights",
+  "ItineraryTimeline",
+  "Gallery",
+  "PricingBox",
+  "ImportantInfo",
+  "FAQ",
+  "CTAContact",
+] as const;
+
+export type ApprovedBlockType = (typeof APPROVED_BLOCKS)[number];
+
+// Feature flags
+export const FEATURES = {
+  debugMode: process.env.NODE_ENV === "development",
+  enableEdgeCache: true,
+};
