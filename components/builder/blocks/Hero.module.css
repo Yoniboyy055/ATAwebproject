@@ -1,0 +1,89 @@
+.hero {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.hero[data-height="300"] {
+  min-height: 300px;
+}
+
+.hero[data-height="400"] {
+  min-height: 400px;
+}
+
+.hero[data-height="500"] {
+  min-height: 500px;
+}
+
+.hero[data-height="600"] {
+  min-height: 600px;
+}
+
+.heroWithImage {
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 3rem 1rem;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .heroTitle {
+    font-size: 3rem;
+    line-height: 3.5rem;
+  }
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2rem;
+  max-width: 42rem;
+}
+
+.heroButton {
+  background-color: rgb(37, 99, 235);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.heroButton:hover {
+  background-color: rgb(29, 78, 216);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
