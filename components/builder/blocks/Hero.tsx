@@ -5,13 +5,14 @@
 
 import { z } from "zod";
 import { ReactNode } from "react";
+import styles from "./Hero.module.css";
 
 const HeroBlockPropsSchema = z.object({
   title: z.string().optional().default("Welcome to Amanuel Travel"),
   subtitle: z.string().optional(),
-  backgroundImage: z.string().optional(),
+  backgroundImage: z.string().url('Invalid image URL').optional(),
   buttonText: z.string().optional().default("Explore"),
-  buttonLink: z.string().optional(),
+  buttonLink: z.string().url('Invalid button link').optional(),
   alignment: z.enum(["left", "center", "right"]).optional().default("center"),
   minHeight: z.number().optional().default(400),
 });
@@ -28,48 +29,54 @@ export function HeroBlock(props: any): ReactNode {
     return <div className="bg-red-50 p-4 text-red-700">Hero block validation failed</div>;
   }
 
-  const bgStyle = validProps.backgroundImage
-    ? { backgroundImage: `url(${validProps.backgroundImage})` }
-    : undefined;
-
   const alignmentClass = {
     left: "text-left",
     center: "text-center",
     right: "text-right",
   }[validProps.alignment];
 
-  return (
-    <section
-      className={`bg-cover bg-center relative w-full ${alignmentClass}`}
-      style={{
-        minHeight: `${validProps.minHeight}px`,
-        ...bgStyle,
-      }}
-    >
-      {/* Overlay for readability */}
-      {validProps.backgroundImage && (
-        <div className="absolute inset-0 bg-black/30" />
-      )}
+  // Create unique section ID for CSS targeting
+  const sectionId = `hero-${Math.random().toString(36).substring(2, 11)}`;
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col justify-center items-center h-full px-4 py-12 max-w-4xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          {validProps.title}
-        </h1>
-        {validProps.subtitle && (
-          <p className="text-xl text-white/90 mb-8 max-w-2xl">
-            {validProps.subtitle}
-          </p>
+  return (
+    <>
+      {validProps.backgroundImage && (
+        <style>{`
+          #${sectionId} {
+            background-image: url("${validProps.backgroundImage}");
+          }
+        `}</style>
+      )}
+      <section
+        id={sectionId}
+        className={`${styles.hero} ${validProps.backgroundImage ? styles.heroWithImage : ""} ${alignmentClass}`}
+        data-height={validProps.minHeight}
+      >
+        {/* Overlay for readability */}
+        {validProps.backgroundImage && (
+          <div className={styles.overlay} />
         )}
-        {validProps.buttonText && validProps.buttonLink && (
-          <a
-            href={validProps.buttonLink}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition"
-          >
-            {validProps.buttonText}
-          </a>
-        )}
-      </div>
-    </section>
+
+        {/* Content */}
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>
+            {validProps.title}
+          </h1>
+          {validProps.subtitle && (
+            <p className={styles.heroSubtitle}>
+              {validProps.subtitle}
+            </p>
+          )}
+          {validProps.buttonText && validProps.buttonLink && (
+            <a
+              href={validProps.buttonLink}
+              className={styles.heroButton}
+            >
+              {validProps.buttonText}
+            </a>
+          )}
+        </div>
+      </section>
+    </>
   );
 }
