@@ -26,10 +26,14 @@ export default async function CatchAllPage({ params }: PageProps) {
 
   // Handle fetch errors
   if (!result.success) {
+    const errorMessage = FEATURES.debugMode
+      ? result.error
+      : "Content is unavailable right now. Please check back soon.";
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-4">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Not Found</h1>
-        <p className="text-gray-600 mb-8">{result.error}</p>
+        <p className="text-gray-600 mb-8">{errorMessage}</p>
         {FEATURES.debugMode && (
           <details className="text-xs text-gray-500 max-w-2xl">
             <summary>Debug info</summary>
