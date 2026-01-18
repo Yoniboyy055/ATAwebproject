@@ -7,6 +7,7 @@ import { fetchPageByPath } from "@/lib/builder";
 import { renderBlocks } from "@/components/builder/registry";
 import { Metadata } from "next";
 import { FEATURES } from "@/lib/config";
+import { notFound } from "next/navigation";
 
 interface PageProps {
   params: {
@@ -20,6 +21,11 @@ interface PageProps {
 export default async function CatchAllPage({ params }: PageProps) {
   // Construct the path from segments
   const path = "/" + params.page.join("/");
+
+  // Skip Builder for auth routes - they have their own pages
+  if (path.startsWith("/auth/") || path.startsWith("/api/auth/")) {
+    notFound();
+  }
 
   // Fetch page from Builder
   const result = await fetchPageByPath(path);
@@ -61,6 +67,15 @@ export default async function CatchAllPage({ params }: PageProps) {
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const path = "/" + params.page.join("/");
+
+  // Skip Builder for auth routes
+  if (path.startsWith("/auth/") || path.startsWith("/api/auth/")) {
+    return {
+      title: "Sign In — Amanuel Travel",
+      description: "Sign in to your Amanuel Travel account",
+    };
+  }
+
   const result = await fetchPageByPath(path);
 
   if (!result.success) {
