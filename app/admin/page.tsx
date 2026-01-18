@@ -30,7 +30,13 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/stats')
       if (response.ok) {
         const data = await response.json()
-        setStats(data)
+        const nextStats = data?.stats ?? data
+        setStats({
+          totalBookings: nextStats?.totalBookings ?? 0,
+          totalRevenue: nextStats?.totalRevenue ?? 0,
+          pendingBookings: nextStats?.pendingBookings ?? 0,
+          totalUsers: nextStats?.totalUsers ?? 0,
+        })
       }
     } catch (error) {
       console.error('Failed to fetch stats:', error)

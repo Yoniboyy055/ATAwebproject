@@ -17,48 +17,67 @@ declare module 'next-auth' {
   }
 }
 
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
-  providers: [
+const hasDatabase = !!process.env.DATABASE_URL && !!prisma
+const hasGoogleCredentials =
+  !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET
+
+const providers: NextAuthOptions['providers'] = []
+
+if (hasGoogleCredentials) {
+  providers.push(
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
       allowDangerousEmailAccountLinking: true,
-    }),
-    CredentialsProvider({
-      name: 'Email & Password',
-      credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'you@example.com' },
-        password: { label: 'Password', type: 'password' },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password required')
-        }
+    })
+  )
+} else {
+  console.warn('[Auth] Google OAuth not configured; Google sign-in disabled.')
+}
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        })
+providers.push(
+  CredentialsProvider({
+    name: 'Email & Password',
+    credentials: {
+      email: { label: 'Email', type: 'email', placeholder: 'you@example.com' },
+      password: { label: 'Password', type: 'password' },
+    },
+    async authorize(credentials) {
+      if (!credentials?.email || !credentials?.password) {
+        throw new Error('Email and password required')
+      }
 
-        if (!user || !user.password) {
-          throw new Error('Invalid email or password')
-        }
+      if (!hasDatabase) {
+        throw new Error('Database is not configured')
+      }
 
-        const isPasswordValid = await comparePasswords(credentials.password, user.password)
+      const user = await prisma.user.findUnique({
+        where: { email: credentials.email },
+      })
 
-        if (!isPasswordValid) {
-          throw new Error('Invalid email or password')
-        }
+      if (!user || !user.password) {
+        throw new Error('Invalid email or password')
+      }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-        }
-      },
-    }),
-  ],
+      const isPasswordValid = await comparePasswords(credentials.password, user.password)
+
+      if (!isPasswordValid) {
+        throw new Error('Invalid email or password')
+      }
+
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        image: user.image,
+      }
+    },
+  })
+)
+
+export const authOptions: NextAuthOptions = {
+  adapter: hasDatabase ? PrismaAdapter(prisma) : undefined,
+  providers,
   callbacks: {
     async signIn() {
       // Allow sign in

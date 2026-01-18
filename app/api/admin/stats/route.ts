@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-// Mock data - in production, fetch from Prisma
+// Mock data - used when Prisma is unavailable
 const mockStats = {
   totalBookings: 127,
   pendingBookings: 8,
@@ -12,6 +13,38 @@ const mockStats = {
   totalUsers: 342,
   completedBookings: 119,
   cancelledBookings: 5,
+}
+
+const getStats = async () => {
+  if (!prisma) return null
+
+  const [
+    totalBookings,
+    pendingBookings,
+    completedBookings,
+    cancelledBookings,
+    totalUsers,
+    totalRevenueResult,
+  ] = await prisma.$transaction([
+    prisma.booking.count(),
+    prisma.booking.count({ where: { status: 'pending' } }),
+    prisma.booking.count({ where: { status: 'completed' } }),
+    prisma.booking.count({ where: { status: 'cancelled' } }),
+    prisma.user.count(),
+    prisma.payment.aggregate({
+      _sum: { amount: true },
+      where: { status: 'completed' },
+    }),
+  ])
+
+  return {
+    totalBookings,
+    pendingBookings,
+    completedBookings,
+    cancelledBookings,
+    totalUsers,
+    totalRevenue: totalRevenueResult._sum.amount ?? 0,
+  }
 }
 
 export async function GET() {
@@ -27,16 +60,9 @@ export async function GET() {
     //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     // }
 
-    return NextResponse.json({
-      stats: {
-        totalBookings: mockStats.totalBookings,
-        pendingBookings: mockStats.pendingBookings,
-        totalRevenue: mockStats.totalRevenue,
-        totalUsers: mockStats.totalUsers,
-        completedBookings: mockStats.completedBookings,
-        cancelledBookings: mockStats.cancelledBookings,
-      },
-    })
+    const stats = (await getStats()) ?? mockStats
+
+    return NextResponse.json(stats)
   } catch (error) {
     console.error('Error fetching stats:', error)
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
