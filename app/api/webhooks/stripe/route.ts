@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
             data: { status: 'confirmed' },
           })
 
-          console.log(`Payment succeeded for booking ${bookingId}`)
+          // Payment succeeded for booking
         }
         break
       }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        console.log(`Payment failed for intent ${paymentIntent.id}`)
+        // Payment failed for payment intent
         break
       }
 
@@ -102,13 +102,13 @@ export async function POST(request: NextRequest) {
             },
           })
 
-          console.log(`Payment refunded for intent ${paymentIntentId}`)
+          // Payment refunded for payment intent
         }
         break
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        // Unhandled event type
     }
 
     return NextResponse.json({ received: true })

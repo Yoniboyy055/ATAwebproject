@@ -18,7 +18,9 @@
     "types": [
       "node",
       "react",
-      "react-dom"
+      "react-dom",
+      "jest",
+      "@testing-library/jest-dom"
     ],
     "esModuleInterop": true,
     "resolveJsonModule": true,

@@ -17,3 +17,5 @@ dist
 .env.production
 .env.test
 coverage/
+.vercel
+.env*.local

@@ -175,17 +175,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Log the booking request
-    console.log('Booking request received:', {
-      id: bookingId,
-      reference: bookingReference,
-      fullName: body.fullName,
-      fromCity: body.fromCity,
-      toCity: body.toCity,
-      contactMethod: body.contactMethod,
-      emailSent,
-      smsSent,
-    })
+    // Booking request processed successfully
 
     const response: BookingResponse = {
       ok: true,

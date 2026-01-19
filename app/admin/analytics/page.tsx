@@ -36,14 +36,19 @@ export default function AnalyticsPage() {
   const [dateRange, setDateRange] = useState('7d')
 
   const fetchAnalytics = useCallback(async () => {
+    setLoading(true)
     try {
       const response = await fetch(`/api/admin/analytics?range=${dateRange}`)
       if (response.ok) {
         const result = await response.json()
         setData(result.data)
+      } else {
+        console.error('Analytics API error:', response.status)
+        setData(null)
       }
     } catch (error) {
       console.error('Failed to fetch analytics:', error)
+      setData(null)
     } finally {
       setLoading(false)
     }
@@ -62,6 +67,7 @@ export default function AnalyticsPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Analytics & Insights</h1>
         <select
+          aria-label="Date range"
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
