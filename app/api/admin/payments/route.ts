@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { isAdmin } from '@/lib/admin'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -41,8 +42,12 @@ const mockPayments = [
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession()
-    if (!session) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    if (!isAdmin(session.user.email)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const status = request.nextUrl.searchParams.get('status')

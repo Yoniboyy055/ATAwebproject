@@ -1,30 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
-
-interface Newsletter {
-  email: string;
-  subscribedAt: string;
-}
-
-const newsletterFile = path.join(process.cwd(), 'data', 'newsletter.json');
-
-async function readNewsletterList(): Promise<Newsletter[]> {
-  try {
-    const data = await fs.readFile(newsletterFile, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
-}
-
-async function writeNewsletterList(subscribers: Newsletter[]) {
-  await fs.mkdir(path.dirname(newsletterFile), { recursive: true });
-  await fs.writeFile(newsletterFile, JSON.stringify(subscribers, null, 2));
-}
 
 async function isValidEmail(email: string): Promise<boolean> {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,28 +27,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const subscribers = await readNewsletterList();
-    
     // Check if already subscribed
-    if (subscribers.some((sub) => sub.email.toLowerCase() === email.toLowerCase())) {
+    const existing = await prisma.newsletter.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+    
+    if (existing && existing.subscribed) {
       return NextResponse.json(
         { error: 'This email is already subscribed' },
         { status: 400 }
       );
     }
 
-    // Add new subscriber
-    subscribers.push({
-      email: email.toLowerCase(),
-      subscribedAt: new Date().toISOString(),
+    // Upsert subscriber (create or update if exists)
+    await prisma.newsletter.upsert({
+      where: { email: email.toLowerCase() },
+      update: { subscribed: true },
+      create: {
+        email: email.toLowerCase(),
+        subscribed: true,
+      },
     });
 
-    await writeNewsletterList(subscribers);
+    // Get total count
+    const totalSubscribers = await prisma.newsletter.count({
+      where: { subscribed: true },
+    });
 
     return NextResponse.json(
       { 
         message: 'Successfully subscribed!',
-        totalSubscribers: subscribers.length 
+        totalSubscribers,
       },
       { status: 200 }
     );
@@ -85,9 +72,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const subscribers = await readNewsletterList();
+    const totalSubscribers = await prisma.newsletter.count({
+      where: { subscribed: true },
+    });
     return NextResponse.json(
-      { totalSubscribers: subscribers.length },
+      { totalSubscribers },
       { status: 200 }
     );
   } catch (error) {
