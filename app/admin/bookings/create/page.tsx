@@ -17,6 +17,8 @@ export default function CreateBookingPage() {
     returnDate: '',
     passengers: 1,
     notes: '',
+    tripType: 'one-way' as 'one-way' | 'round-trip',
+    contactMethod: 'email' as 'whatsapp' | 'phone' | 'email',
   })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,19 +26,47 @@ export default function CreateBookingPage() {
     setLoading(true)
 
     try {
-      // TODO: Implement booking creation API call
-      // const response = await fetch('/api/bookings', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData),
-      // })
-      // if (!response.ok) throw new Error('Failed to create booking')
-      
-      // For now, just redirect back to bookings list
-      router.push('/admin/bookings')
+      // Prepare request body matching BookingRequest schema
+      const requestBody = {
+        tripType: formData.tripType,
+        passengers: formData.passengers,
+        passengerNames: [formData.fullName], // Use fullName as primary passenger
+        phoneCountry: '+1', // Default, admin can adjust if needed
+        fromCity: formData.fromCity,
+        toCity: formData.toCity,
+        departDate: formData.departDate,
+        returnDate: formData.returnDate || undefined,
+        fullName: formData.fullName,
+        phone: formData.phone,
+        email: formData.email || undefined,
+        notes: formData.notes || undefined,
+        contactMethod: formData.contactMethod,
+        sendEmail: false, // Admin creates, don't auto-send notifications
+        sendSMS: false,
+      }
+
+      const response = await fetch('/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create booking')
+      }
+
+      if (data.ok && data.id) {
+        // Success - redirect to bookings list
+        router.push('/admin/bookings')
+      } else {
+        throw new Error('Booking creation failed - no ID returned')
+      }
     } catch (error) {
       console.error('Failed to create booking:', error)
-      alert('Failed to create booking. Please try again.')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create booking. Please try again.'
+      alert(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -158,6 +188,37 @@ export default function CreateBookingPage() {
               onChange={(e) => setFormData({ ...formData, returnDate: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Trip Type *
+            </label>
+            <select
+              required
+              value={formData.tripType}
+              onChange={(e) => setFormData({ ...formData, tripType: e.target.value as 'one-way' | 'round-trip' })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="one-way">One-Way</option>
+              <option value="round-trip">Round-Trip</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Contact Method *
+            </label>
+            <select
+              required
+              value={formData.contactMethod}
+              onChange={(e) => setFormData({ ...formData, contactMethod: e.target.value as 'whatsapp' | 'phone' | 'email' })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
           </div>
         </div>
 
