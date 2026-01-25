@@ -139,8 +139,7 @@ export default function ContentHubPage() {
               <Link
                 key={item.id}
                 href={`/blog/${item.slug}`}
-                className="group rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 hover:shadow-lg transition duration-300 overflow-hidden animate-fade-in-up card-hover"
-                style={{ animationDelay: `${item.id * 50}ms` }}
+                className="group rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 hover:shadow-lg transition duration-300 overflow-hidden"
               >
                 <div className="relative overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 p-8 flex items-center justify-center min-h-48">
                   <div className="text-6xl group-hover:scale-110 transition duration-300">

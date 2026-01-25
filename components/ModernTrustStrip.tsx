@@ -36,8 +36,7 @@ export default function ModernTrustStrip() {
           {trustItems.map((item, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-md transition duration-300 animate-fade-in-up"
-              style={{ animationDelay: `${idx * 50}ms` }}
+              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-md transition duration-300"
             >
               <div className="text-2xl sm:text-3xl mb-2">{item.icon}</div>
               <div className="font-bold text-slate-900 text-lg sm:text-xl">{item.metric}</div>

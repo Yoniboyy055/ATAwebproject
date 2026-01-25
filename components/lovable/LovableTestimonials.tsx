@@ -44,8 +44,7 @@ export default function LovableTestimonials() {
           {testimonials.map((testimonial, idx) => (
             <div
               key={testimonial.id}
-              className="rounded-xl border border-slate-200 bg-white p-8 hover:shadow-lg hover:border-emerald-300 transition duration-300 card-hover animate-fade-in-up"
-              style={{ animationDelay: `${idx * 100}ms` }}
+              className="rounded-xl border border-slate-200 bg-white p-8 hover:shadow-lg hover:border-emerald-300 transition duration-300"
             >
               {/* Stars */}
               <div className="flex gap-1 mb-4">
