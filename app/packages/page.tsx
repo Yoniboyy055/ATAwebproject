@@ -1,6 +1,5 @@
 'use client'
 
-import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import { packages } from '../../lib/config'
 import { useLang } from '../../components/LangProvider'
@@ -16,17 +15,17 @@ export default function PackagesPage() {
   return (
     <div>
       {/* Header */}
-      <Section className="bg-gradient-to-b from-blue-50 to-white">
+      <section className="section bg-gradient-to-b from-blue-50 to-white">
         <div className="container max-w-3xl">
           <SectionHeading>{getTranslation(lang, 'packagesTitle')}</SectionHeading>
           <p className="text-lg text-slate-700">
             {getTranslation(lang, 'packagesBody')}
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* Packages Grid */}
-      <Section>
+      <section className="section">
         <div className="container max-w-6xl">
           {/* Local Packages */}
           <div className="mb-16">
@@ -66,10 +65,10 @@ export default function PackagesPage() {
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Bottom CTA */}
-      <Section className="bg-slate-50">
+      <section className="section bg-slate-50">
         <div className="container max-w-2xl text-center">
           <h3 className="text-2xl font-semibold mb-4">Not Sure Which Package&quest;</h3>
           <p className="text-slate-700 mb-6">
@@ -82,7 +81,7 @@ export default function PackagesPage() {
             Chat on WhatsApp
           </a>
         </div>
-      </Section>
+      </section>
     </div>
   )
 }

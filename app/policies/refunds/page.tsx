@@ -1,4 +1,3 @@
-import Section from '../../../components/Section'
 import SectionHeading from '../../../components/SectionHeading'
 import Link from 'next/link'
 import { BRAND } from '../../../lib/config'
@@ -12,17 +11,17 @@ export default function ChangesRefunds() {
   return (
     <div>
       {/* Header */}
-      <Section className="bg-gradient-to-b from-blue-50 to-white">
+      <section className="section bg-gradient-to-b from-blue-50 to-white">
         <div className="container">
           <SectionHeading>Changes & Refunds</SectionHeading>
           <p className="text-slate-700 max-w-2xl">
             How airline changes, cancellations, and refunds work.
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* Content */}
-      <Section>
+      <section className="section">
         <div className="container max-w-3xl space-y-8">
 
           <div>
@@ -183,10 +182,10 @@ export default function ChangesRefunds() {
           </div>
 
         </div>
-      </Section>
+      </section>
 
       {/* Footer CTA */}
-      <Section className="bg-slate-50">
+      <section className="section bg-slate-50">
         <div className="container max-w-2xl text-center">
           <p className="text-slate-700 mb-6">
             <Link href="/policies" className="text-accent/90 hover:underline font-semibold">← Back to Policies</Link>
@@ -198,7 +197,7 @@ export default function ChangesRefunds() {
             Chat on WhatsApp
           </a>
         </div>
-      </Section>
+      </section>
     </div>
   )
 }

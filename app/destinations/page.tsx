@@ -1,4 +1,3 @@
-import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import DestinationsGrid from '../../components/DestinationsGrid'
 import { BLUR_MAP } from '../../lib/images'
@@ -29,7 +28,7 @@ export const metadata: Metadata = {
 export default function Destinations(){
   return (
     <div>
-      <Section>
+      <section className="section">
         <div className="container">
           <h1 className="text-2xl font-semibold">Destinations</h1>
           <SectionHeading>Explore our cities</SectionHeading>
@@ -38,7 +37,7 @@ export default function Destinations(){
             <DestinationsGrid blurMap={BLUR_MAP} />
           </div>
         </div>
-      </Section>
+      </section>
     </div>
   )
 }

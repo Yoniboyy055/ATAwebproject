@@ -1,4 +1,3 @@
-import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import { BRAND } from '../../lib/config'
 
@@ -11,17 +10,17 @@ export default function Copyright() {
   return (
     <div>
       {/* Header */}
-      <Section className="bg-gradient-to-b from-blue-50 to-white">
+      <section className="section bg-gradient-to-b from-blue-50 to-white">
         <div className="container">
           <SectionHeading>Copyright & Attribution</SectionHeading>
           <p className="text-slate-700 max-w-2xl">
             Site content ownership and usage rights.
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* Content */}
-      <Section>
+      <section className="section">
         <div className="container max-w-3xl space-y-8">
 
           <div>
@@ -103,10 +102,10 @@ export default function Copyright() {
           </div>
 
         </div>
-      </Section>
+      </section>
 
       {/* Footer CTA */}
-      <Section className="bg-slate-50">
+      <section className="section bg-slate-50">
         <div className="container max-w-2xl text-center">
           <a
             href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
@@ -115,7 +114,7 @@ export default function Copyright() {
             Chat on WhatsApp
           </a>
         </div>
-      </Section>
+      </section>
     </div>
   )
 }

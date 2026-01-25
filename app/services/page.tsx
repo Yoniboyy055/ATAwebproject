@@ -1,6 +1,4 @@
-import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
-import Card from '../../components/Card'
 import { services } from '../../lib/data'
 import { BRAND } from '../../lib/config'
 import { Metadata } from 'next'
@@ -31,26 +29,31 @@ export default function ServicesPage(){
   return (
     <div>
       {/* Header */}
-      <Section className="bg-gradient-to-b from-blue-50 to-white">
+      <section className="section bg-gradient-to-b from-blue-50 to-white">
         <div className="container max-w-3xl">
           <SectionHeading>Our Services</SectionHeading>
           <p className="text-lg text-slate-700">
             Comprehensive travel support designed for diaspora families and local travelers. From flight coordination to ground support, we handle every detail.
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* Services Grid */}
-      <Section>
+      <section className="section">
         <div className="container max-w-5xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {services.map(s=> <Card key={s.title} title={s.title} description={s.desc} />)}
+            {services.map(s => (
+              <article key={s.title} className="rounded-lg border border-slate-200 p-4 bg-white hover:shadow-md transition">
+                <h3 className="font-semibold text-slate-900">{s.title}</h3>
+                <p className="text-sm text-slate-600 mt-1">{s.desc}</p>
+              </article>
+            ))}
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* Benefits */}
-      <Section className="bg-slate-50">
+      <section className="section bg-slate-50">
         <div className="container max-w-3xl">
           <SectionHeading>Why Choose Us</SectionHeading>
           <div className="space-y-4">
@@ -84,10 +87,10 @@ export default function ServicesPage(){
             </div>
           </div>
         </div>
-      </Section>
+      </section>
 
       {/* CTA */}
-      <Section>
+      <section className="section">
         <div className="container max-w-2xl text-center">
           <h3 className="text-2xl font-semibold mb-4">Ready to Plan Your Journey?</h3>
           <p className="text-slate-700 mb-6">
@@ -100,7 +103,7 @@ export default function ServicesPage(){
             Chat on WhatsApp
           </a>
         </div>
-      </Section>
+      </section>
     </div>
   )
 }

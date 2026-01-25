@@ -1,4 +1,3 @@
-import Section from '../../components/Section'
 import SectionHeading from '../../components/SectionHeading'
 import EnhancedContactForm from '../../components/EnhancedContactForm'
 import { BRAND } from '../../lib/config'
@@ -30,17 +29,17 @@ export default function Contact(){
   return (
     <div>
       {/* Header */}
-      <Section className="bg-gradient-to-b from-blue-50 to-white">
+      <section className="section bg-gradient-to-b from-blue-50 to-white">
         <div className="container max-w-3xl">
           <SectionHeading>Contact Us</SectionHeading>
           <p className="text-lg text-slate-700">
             We prioritize WhatsApp for fast replies across all time zones. Tell us what you need, and we&apos;ll respond within 1-2 hours.
           </p>
         </div>
-      </Section>
+      </section>
 
       {/* Contact Info */}
-      <Section>
+      <section className="section">
         <div className="container max-w-3xl">
           <div className="bg-white border border-slate-200 rounded-lg p-6 mb-8">
             <div className="mb-6">
@@ -63,7 +62,7 @@ export default function Contact(){
           {/* Enhanced Form */}
           <EnhancedContactForm />
         </div>
-      </Section>
+      </section>
     </div>
   )
 }
