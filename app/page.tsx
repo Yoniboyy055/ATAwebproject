@@ -4,13 +4,15 @@ import LovableServices from '@/components/lovable/LovableServices'
 import LovableDestinations from '@/components/lovable/LovableDestinations'
 import LovableTestimonials from '@/components/lovable/LovableTestimonials'
 import LovableTrust from '@/components/lovable/LovableTrust'
+import LovablePackages from '@/components/lovable/LovablePackages'
 import LovableFaqPreview from '@/components/lovable/LovableFaqPreview'
 import LovableFinalCta from '@/components/lovable/LovableFinalCta'
+import HowItWorksSection from '@/components/HowItWorksSection'
 import { generateOrganizationSchema, generateLocalBusinessSchema } from '@/lib/schema'
 
 export const metadata = {
   title: 'Amanuel Travel — Travel Home & Beyond',
-  description: 'Fast flights, visa help, and trusted support for Eritrea/Ethiopia routes. WhatsApp-first service for diaspora & local travelers.'
+  description: 'Flights, visa guidance, and human-led support for Eritrea/Ethiopia routes. Trusted by diaspora and local travelers.'
 }
 
 export default function Home() {
@@ -31,6 +33,8 @@ export default function Home() {
       <ModernTrustStrip />
       <LovableServices />
       <LovableDestinations />
+      <LovablePackages />
+      <HowItWorksSection />
       <LovableTrust />
       <LovableTestimonials />
       <LovableFaqPreview />

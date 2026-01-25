@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useLang } from './LangProvider'
 import { getTranslation } from '@/lib/lang'
 import { BRAND } from '@/lib/config'
+import Button, { buttonClasses } from '@/components/ui/Button'
+import Input from '@/components/ui/Input'
 
 type RequestType = 'quickQuote' | 'fullTrip' | 'package' | 'visa' | 'other'
 type TravelerType = 'local' | 'diaspora'
@@ -78,11 +80,11 @@ export default function EnhancedContactForm() {
               key={type}
               type="button"
               onClick={() => setRequestType(type)}
-              className={`px-4 py-3 rounded-lg border text-sm font-medium transition ${
-                requestType === type
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-slate-700 border-slate-300 hover:border-blue-400'
-              }`}
+              className={buttonClasses({
+                variant: requestType === type ? 'primary' : 'secondary',
+                size: 'sm',
+                className: requestType === type ? 'bg-slate-900 hover:bg-slate-900' : ''
+              })}
             >
               {getRequestTypeLabel(type)}
             </button>
@@ -104,7 +106,7 @@ export default function EnhancedContactForm() {
                 value={type}
                 checked={travelerType === type}
                 onChange={() => setTravelerType(type)}
-                className="w-4 h-4 text-blue-600"
+                className="h-4 w-4 text-primary"
               />
               <span className="text-sm text-slate-700">
                 {type === 'local'
@@ -119,68 +121,48 @@ export default function EnhancedContactForm() {
       {/* Form Fields - Grid Layout */}
       <div className="space-y-4">
         {/* From */}
-        <div>
-          <label htmlFor="from" className="block text-sm font-medium text-slate-700 mb-1">
-            {getTranslation(lang, 'contactFormFrom')}
-          </label>
-          <input
-            type="text"
-            id="from"
-            name="from"
-            placeholder="e.g., Asmara"
-            value={formData.from}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        <Input
+          type="text"
+          id="from"
+          name="from"
+          label={getTranslation(lang, 'contactFormFrom')}
+          placeholder="e.g., Asmara"
+          value={formData.from}
+          onChange={handleInputChange}
+        />
 
         {/* To */}
-        <div>
-          <label htmlFor="to" className="block text-sm font-medium text-slate-700 mb-1">
-            {getTranslation(lang, 'contactFormTo')}
-          </label>
-          <input
-            type="text"
-            id="to"
-            name="to"
-            placeholder="e.g., Toronto"
-            value={formData.to}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        <Input
+          type="text"
+          id="to"
+          name="to"
+          label={getTranslation(lang, 'contactFormTo')}
+          placeholder="e.g., Toronto"
+          value={formData.to}
+          onChange={handleInputChange}
+        />
 
         {/* Dates */}
-        <div>
-          <label htmlFor="dates" className="block text-sm font-medium text-slate-700 mb-1">
-            {getTranslation(lang, 'contactFormDates')}
-          </label>
-          <input
-            type="text"
-            id="dates"
-            name="dates"
-            placeholder="e.g., Dec 15 - Jan 10"
-            value={formData.dates}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        <Input
+          type="text"
+          id="dates"
+          name="dates"
+          label={getTranslation(lang, 'contactFormDates')}
+          placeholder="e.g., Dec 15 - Jan 10"
+          value={formData.dates}
+          onChange={handleInputChange}
+        />
 
         {/* Passengers */}
-        <div>
-          <label htmlFor="passengers" className="block text-sm font-medium text-slate-700 mb-1">
-            {getTranslation(lang, 'contactFormPassengers')}
-          </label>
-          <input
-            type="number"
-            id="passengers"
-            name="passengers"
-            min="1"
-            value={formData.passengers}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        <Input
+          type="number"
+          id="passengers"
+          name="passengers"
+          label={getTranslation(lang, 'contactFormPassengers')}
+          min="1"
+          value={formData.passengers}
+          onChange={handleInputChange}
+        />
 
         {/* Notes */}
         <div>
@@ -195,26 +177,25 @@ export default function EnhancedContactForm() {
             placeholder="Special requests, visa questions, hotel preferences, etc."
             value={formData.notes}
             onChange={handleInputChange}
-            className="w-full px-3 py-2 rounded-lg border border-slate-300 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/30"
           />
         </div>
       </div>
 
       {/* Message Preview */}
-      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-        <p className="text-xs font-semibold text-slate-700 mb-2">Message Preview (will be sent via WhatsApp):</p>
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+        <p className="mb-2 text-xs font-semibold text-slate-700">
+          Message preview (shared with your agent):
+        </p>
         <p className="text-sm text-slate-700 whitespace-pre-wrap break-words font-mono">
           {buildWhatsAppMessage()}
         </p>
       </div>
 
       {/* Submit Button */}
-      <button
-        type="submit"
-        className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition flex items-center justify-center gap-2"
-      >
-        <span>💬</span> {getTranslation(lang, 'contactFormSubmit')}
-      </button>
+      <Button type="submit" size="lg" className="w-full">
+        {getTranslation(lang, 'contactFormSubmit')}
+      </Button>
 
       {/* Info text */}
       <p className="text-xs text-slate-600 text-center">

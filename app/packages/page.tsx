@@ -1,27 +1,31 @@
 'use client'
 
 import Section from '../../components/Section'
-import SectionHeading from '../../components/SectionHeading'
+import SectionHeader from '../../components/ui/SectionHeader'
+import BentoGrid, { BentoTile } from '../../components/ui/BentoGrid'
 import { packages } from '../../lib/config'
 import { useLang } from '../../components/LangProvider'
 import { getTranslation } from '../../lib/lang'
 import { getPackageWhatsAppUrl } from '../../lib/whatsappHelper'
+import { buttonClasses } from '@/components/ui/Button'
 
 export default function PackagesPage() {
   const { lang } = useLang()
 
   const localPackages = packages.filter(p => p.type === 'Local')
   const diasporaPackages = packages.filter(p => p.type === 'Diaspora')
+  const featuredId = packages.find((pkg) => pkg.recommended)?.id
 
   return (
     <div>
       {/* Header */}
-      <Section className="bg-gradient-to-b from-blue-50 to-white">
+      <Section className="bg-slate-50">
         <div className="container max-w-3xl">
-          <SectionHeading>{getTranslation(lang, 'packagesTitle')}</SectionHeading>
-          <p className="text-lg text-slate-700">
-            {getTranslation(lang, 'packagesBody')}
-          </p>
+          <SectionHeader
+            title={getTranslation(lang, 'packagesTitle')}
+            subtitle={getTranslation(lang, 'packagesBody')}
+            align="left"
+          />
         </div>
       </Section>
 
@@ -30,116 +34,114 @@ export default function PackagesPage() {
         <div className="container max-w-6xl">
           {/* Local Packages */}
           <div className="mb-16">
-            <div className="text-center mb-12 pb-6 border-b-2 border-blue-200">
-              <h2 className="text-2xl font-bold text-slate-900">
-                {getTranslation(lang, 'packagesHeadingLocal')}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SectionHeader
+              title={getTranslation(lang, 'packagesHeadingLocal')}
+              subtitle="Support for local outbound travel and family coordination."
+              align="left"
+              className="mb-8"
+            />
+            <BentoGrid>
               {localPackages.map(pkg => (
-                <PackageCard
+                <PackageTile
                   key={pkg.id}
                   package={pkg}
-                  type="local"
-                  lang={lang}
+                  featured={pkg.id === featuredId}
                 />
               ))}
-            </div>
+            </BentoGrid>
           </div>
 
           {/* Diaspora Packages */}
           <div>
-            <div className="text-center mb-12 pb-6 border-b-2 border-emerald-200">
-              <h2 className="text-2xl font-bold text-slate-900">
-                {getTranslation(lang, 'packagesHeadingDiaspora')}
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SectionHeader
+              title={getTranslation(lang, 'packagesHeadingDiaspora')}
+              subtitle="Trips home for diaspora families and heritage travel."
+              align="left"
+              className="mb-8"
+            />
+            <BentoGrid>
               {diasporaPackages.map(pkg => (
-                <PackageCard
+                <PackageTile
                   key={pkg.id}
                   package={pkg}
-                  type="diaspora"
-                  lang={lang}
+                  featured={pkg.id === featuredId}
                 />
               ))}
-            </div>
+            </BentoGrid>
           </div>
         </div>
       </Section>
 
       {/* Bottom CTA */}
-      <Section className="bg-slate-50">
+      <Section className="bg-white">
         <div className="container max-w-2xl text-center">
-          <h3 className="text-2xl font-semibold mb-4">Not Sure Which Package&quest;</h3>
-          <p className="text-slate-700 mb-6">
-            WhatsApp us your route and dates—we&apos;ll recommend the best package for your journey.
-          </p>
+          <SectionHeader
+            title="Not sure which package fits?"
+            subtitle="Share your route and dates. We will recommend the clearest option."
+          />
           <a
             href={getPackageWhatsAppUrl('')}
-            className="inline-block bg-accent/90 text-white px-6 py-3 rounded-md font-semibold hover:bg-accent transition"
+            className={buttonClasses({ variant: 'primary', size: 'lg' })}
           >
-            Chat on WhatsApp
+            Talk to an Agent
           </a>
+          <p className="mt-3 text-sm text-slate-500">
+            Available by WhatsApp, phone, or email.
+          </p>
         </div>
       </Section>
     </div>
   )
 }
 
-interface PackageCardProps {
+interface PackageTileProps {
   package: typeof packages[0]
-  type: 'local' | 'diaspora'
-  lang: string
+  featured?: boolean
 }
 
-function PackageCard({ package: pkg, type }: PackageCardProps) {
-  const borderColor = type === 'local' ? 'border-blue-200' : 'border-emerald-200'
-  const accentBg = type === 'local' ? 'bg-blue-50' : 'bg-emerald-50'
-  const btnColor = type === 'local' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-emerald-600 hover:bg-emerald-700'
-  const badgeColor = type === 'local' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'
+function PackageTile({ package: pkg, featured = false }: PackageTileProps) {
+  const normalizeItem = (item: string) =>
+    item.replace(/whatsapp/gi, 'agent')
+  const items = pkg.includes.slice(0, 4).map(normalizeItem)
 
   return (
-    <div className={`border-2 ${borderColor} rounded-lg p-6 ${accentBg} hover:shadow-lg transition-shadow`}>
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="text-xl font-bold text-slate-900 flex-1">
-          {pkg.title}
-        </h3>
+    <BentoTile
+      featured={featured}
+      className={[
+        'flex h-full flex-col gap-4',
+        featured ? 'border-primary/30 bg-primary/5' : ''
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            {pkg.type}
+          </p>
+          <h3 className="mt-2 text-lg font-semibold text-slate-900">
+            {pkg.title}
+          </h3>
+        </div>
         {pkg.recommended && (
-          <span className={`text-xs font-semibold px-2 py-1 rounded whitespace-nowrap ml-2 ${badgeColor}`}>
-            {getTranslation('en', 'bestForLocal')}
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+            Recommended
           </span>
         )}
       </div>
 
-      {/* Includes */}
-      <div className="space-y-3 mb-6">
-        <p className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Includes:</p>
-        <ul className="space-y-2">
-          {pkg.includes.map((item, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-slate-700">
-              <span className="text-emerald-600 font-bold">✓</span>
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ul className="space-y-2 text-sm text-slate-600">
+        {items.map((item) => (
+          <li key={item} className="flex items-start gap-2">
+            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-primary/60" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
 
-      {/* Note */}
       {pkg.note && (
-        <p className="text-sm text-slate-600 italic border-l-2 border-slate-300 pl-3 mb-6">
-          {pkg.note}
-        </p>
+        <p className="text-sm text-slate-500">{pkg.note}</p>
       )}
-
-      {/* CTA */}
-      <a
-        href={getPackageWhatsAppUrl(pkg.title, pkg.type as 'Local' | 'Diaspora')}
-        className={`block w-full text-center text-white font-semibold py-2 px-4 rounded-md transition ${btnColor}`}
-      >
-        Request This Package
-      </a>
-    </div>
+    </BentoTile>
   )
 }

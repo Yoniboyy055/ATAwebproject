@@ -1,76 +1,62 @@
-import Link from 'next/link'
 import { BRAND } from '@/lib/config'
+import SectionHeader from '@/components/ui/SectionHeader'
+import { buttonClasses } from '@/components/ui/Button'
 
 export default function LovableFinalCta() {
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-r from-emerald-600 to-emerald-700">
+    <section className="bg-slate-900 py-16 md:py-24">
       <div className="container max-w-6xl mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          {/* Headline */}
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Plan Your Journey?
-          </h2>
+        <div className="max-w-3xl mx-auto text-center text-white">
+          <SectionHeader
+            title="Talk with a real agent in Asmara"
+            subtitle="We will guide your flights, documents, and family coordination from start to finish."
+            tone="light"
+          />
 
-          {/* Description */}
-          <p className="text-lg text-emerald-50 mb-8">
-            Let our travel experts help you create unforgettable memories. Whether you&rsquo;re exploring new destinations or returning home, we&rsquo;re here to make it seamless.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+          <div className="mt-8 flex flex-col items-center gap-3">
             <a
               href={`https://wa.me/${BRAND.whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 hover:bg-emerald-50 px-8 py-4 rounded-lg font-bold transition shadow-lg hover:shadow-xl"
+              className={buttonClasses({
+                variant: 'primary',
+                size: 'lg',
+                className: 'bg-white text-slate-900 hover:bg-white/90'
+              })}
             >
-              💬 WhatsApp: Book Now
+              Talk to an Agent
             </a>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 border-2 border-white text-white hover:bg-white hover:text-emerald-600 px-8 py-4 rounded-lg font-bold transition"
-            >
-              📧 Send Email
-            </Link>
+            <p className="text-sm text-white/70">
+              Reach us by WhatsApp, phone, or email.
+            </p>
           </div>
 
-          {/* Contact Info */}
-          <div className="bg-emerald-500 rounded-xl p-6 md:p-8 text-white">
-            <p className="text-sm font-semibold mb-4 opacity-90">Get in Touch</p>
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm opacity-90">📱 Phone</p>
-                <p className="font-bold text-lg">{BRAND.phoneOffice}</p>
-              </div>
-              <div>
-                <p className="text-sm opacity-90">✉️ Email</p>
-                <p className="font-bold text-lg">{BRAND.email}</p>
-              </div>
-              <div>
-                <p className="text-sm opacity-90">📍 Location</p>
-                <p className="font-bold">{BRAND.addressLine1}</p>
-                <p className="text-sm">{BRAND.city}</p>
-              </div>
+          <div className="mt-10 grid gap-6 text-sm text-white/80 md:grid-cols-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-white/60">
+                Phone
+              </p>
+              <p className="mt-2 text-base font-semibold text-white">
+                {BRAND.phoneOffice}
+              </p>
             </div>
-          </div>
-
-          {/* Quick Links */}
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link href="/packages" className="text-white hover:text-emerald-100 transition font-semibold text-sm">
-              View Packages
-            </Link>
-            <span className="text-white opacity-50">•</span>
-            <Link href="/destinations" className="text-white hover:text-emerald-100 transition font-semibold text-sm">
-              Destinations
-            </Link>
-            <span className="text-white opacity-50">•</span>
-            <Link href="/about" className="text-white hover:text-emerald-100 transition font-semibold text-sm">
-              About Us
-            </Link>
-            <span className="text-white opacity-50">•</span>
-            <Link href="/faq" className="text-white hover:text-emerald-100 transition font-semibold text-sm">
-              FAQ
-            </Link>
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-white/60">
+                Email
+              </p>
+              <p className="mt-2 text-base font-semibold text-white">
+                {BRAND.email}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-white/60">
+                Location
+              </p>
+              <p className="mt-2 text-base font-semibold text-white">
+                {BRAND.addressLine1}
+              </p>
+              <p className="text-sm text-white/70">{BRAND.city}</p>
+            </div>
           </div>
         </div>
       </div>

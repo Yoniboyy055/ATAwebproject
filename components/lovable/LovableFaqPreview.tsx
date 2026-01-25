@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import SectionHeader from '@/components/ui/SectionHeader'
+import { buttonClasses } from '@/components/ui/Button'
 
 const faqs = [
   {
@@ -25,28 +27,24 @@ const faqs = [
 
 export default function LovableFaqPreview() {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="bg-white py-16 md:py-24">
       <div className="container max-w-6xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-            Quick answers to common questions. See our full FAQ page for more details.
-          </p>
-        </div>
+        <SectionHeader
+          title="Answers before you commit"
+          subtitle="Quick guidance on visas, payments, and group travel."
+          className="mb-12"
+        />
 
         {/* FAQ Items */}
         <div className="space-y-4 max-w-3xl mx-auto">
           {faqs.map(faq => (
             <details
               key={faq.id}
-              className="group rounded-lg border border-slate-200 hover:border-emerald-300 transition cursor-pointer"
+              className="group rounded-lg border border-slate-200 transition hover:border-slate-300"
             >
               <summary className="p-5 md:p-6 font-semibold text-slate-900 flex items-center justify-between hover:bg-slate-50 transition">
                 <span>{faq.question}</span>
-                <span className="text-2xl text-emerald-600 group-open:rotate-180 transition">
+                <span className="text-2xl text-slate-500 group-open:rotate-180 transition">
                   +
                 </span>
               </summary>
@@ -61,9 +59,9 @@ export default function LovableFaqPreview() {
         <div className="text-center mt-12">
           <Link
             href="/faq"
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-lg font-bold transition shadow-lg hover:shadow-xl"
+            className={buttonClasses({ variant: 'secondary', size: 'lg' })}
           >
-            View All FAQs →
+            View All FAQs
           </Link>
         </div>
       </div>

@@ -1,8 +1,10 @@
 import Section from '../../components/Section'
-import SectionHeading from '../../components/SectionHeading'
+import SectionHeader from '../../components/ui/SectionHeader'
 import DestinationsGrid from '../../components/DestinationsGrid'
 import { BLUR_MAP } from '../../lib/images'
 import { Metadata } from 'next'
+import { BRAND } from '../../lib/config'
+import { buttonClasses } from '@/components/ui/Button'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
 
@@ -31,11 +33,30 @@ export default function Destinations(){
     <div>
       <Section>
         <div className="container">
-          <h1 className="text-2xl font-semibold">Destinations</h1>
-          <SectionHeading>Explore our cities</SectionHeading>
-          <p className="text-slate-700 max-w-xl">Browse our focused list of cities across Eritrea and Ethiopia. Use filters and search to find the right city, then request a quote via WhatsApp.</p>
+          <SectionHeader
+            title="Destinations"
+            subtitle="Browse cities across Eritrea and Ethiopia with calm, guided support."
+            align="left"
+          />
+          <p className="mt-4 max-w-xl text-sm text-slate-600">
+            Use filters and search to find the right city. When you are ready,
+            talk with a real agent to plan dates and routing.
+          </p>
           <div className="mt-6">
             <DestinationsGrid blurMap={BLUR_MAP} />
+          </div>
+          <div className="mt-10">
+            <a
+              href={`https://wa.me/${BRAND.whatsappNumber}?text=Hi! I need help choosing a destination. Can you assist?`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClasses({ variant: 'primary', size: 'lg' })}
+            >
+              Talk to an Agent
+            </a>
+            <p className="mt-2 text-sm text-slate-500">
+              Available by WhatsApp, phone, or email.
+            </p>
           </div>
         </div>
       </Section>

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { useSession, signOut } from 'next-auth/react'
 import { BRAND } from '../lib/config'
+import { buttonClasses } from '@/components/ui/Button'
 
 export default function Navbar(){
   const [open,setOpen] = useState(false)
@@ -23,7 +24,12 @@ export default function Navbar(){
           <Link href="/about" className="hover:underline">About</Link>
           <Link href="/faq" className="hover:underline">FAQ</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
-          <a className="ml-2 inline-flex items-center rounded-md bg-accent/90 text-white px-3 py-1 text-sm" href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}>WhatsApp</a>
+          <a
+            className={buttonClasses({ variant: 'primary', size: 'sm', className: 'ml-2' })}
+            href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
+          >
+            Talk to an Agent
+          </a>
           
           {/* Auth Links */}
           {status === 'authenticated' && session?.user ? (
@@ -79,7 +85,12 @@ export default function Navbar(){
             ) : (
               <Link href="/auth/signin">Sign In</Link>
             )}
-            <a href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`} className="inline-flex items-center rounded-md bg-accent/90 text-white px-3 py-1 text-sm w-max">Chat on WhatsApp</a>
+            <a
+              href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
+              className={buttonClasses({ variant: 'primary', size: 'sm', className: 'w-max' })}
+            >
+              Talk to an Agent
+            </a>
           </div>
         </div>
       )}
