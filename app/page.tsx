@@ -1,12 +1,7 @@
 import LovableHero from '@/components/lovable/LovableHero'
-import ModernTrustStrip from '@/components/ModernTrustStrip'
 import LovableServices from '@/components/lovable/LovableServices'
-import LovablePackages from '@/components/lovable/LovablePackages'
-import LovableDestinations from '@/components/lovable/LovableDestinations'
-import LovableTestimonials from '@/components/lovable/LovableTestimonials'
 import LovableTrust from '@/components/lovable/LovableTrust'
 import LovableFaqPreview from '@/components/lovable/LovableFaqPreview'
-import LovableFinalCta from '@/components/lovable/LovableFinalCta'
 import { generateOrganizationSchema, generateLocalBusinessSchema } from '@/lib/schema'
 
 export const metadata = {
@@ -29,14 +24,9 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
       <LovableHero />
-      <ModernTrustStrip />
       <LovableServices />
-      <LovablePackages />
-      <LovableDestinations />
       <LovableTrust />
-      <LovableTestimonials />
       <LovableFaqPreview />
-      <LovableFinalCta />
     </main>
   )
 }

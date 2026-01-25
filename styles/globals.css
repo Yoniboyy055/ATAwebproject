@@ -15,103 +15,6 @@ body{
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-/* Micro-animations */
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-in-left {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slide-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 600ms ease-out;
-}
-
-.animate-fade-in-delay-1 {
-  animation: fade-in 600ms ease-out 100ms both;
-}
-
-.animate-fade-in-delay-2 {
-  animation: fade-in 600ms ease-out 200ms both;
-}
-
-.animate-fade-in-delay-3 {
-  animation: fade-in 600ms ease-out 300ms both;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 600ms ease-out;
-}
-
-.animate-slide-in-left {
-  animation: slide-in-left 600ms ease-out;
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 600ms ease-out;
-}
-
-.animate-slide-in-up {
-  animation: slide-in-up 600ms ease-out;
-}
-
-.animate-scale-in {
-  animation: scale-in 600ms ease-out;
-}
-
 /* Button & Interactive Animations */
 button, a {
   @apply transition-all duration-200;
@@ -122,29 +25,6 @@ button:active, a:active {
 }
 
 /* Hover Effects */
-.btn-hover {
-  @apply transition-all duration-300;
-}
-
-.btn-hover:hover {
-  @apply translate-y-[-2px] shadow-lg;
-}
-
-/* Link underline animation */
-.link-underline {
-  @apply relative;
-  text-decoration: none;
-}
-
-.link-underline::after {
-  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-300;
-  content: '';
-}
-
-.link-underline:hover::after {
-  @apply w-full;
-}
-
 /* Card hover lift */
 .card-hover {
   @apply transition-all duration-300 cursor-pointer;
@@ -152,12 +32,6 @@ button:active, a:active {
 
 .card-hover:hover {
   @apply translate-y-[-6px] shadow-xl;
-}
-
-/* Smooth appearance animations */
-.appear-on-scroll {
-  @apply opacity-0;
-  animation: fade-in-up 600ms ease-out forwards;
 }
 
 /* subtle utility classes */
@@ -169,9 +43,6 @@ button:active, a:active {
 /* skeleton */
 .skeleton { background: linear-gradient(90deg, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
 @keyframes shimmer{ from{ background-position: 200% 0 } to { background-position: -200% 0 } }
-
-/* entry animation hook using data-visible */
-[data-visible="true"] { animation: fade-up 360ms ease-out both; }
 
 /* small forms */
 .input, .textarea{ @apply border border-slate-200 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary }

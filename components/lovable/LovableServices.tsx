@@ -72,26 +72,9 @@ export default function LovableServices() {
                 <div className="text-5xl mb-4">{service.icon}</div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">{service.title}</h3>
                 <p className="text-slate-600 mb-6 group-hover:text-slate-700 transition">{service.description}</p>
-                <div className="inline-flex items-center text-sm font-semibold text-blue-600 group-hover:text-blue-700 transition gap-2">
-                  Learn more
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
               </div>
             </Link>
           ))}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="mt-16 text-center">
-          <p className="text-slate-600 mb-6">Not sure where to start?</p>
-          <Link
-            href="/contact"
-            className="inline-block px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition shadow-lg hover:shadow-xl"
-          >
-            Chat with Our Experts
-          </Link>
         </div>
       </div>
     </section>
