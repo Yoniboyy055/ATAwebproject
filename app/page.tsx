@@ -1,7 +1,6 @@
 import LovableHero from '@/components/lovable/LovableHero'
 import ModernTrustStrip from '@/components/ModernTrustStrip'
 import LovableServices from '@/components/lovable/LovableServices'
-import LovablePackages from '@/components/lovable/LovablePackages'
 import LovableDestinations from '@/components/lovable/LovableDestinations'
 import LovableTestimonials from '@/components/lovable/LovableTestimonials'
 import LovableTrust from '@/components/lovable/LovableTrust'
@@ -31,7 +30,6 @@ export default function Home() {
       <LovableHero />
       <ModernTrustStrip />
       <LovableServices />
-      <LovablePackages />
       <LovableDestinations />
       <LovableTrust />
       <LovableTestimonials />
