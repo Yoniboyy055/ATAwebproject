@@ -31,7 +31,7 @@ export default function LovableDestinations() {
               className={bentoTileClasses({
                 featured: Boolean(dest.featured),
                 className: [
-                  'group flex flex-col gap-4 transition hover:-translate-y-0.5 hover:shadow-soft',
+                  'group flex flex-col gap-4 transition hover:-translate-y-0.5 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 cursor-pointer',
                   dest.featured ? 'bg-slate-900 text-white border-slate-800' : ''
                 ]
                   .filter(Boolean)

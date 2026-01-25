@@ -11,7 +11,7 @@ type CardProps = {
 export default function Card({title,description,img,href}: CardProps){
   const blur = img ? getBlurForSrc(img) : undefined
   return (
-    <article className="card-lift rounded-lg border border-slate-100 p-4 bg-white">
+    <article className="rounded-lg border border-slate-100 p-4 bg-white">
       {img && <div className="rounded-md overflow-hidden mb-3" style={{height:120}}>
         <Image src={img} alt={title} width={420} height={120} className="object-cover w-full h-full" placeholder={blur ? 'blur' : 'empty'} blurDataURL={blur} />
       </div>}

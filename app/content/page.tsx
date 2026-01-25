@@ -118,7 +118,7 @@ export default function ContentHubPage() {
             {categories.map((cat, idx) => (
               <button
                 key={idx}
-                className={`px-4 py-2 rounded-full font-medium text-sm transition ${
+                className={`px-4 py-2 rounded-full font-medium text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 ${
                   idx === 0
                     ? 'bg-emerald-600 text-white'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -139,7 +139,7 @@ export default function ContentHubPage() {
               <Link
                 key={item.id}
                 href={`/blog/${item.slug}`}
-                className="group rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 hover:shadow-lg transition duration-300 overflow-hidden"
+                className="group rounded-2xl border border-slate-200 bg-white transition duration-300 overflow-hidden cursor-pointer hover:border-slate-300 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
               >
                 <div className="relative overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 p-8 flex items-center justify-center min-h-48">
                   <div className="text-6xl group-hover:scale-110 transition duration-300">
@@ -165,7 +165,7 @@ export default function ContentHubPage() {
 
                   <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                     <span className="text-xs text-slate-500">{item.date}</span>
-                    <span className="text-emerald-600 font-semibold text-sm group-hover:translate-x-1 transition">
+                    <span className="text-primary font-semibold text-sm group-hover:translate-x-1 transition">
                       Read →
                     </span>
                   </div>
@@ -183,42 +183,16 @@ export default function ContentHubPage() {
             Didn&apos;t find what you&apos;re looking for?
           </h2>
           <p className="text-lg text-emerald-100 mb-8">
-            Chat with our travel experts on WhatsApp. They can answer any questions and help you plan the perfect trip.
+            Talk with an agent for answers and clear next steps.
           </p>
           <a
             href="https://wa.me/2917197086?text=Hi! I have questions about planning my trip. Can you help?"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block bg-white text-emerald-600 hover:bg-slate-100 px-8 py-4 rounded-lg font-bold transition shadow-lg hover:shadow-xl"
+            className="inline-block bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 rounded-lg font-bold transition shadow-soft"
           >
-            💬 Chat on WhatsApp
+            Talk to an Agent
           </a>
-        </div>
-      </section>
-
-      {/* Newsletter Section */}
-      <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8 bg-white border-t border-slate-200">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">
-            Get Travel Tips Delivered
-          </h2>
-          <p className="text-slate-600 mb-8">
-            Subscribe to our newsletter for exclusive travel guides, visa updates, and special offers.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              required
-              className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            />
-            <button
-              type="submit"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3 rounded-lg transition shadow-md hover:shadow-lg"
-            >
-              Subscribe
-            </button>
-          </form>
         </div>
       </section>
     </main>

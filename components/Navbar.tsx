@@ -13,17 +13,12 @@ export default function Navbar(){
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
       <div className="container flex items-center justify-between py-3">
         <Link href="/" className="font-semibold text-lg text-primary">{BRAND.name}</Link>
-        <nav className="hidden md:flex gap-6 items-center text-sm">
+        <nav className="hidden md:flex items-center gap-6 text-sm">
           <Link href="/services" className="hover:underline">Services</Link>
           <Link href="/destinations" className="hover:underline">Destinations</Link>
           <Link href="/packages" className="hover:underline">Packages</Link>
-          <Link href="/flights" className="hover:underline font-semibold text-blue-600">✈️ Flights</Link>
-          <Link href="/content" className="hover:underline">Resources</Link>
-          <Link href="/book" className="hover:underline font-semibold text-blue-600">Book</Link>
-          <Link href="/search" className="hover:underline font-semibold text-emerald-600">Search</Link>
+          <Link href="/content" className="hover:underline">Guides</Link>
           <Link href="/about" className="hover:underline">About</Link>
-          <Link href="/faq" className="hover:underline">FAQ</Link>
-          <Link href="/contact" className="hover:underline">Contact</Link>
           <a
             className={buttonClasses({ variant: 'primary', size: 'sm', className: 'ml-2' })}
             href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
@@ -47,7 +42,7 @@ export default function Navbar(){
               </button>
             </div>
           ) : (
-            <Link href="/auth/signin" className="ml-2 inline-flex items-center rounded-md bg-emerald-600 text-white px-3 py-1 text-sm hover:bg-emerald-700">
+            <Link href="/auth/signin" className="text-sm font-medium text-slate-600 hover:text-slate-900">
               Sign In
             </Link>
           )}
@@ -60,30 +55,37 @@ export default function Navbar(){
       {open && (
         <div className="md:hidden border-t border-slate-100">
           <div className="container py-4 flex flex-col gap-3">
-            <Link href="/services">Services</Link>
-            <Link href="/destinations">Destinations</Link>
-            <Link href="/packages">Packages</Link>
-            <Link href="/flights" className="font-semibold text-blue-600">✈️ Flights</Link>
-            <Link href="/content">Resources</Link>
-            <Link href="/book" className="font-semibold text-blue-600">📅 Book Trip</Link>
-            <Link href="/search" className="font-semibold text-emerald-600">🔍 Advanced Search</Link>
-            <Link href="/about">About</Link>
-            <Link href="/faq">FAQ</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/reviews">Reviews</Link>
-            <Link href="/dashboard/wishlist" className="font-semibold text-red-600">❤️ Wishlist</Link>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Explore</p>
+            <Link href="/services" className="py-1">Services</Link>
+            <Link href="/destinations" className="py-1">Destinations</Link>
+            <Link href="/packages" className="py-1">Packages</Link>
+            <Link href="/content" className="py-1">Guides</Link>
+            <Link href="/about" className="py-1">About</Link>
+
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mt-2">Plan</p>
+            <Link href="/flights" className="py-1">Flights</Link>
+            <Link href="/book" className="py-1">Book Trip</Link>
+            <Link href="/search" className="py-1">Search</Link>
+
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mt-2">Support</p>
+            <Link href="/faq" className="py-1">FAQ</Link>
+            <Link href="/contact" className="py-1">Contact</Link>
+
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mt-2">Account</p>
+            <Link href="/reviews" className="py-1">Reviews</Link>
+            <Link href="/dashboard/wishlist" className="py-1">Wishlist</Link>
             {status === 'authenticated' && session?.user ? (
               <>
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/dashboard" className="py-1">Dashboard</Link>
                 <button
                   onClick={() => signOut()}
-                  className="text-left text-slate-600"
+                  className="text-left text-slate-600 py-1"
                 >
                   Sign Out
                 </button>
               </>
             ) : (
-              <Link href="/auth/signin">Sign In</Link>
+              <Link href="/auth/signin" className="py-1">Sign In</Link>
             )}
             <a
               href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
