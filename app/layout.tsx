@@ -5,7 +5,6 @@ import FaqChatWidget from '../components/FaqChatWidget'
 import LiveChat from '../components/LiveChat'
 import RegionToggle from '../components/RegionToggle'
 import GoogleAnalytics from '../components/GoogleAnalytics'
-import StickeyMobileFooter from '../components/StickyMobileFooter'
 import { QuoteProvider } from '../components/QuoteProvider'
 import { LangProvider } from '../components/LangProvider'
 import { AuthProvider } from '../components/AuthProvider'
@@ -116,7 +115,6 @@ export default function RootLayout({children}:{children:React.ReactNode}){
               <FaqChatWidget />
               <LiveChat />
               <RegionToggle />
-              <StickeyMobileFooter />
             </QuoteProvider>
           </LangProvider>
         </AuthProvider>

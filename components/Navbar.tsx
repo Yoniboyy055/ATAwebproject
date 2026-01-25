@@ -1,86 +1,87 @@
 "use client"
 import Link from 'next/link'
-import { useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { BRAND } from '../lib/config'
 
 export default function Navbar(){
   const [open,setOpen] = useState(false)
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100">
-      <div className="container flex items-center justify-between py-3">
-        <Link href="/" className="font-semibold text-lg text-primary">{BRAND.name}</Link>
-        <nav className="hidden md:flex gap-6 items-center text-sm">
-          <Link href="/services" className="hover:underline">Services</Link>
-          <Link href="/destinations" className="hover:underline">Destinations</Link>
-          <Link href="/packages" className="hover:underline">Packages</Link>
-          <Link href="/flights" className="hover:underline font-semibold text-blue-600">✈️ Flights</Link>
-          <Link href="/content" className="hover:underline">Resources</Link>
-          <Link href="/book" className="hover:underline font-semibold text-blue-600">Book</Link>
-          <Link href="/search" className="hover:underline font-semibold text-emerald-600">Search</Link>
-          <Link href="/about" className="hover:underline">About</Link>
-          <Link href="/faq" className="hover:underline">FAQ</Link>
-          <Link href="/contact" className="hover:underline">Contact</Link>
-          <a className="ml-2 inline-flex items-center rounded-md bg-accent/90 text-white px-3 py-1 text-sm" href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}>WhatsApp</a>
-          
-          {/* Auth Links */}
-          {status === 'authenticated' && session?.user ? (
-            <div className="flex items-center gap-2 ml-4 pl-4 border-l border-slate-200">
-              <Link href="/reviews" className="hover:underline">Reviews</Link>
-              <Link href="/dashboard/wishlist" className="hover:underline">❤️ Wishlist</Link>
-              <Link href="/dashboard" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                Dashboard
-              </Link>
-              <button
-                onClick={() => signOut()}
-                className="text-slate-600 hover:text-slate-900 font-medium"
-              >
-                Sign Out
-              </button>
-            </div>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm py-3' : 'bg-white/90 backdrop-blur-md py-4'}`}>
+      <div className="container flex items-center justify-between px-4">
+        <Link href="/" className="font-bold text-xl tracking-tight text-slate-900">
+          {BRAND.name}
+        </Link>
+        
+        {/* Desktop Nav - Max 4 items */}
+        <nav className="hidden md:flex gap-8 items-center text-sm font-medium text-slate-700">
+          <Link href="/flights" className="hover:text-emerald-600 transition">Flights</Link>
+          <Link href="/packages" className="hover:text-emerald-600 transition">Packages</Link>
+          <Link href="/destinations" className="hover:text-emerald-600 transition">Destinations</Link>
+          <Link href="/services" className="hover:text-emerald-600 transition">Services</Link>
+        </nav>
+
+        {/* CTAs */}
+        <div className="hidden md:flex items-center gap-4">
+          {session ? (
+            <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-emerald-600">
+              Dashboard
+            </Link>
           ) : (
-            <Link href="/auth/signin" className="ml-2 inline-flex items-center rounded-md bg-emerald-600 text-white px-3 py-1 text-sm hover:bg-emerald-700">
+             <Link href="/auth/signin" className="text-sm font-medium text-slate-700 hover:text-emerald-600">
               Sign In
             </Link>
           )}
-        </nav>
-        <button onClick={()=>setOpen(!open)} aria-expanded={open} className="md:hidden p-2">
-          <span className="sr-only">Open menu</span>
-          <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d={open?"M6 18L18 6M6 6l12 12":"M4 6h16M4 12h16M4 18h16"} /></svg>
+          
+          <a 
+            href={`https://wa.me/${BRAND.whatsapp.replace(/\D/g, '')}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2 px-4 rounded-full transition-colors shadow-sm"
+          >
+            Chat on WhatsApp
+          </a>
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button onClick={()=>setOpen(!open)} className="md:hidden p-2 text-slate-900" aria-label="Toggle menu">
+          {open ? (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+          )}
         </button>
       </div>
+
+      {/* Mobile Menu */}
       {open && (
-        <div className="md:hidden border-t border-slate-100">
-          <div className="container py-4 flex flex-col gap-3">
-            <Link href="/services">Services</Link>
-            <Link href="/destinations">Destinations</Link>
-            <Link href="/packages">Packages</Link>
-            <Link href="/flights" className="font-semibold text-blue-600">✈️ Flights</Link>
-            <Link href="/content">Resources</Link>
-            <Link href="/book" className="font-semibold text-blue-600">📅 Book Trip</Link>
-            <Link href="/search" className="font-semibold text-emerald-600">🔍 Advanced Search</Link>
-            <Link href="/about">About</Link>
-            <Link href="/faq">FAQ</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/reviews">Reviews</Link>
-            <Link href="/dashboard/wishlist" className="font-semibold text-red-600">❤️ Wishlist</Link>
-            {status === 'authenticated' && session?.user ? (
-              <>
-                <Link href="/dashboard">Dashboard</Link>
-                <button
-                  onClick={() => signOut()}
-                  className="text-left text-slate-600"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <Link href="/auth/signin">Sign In</Link>
-            )}
-            <a href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`} className="inline-flex items-center rounded-md bg-accent/90 text-white px-3 py-1 text-sm w-max">Chat on WhatsApp</a>
-          </div>
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-slate-100 shadow-xl p-4 flex flex-col gap-4 animate-fade-in-up">
+          <Link href="/flights" className="text-lg font-medium text-slate-900 py-2" onClick={()=>setOpen(false)}>Flights</Link>
+          <Link href="/packages" className="text-lg font-medium text-slate-900 py-2" onClick={()=>setOpen(false)}>Packages</Link>
+          <Link href="/destinations" className="text-lg font-medium text-slate-900 py-2" onClick={()=>setOpen(false)}>Destinations</Link>
+          <Link href="/services" className="text-lg font-medium text-slate-900 py-2" onClick={()=>setOpen(false)}>Services</Link>
+          <hr className="border-slate-100" />
+          <Link href="/contact" className="text-lg font-medium text-slate-900 py-2" onClick={()=>setOpen(false)}>Contact Us</Link>
+          {session ? (
+             <Link href="/dashboard" className="text-lg font-medium text-slate-900 py-2" onClick={()=>setOpen(false)}>Dashboard</Link>
+          ) : (
+             <Link href="/auth/signin" className="text-lg font-medium text-slate-900 py-2" onClick={()=>setOpen(false)}>Sign In</Link>
+          )}
+          <a 
+            href={`https://wa.me/${BRAND.whatsapp.replace(/\D/g, '')}`}
+            className="bg-emerald-600 text-white text-center font-bold py-3 rounded-lg"
+          >
+            Chat on WhatsApp
+          </a>
         </div>
       )}
     </header>
