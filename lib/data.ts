@@ -6,7 +6,7 @@ export const services = [
   {title:'Student Travel Support', desc:'Dedicated guidance for student visas, travel documentation and group bookings.'},
   {title:'Medical & Emergency Travel', desc:'Urgent travel planning and coordination for medical appointments or emergencies.'},
   {title:'Group & Family Bookings', desc:'Multi-passenger routing, coordination and special handling for families and groups.'},
-  {title:'WhatsApp-First Support', desc:'Real answers across time zones until your trip is locked and confirmed.'}
+  {title:'Direct Agent Support', desc:'Real answers across time zones until your trip is locked and confirmed.'}
 ]
 
 export const destinations = [
@@ -35,7 +35,7 @@ export const destinations = [
 ]
 
 export const trustBullets = [
-  'Fast WhatsApp-first responses to keep travel moving',
+  'Fast human responses to keep travel moving',
   'Clear, diaspora-friendly pricing guidance and options',
   'Local partners for reliable on-the-ground support in Eritrea & Ethiopia'
 ]
@@ -43,5 +43,5 @@ export const trustBullets = [
 export const testimonials = [
   {name:'S., Toronto', text:'Quick, clear guidance on visas and flights — helped my family travel home smoothly.'},
   {name:'M., Asmara', text:'Practical support with document checklists and airport transfers.'},
-  {name:'A., London', text:'Friendly, fast WhatsApp replies and dependable bookings.'}
+  {name:'A., London', text:'Friendly, fast agent replies and dependable bookings.'}
 ]

@@ -1,10 +1,7 @@
 import '../styles/globals.css'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import FaqChatWidget from '../components/FaqChatWidget'
-import LiveChat from '../components/LiveChat'
 import GoogleAnalytics from '../components/GoogleAnalytics'
-import { QuoteProvider } from '../components/QuoteProvider'
 import { LangProvider } from '../components/LangProvider'
 import { AuthProvider } from '../components/AuthProvider'
 import { Metadata, Viewport } from 'next'
@@ -23,7 +20,7 @@ export const metadata: Metadata = {
     default: 'Amanuel Travel Agency - Flights & Visa Services',
     template: '%s — Amanuel Travel Agency'
   },
-  description: 'Premium, reliable travel services — flights, tours and visa help for Canada ↔ Africa routes. Chat with us on WhatsApp.',
+  description: 'Premium, reliable travel services — flights, tours and visa help for Canada ↔ Africa routes. Talk with a real agent.',
   keywords: [
     'travel agency',
     'flight booking',
@@ -106,14 +103,10 @@ export default function RootLayout({children}:{children:React.ReactNode}){
       <body>
         <AuthProvider>
           <LangProvider>
-            <QuoteProvider>
-              <GoogleAnalytics />
-              <Navbar />
-              <main>{children}</main>
-              <Footer />
-              <FaqChatWidget />
-              <LiveChat />
-            </QuoteProvider>
+            <GoogleAnalytics />
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
           </LangProvider>
         </AuthProvider>
       </body>

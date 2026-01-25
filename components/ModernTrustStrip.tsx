@@ -1,47 +1,41 @@
-'use client'
+import GlassCard from '@/components/ui/GlassCard'
+import SectionHeader from '@/components/ui/SectionHeader'
 
 export default function ModernTrustStrip() {
   const trustItems = [
     {
-      icon: '✈️',
-      metric: '10+',
-      label: 'Years Experience'
+      metric: '10+ years',
+      label: 'Serving Eritrean and Ethiopian travelers'
     },
     {
-      icon: '👥',
-      metric: '50K+',
-      label: 'Happy Travelers'
+      metric: '4.9 average',
+      label: 'Rated by returning families and groups'
     },
     {
-      icon: '💬',
-      metric: '<5 min',
-      label: 'WhatsApp Response'
+      metric: '50K+ trips',
+      label: 'Coordinated with real agents'
     },
     {
-      icon: '🌍',
-      metric: '6',
-      label: 'Continents'
-    },
-    {
-      icon: '⭐',
-      metric: '4.9',
-      label: 'Avg. Rating'
+      metric: 'Human-led',
+      label: 'Clear guidance from a local team'
     }
   ]
 
   return (
-    <section className="py-8 md:py-12 px-4 bg-gradient-to-r from-slate-50 to-slate-100 border-t border-b border-slate-200">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6">
-          {trustItems.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-md transition duration-300"
-            >
-              <div className="text-2xl sm:text-3xl mb-2">{item.icon}</div>
-              <div className="font-bold text-slate-900 text-lg sm:text-xl">{item.metric}</div>
-              <div className="text-xs sm:text-sm text-slate-600 text-center">{item.label}</div>
-            </div>
+    <section className="bg-slate-900 py-12">
+      <div className="container">
+        <SectionHeader
+          title="Trusted support, not a platform"
+          subtitle="A local team helping families travel home and abroad with clarity."
+          tone="light"
+          className="mb-10"
+        />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {trustItems.map((item) => (
+            <GlassCard key={item.metric} className="p-5 text-white">
+              <p className="text-xl font-semibold">{item.metric}</p>
+              <p className="mt-2 text-sm text-white/70">{item.label}</p>
+            </GlassCard>
           ))}
         </div>
       </div>

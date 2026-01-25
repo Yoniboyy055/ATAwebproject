@@ -1,17 +1,18 @@
 import { BRAND } from '@/lib/config'
 import Link from 'next/link'
 import NewsletterSignup from './NewsletterSignup'
+import { buttonClasses } from '@/components/ui/Button'
 
 export default function Footer() {
   return (
     <footer className="bg-slate-900 text-white">
       {/* Newsletter Section */}
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white">
+      <div className="bg-slate-800 text-white">
         <div className="container max-w-6xl mx-auto px-4 py-12">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h3 className="text-2xl font-bold mb-2">Stay Updated</h3>
-              <p className="text-emerald-100">
+              <p className="text-slate-300">
                 Get exclusive travel tips, visa updates, and special offers delivered to your inbox.
               </p>
             </div>
@@ -33,9 +34,13 @@ export default function Footer() {
               href={`https://wa.me/${BRAND.whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold transition"
+              className={buttonClasses({
+                variant: 'primary',
+                size: 'sm',
+                className: 'bg-white text-slate-900 hover:bg-white/90'
+              })}
             >
-              💬 WhatsApp
+              Talk to an Agent
             </a>
           </div>
 
@@ -43,13 +48,13 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-6 text-white">Explore</h4>
             <ul className="space-y-3 text-slate-300">
-              <li><Link href="/services" className="hover:text-emerald-400 transition">Services</Link></li>
-              <li><Link href="/destinations" className="hover:text-emerald-400 transition">Destinations</Link></li>
-              <li><Link href="/packages" className="hover:text-emerald-400 transition">Packages</Link></li>
-              <li><Link href="/flights" className="hover:text-emerald-400 transition">✈️ Flights</Link></li>
-              <li><Link href="/content" className="hover:text-emerald-400 transition">Resources</Link></li>
-              <li><Link href="/book" className="hover:text-emerald-400 transition">Book Trip</Link></li>
-              <li><Link href="/about" className="hover:text-emerald-400 transition">About Us</Link></li>
+              <li><Link href="/services" className="hover:text-white transition">Services</Link></li>
+              <li><Link href="/destinations" className="hover:text-white transition">Destinations</Link></li>
+              <li><Link href="/packages" className="hover:text-white transition">Packages</Link></li>
+              <li><Link href="/flights" className="hover:text-white transition">Flights</Link></li>
+              <li><Link href="/content" className="hover:text-white transition">Resources</Link></li>
+              <li><Link href="/book" className="hover:text-white transition">Book Trip</Link></li>
+              <li><Link href="/about" className="hover:text-white transition">About Us</Link></li>
             </ul>
           </div>
 
@@ -57,10 +62,10 @@ export default function Footer() {
           <div>
             <h4 className="font-bold mb-6 text-white">Learn More</h4>
             <ul className="space-y-3 text-slate-300">
-              <li><Link href="/faq" className="hover:text-emerald-400 transition">FAQ</Link></li>
-              <li><Link href="/contact" className="hover:text-emerald-400 transition">Contact Us</Link></li>
-              <li><Link href="/policies" className="hover:text-emerald-400 transition">Policies</Link></li>
-              <li><Link href="/copyright" className="hover:text-emerald-400 transition">Copyright</Link></li>
+              <li><Link href="/faq" className="hover:text-white transition">FAQ</Link></li>
+              <li><Link href="/contact" className="hover:text-white transition">Contact Us</Link></li>
+              <li><Link href="/policies" className="hover:text-white transition">Policies</Link></li>
+              <li><Link href="/copyright" className="hover:text-white transition">Copyright</Link></li>
             </ul>
           </div>
 
@@ -70,19 +75,19 @@ export default function Footer() {
             <div className="space-y-4 text-slate-300">
               <div>
                 <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Office Phone</p>
-                <a href={`tel:${BRAND.phoneOffice}`} className="font-semibold hover:text-emerald-400 transition">
+                <a href={`tel:${BRAND.phoneOffice}`} className="font-semibold hover:text-white transition">
                   {BRAND.phoneOffice}
                 </a>
               </div>
               <div>
                 <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Mobile</p>
-                <a href={`tel:${BRAND.phoneMobile}`} className="font-semibold hover:text-emerald-400 transition">
+                <a href={`tel:${BRAND.phoneMobile}`} className="font-semibold hover:text-white transition">
                   {BRAND.phoneMobile}
                 </a>
               </div>
               <div>
                 <p className="text-xs text-slate-400 uppercase tracking-wide mb-1">Email</p>
-                <a href={`mailto:${BRAND.email}`} className="font-semibold hover:text-emerald-400 transition text-sm">
+                <a href={`mailto:${BRAND.email}`} className="font-semibold hover:text-white transition text-sm">
                   {BRAND.email}
                 </a>
               </div>
@@ -96,11 +101,11 @@ export default function Footer() {
         {/* Bottom Footer */}
         <div className="py-8 flex flex-col md:flex-row items-center justify-between gap-4 text-slate-400 text-sm">
           <div>
-            <p>📍 {BRAND.addressLine1}, {BRAND.city}</p>
+            <p>{BRAND.addressLine1}, {BRAND.city}</p>
             <p>Managing Director — {BRAND.addressLine2}</p>
           </div>
           <p>© 2025 {BRAND.name}. All rights reserved.</p>
-          <p>Prices vary by season and availability. WhatsApp for live quotes.</p>
+          <p>Prices vary by season and availability. Contact us for live quotes.</p>
         </div>
       </div>
     </footer>

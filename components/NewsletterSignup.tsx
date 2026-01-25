@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState('');
@@ -36,27 +38,25 @@ export default function NewsletterSignup() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <div className="flex gap-2">
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-600"
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
-        >
+      <div className="flex flex-col gap-3 md:flex-row">
+        <div className="flex-1">
+          <Input
+            type="email"
+            placeholder="Enter your email"
+            aria-label="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <Button type="submit" size="sm" disabled={loading}>
           {loading ? 'Subscribing...' : 'Subscribe'}
-        </button>
+        </Button>
       </div>
       {message && (
         <p
           className={`text-sm ${
-            message.includes('✓') ? 'text-green-600' : 'text-red-600'
+            message.includes('✓') ? 'text-emerald-300' : 'text-rose-300'
           }`}
         >
           {message}

@@ -1,70 +1,77 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import BentoGrid, { bentoTileClasses } from '@/components/ui/BentoGrid'
+import SectionHeader from '@/components/ui/SectionHeader'
+import { buttonClasses } from '@/components/ui/Button'
 
 const destinations = [
-  { name: 'Asmara', country: 'Eritrea', icon: '🏛️', description: 'History, culture & local food', rating: '4.9', startingPrice: '$699' },
-  { name: 'Massawa', country: 'Eritrea', icon: '🌊', description: 'Beaches, history & diving', rating: '4.8', startingPrice: '$599' },
-  { name: 'Addis Ababa', country: 'Ethiopia', icon: '🌃', description: 'Culture, food & markets', rating: '4.7', startingPrice: '$549' },
-  { name: 'Keren', country: 'Eritrea', icon: '🏜️', description: 'Heritage & mountain views', rating: '5.0', startingPrice: '$379' },
-  { name: 'Lalibela', country: 'Ethiopia', icon: '⛪', description: 'UNESCO heritage sites', rating: '4.9', startingPrice: '$899' },
-  { name: 'Gondar', country: 'Ethiopia', icon: '👑', description: 'Ancient castles & culture', rating: '4.8', startingPrice: '$799' },
+  { name: 'Asmara', country: 'Eritrea', image: '/images/dest-1.svg', description: 'Heritage boulevards, cafés, and calm city rhythms.', featured: true },
+  { name: 'Massawa', country: 'Eritrea', image: '/images/dest-2.svg', description: 'Red Sea coastline, history, and warm water escapes.' },
+  { name: 'Addis Ababa', country: 'Ethiopia', image: '/images/dest-3.svg', description: 'Culture, markets, and a vibrant city gateway.' },
+  { name: 'Keren', country: 'Eritrea', image: '/images/dest-4.svg', description: 'Mountain views and quieter local heritage.' },
+  { name: 'Lalibela', country: 'Ethiopia', image: '/images/dest-5.svg', description: 'UNESCO sites and spiritual heritage travel.' },
+  { name: 'Gondar', country: 'Ethiopia', image: '/images/dest-6.svg', description: 'Historic castles and family-friendly tours.' },
 ]
 
 export default function LovableDestinations() {
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white">
+    <section className="bg-slate-50 py-16 md:py-24">
       <div className="container max-w-6xl mx-auto px-4">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
-            Popular Destinations
-          </h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-            Explore our most sought-after destinations and find inspiration for your next journey.
-          </p>
-        </div>
+        <SectionHeader
+          title="Destinations shaped for real journeys"
+          subtitle="Thoughtful routes across Eritrea and Ethiopia, guided by local insight."
+          className="mb-12"
+        />
 
-        {/* Destination Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <BentoGrid>
           {destinations.map(dest => (
             <Link
               key={`${dest.name}-${dest.country}`}
               href={`/destinations?search=${dest.name}`}
-              className="group rounded-xl overflow-hidden border border-slate-200 hover:border-emerald-400 hover:shadow-xl transition duration-300 bg-white"
+              className={bentoTileClasses({
+                featured: Boolean(dest.featured),
+                className: [
+                  'group flex flex-col gap-4 transition hover:-translate-y-0.5 hover:shadow-soft',
+                  dest.featured ? 'bg-slate-900 text-white border-slate-800' : ''
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+              })}
             >
-              {/* Image Placeholder */}
-              <div className="relative h-48 bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center text-white overflow-hidden">
-                <div className="text-6xl">{dest.icon}</div>
+              <div className="relative h-36 w-full overflow-hidden rounded-lg bg-slate-100">
+                <Image
+                  src={dest.image}
+                  alt={`${dest.name}, ${dest.country}`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                />
               </div>
-
-              {/* Content */}
-              <div className="p-5 md:p-6">
-                <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-emerald-600 transition">
+              <div>
+                <p className={`text-xs font-semibold uppercase tracking-[0.2em] ${dest.featured ? 'text-white/60' : 'text-slate-500'}`}>
+                  {dest.country}
+                </p>
+                <h3 className="mt-2 text-xl font-semibold">
                   {dest.name}
                 </h3>
-                <p className="text-sm text-slate-600 mb-3">{dest.country}</p>
-                <p className="text-sm text-slate-700 mb-4">{dest.description}</p>
-
-                {/* Rating & Price */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-                  <span className="text-sm font-semibold text-slate-900">
-                    ⭐ {dest.rating}
-                  </span>
-                  <span className="text-sm font-bold text-emerald-600">
-                    From {dest.startingPrice}
-                  </span>
-                </div>
+                <p className={`mt-2 text-sm ${dest.featured ? 'text-white/75' : 'text-slate-600'}`}>
+                  {dest.description}
+                </p>
+                <p className={`mt-4 text-sm font-medium ${dest.featured ? 'text-white' : 'text-primary'}`}>
+                  View destination details
+                </p>
               </div>
             </Link>
           ))}
-        </div>
+        </BentoGrid>
 
         {/* View All CTA */}
         <div className="text-center mt-12">
           <Link
             href="/destinations"
-            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-lg font-bold transition shadow-lg hover:shadow-xl"
+            className={buttonClasses({ variant: 'secondary', size: 'lg' })}
           >
-            Explore All Destinations →
+            Explore All Destinations
           </Link>
         </div>
       </div>
