@@ -39,7 +39,7 @@ export default function LovableTestimonials() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft-sm transition hover:-translate-y-0.5 hover:shadow-soft"
+              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft-sm"
             >
               {/* Stars */}
               <div className="flex gap-1 mb-4">

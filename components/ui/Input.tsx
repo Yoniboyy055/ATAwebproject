@@ -12,7 +12,8 @@ const baseClasses =
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, helperText, error, className, id, ...props }, ref) => {
-    const inputId = id ?? useId()
+    const generatedId = useId()
+    const inputId = id ?? generatedId
     const hasError = Boolean(error)
 
     return (
