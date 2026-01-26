@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { isAdmin } from '@/lib/admin'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -17,15 +18,13 @@ const mockStats = {
 export async function GET() {
   try {
     const session = await getServerSession()
-    if (!session) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // In production, validate admin role
-    // const adminEmails = ['admin@amanueltravel.com', 'staff@amanueltravel.com']
-    // if (!adminEmails.includes(session.user?.email || '')) {
-    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    // }
+    if (!isAdmin(session.user.email)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     return NextResponse.json({
       stats: {
