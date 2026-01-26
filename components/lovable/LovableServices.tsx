@@ -57,7 +57,7 @@ export default function LovableServices() {
               href={service.link}
               className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-soft-sm transition hover:-translate-y-0.5 hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 cursor-pointer"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700">
                 {service.short}
               </div>
               <h3 className="mt-4 text-lg font-semibold text-slate-900">

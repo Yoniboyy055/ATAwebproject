@@ -5,7 +5,7 @@ export const BRAND = {
   city: 'Asmara, Eritrea',
   phoneOffice: '002911180240',
   phoneMobile: '002917197086',
-  email: 'amanueltravel@gmail.com',
+  email: 'info@amanueltravel.com',
   whatsappNumber: '2917197086',
   whatsappLink: 'https://wa.me/2917197086',
   whatsapp: '2917197086', // legacy field for backward compatibility

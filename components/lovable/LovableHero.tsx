@@ -35,7 +35,7 @@ export default function LovableHero() {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
               <a
-                href={`https://wa.me/${BRAND.whatsappNumber}?text=Hi! I need help planning my trip. Can you help me?`}
+                href={`https://wa.me/${BRAND.whatsappNumber}?text=Hi! I'm part of the diaspora and need help planning a family trip. Can you assist me?`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={buttonClasses({ variant: 'primary', size: 'lg' })}
@@ -43,7 +43,7 @@ export default function LovableHero() {
                 Talk to an Agent
               </a>
               <p className="text-sm text-white/70">
-                Available by WhatsApp, phone, or email.
+                Typical response time: 1–2 hours.
               </p>
             </div>
           </div>

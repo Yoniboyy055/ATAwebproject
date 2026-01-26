@@ -19,7 +19,7 @@ export function buildWhatsAppMessage(config: WhatsAppMessageConfig): string {
   if (config.packageName) {
     lines.push(`Hi! I'm interested in the ${config.packageName} package.`)
   } else {
-    lines.push('Hi! I have a travel inquiry.')
+    lines.push("Hi! I'm part of the diaspora and need help planning a family trip. Can you assist me?")
   }
 
   if (config.customerType) {
@@ -70,7 +70,7 @@ export function getDestinationQuoteUrl(
   city: string,
   country: string
 ): string {
-  const message = `Hi, I'd like a quote for ${city}, ${country}.`
+  const message = `Hi! I'm part of the diaspora and need help planning a family trip to ${city}, ${country}. Can you assist me?`
   const encodedMessage = encodeURIComponent(message)
   return `https://wa.me/${encodeURIComponent(BRAND.whatsapp)}?text=${encodedMessage}`
 }

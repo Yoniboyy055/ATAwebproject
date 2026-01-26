@@ -186,7 +186,7 @@ export default function ContentHubPage() {
             Talk with an agent for answers and clear next steps.
           </p>
           <a
-            href="https://wa.me/2917197086?text=Hi! I have questions about planning my trip. Can you help?"
+            href="https://wa.me/2917197086?text=Hi! I'm part of the diaspora and need help planning a family trip. Can you assist me?"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-white text-slate-900 hover:bg-slate-100 px-8 py-4 rounded-lg font-bold transition shadow-soft"

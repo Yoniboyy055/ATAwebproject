@@ -256,7 +256,7 @@ npm run build
 **WhatsApp**: +291-7197086  
 **Phone (Office)**: +291-1-180240  
 **Phone (Mobile)**: +291-7-197086  
-**Email**: amanueltravel@gmail.com  
+**Email**: info@amanueltravel.com  
 
 ---
 

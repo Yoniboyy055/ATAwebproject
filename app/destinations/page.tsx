@@ -47,7 +47,7 @@ export default function Destinations(){
           </div>
           <div className="mt-10">
             <a
-              href={`https://wa.me/${BRAND.whatsappNumber}?text=Hi! I need help choosing a destination. Can you assist?`}
+              href={`https://wa.me/${BRAND.whatsappNumber}?text=Hi! I'm part of the diaspora and need help planning a family trip. Can you help me choose a destination?`}
               target="_blank"
               rel="noopener noreferrer"
               className={buttonClasses({ variant: 'primary', size: 'lg' })}

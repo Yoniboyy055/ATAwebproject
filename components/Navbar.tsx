@@ -20,7 +20,11 @@ export default function Navbar(){
           <Link href="/content" className="hover:underline">Guides</Link>
           <Link href="/about" className="hover:underline">About</Link>
           <a
-            className={buttonClasses({ variant: 'primary', size: 'sm', className: 'ml-2' })}
+            className={buttonClasses({
+              variant: 'primary',
+              size: 'md',
+              className: 'ml-2 min-h-[44px] px-4'
+            })}
             href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
           >
             Talk to an Agent
@@ -41,11 +45,7 @@ export default function Navbar(){
                 Sign Out
               </button>
             </div>
-          ) : (
-            <Link href="/auth/signin" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-              Sign In
-            </Link>
-          )}
+          ) : null}
         </nav>
         <button onClick={()=>setOpen(!open)} aria-expanded={open} className="md:hidden p-2">
           <span className="sr-only">Open menu</span>
@@ -84,12 +84,14 @@ export default function Navbar(){
                   Sign Out
                 </button>
               </>
-            ) : (
-              <Link href="/auth/signin" className="py-1">Sign In</Link>
-            )}
+            ) : null}
             <a
               href={`https://wa.me/${encodeURIComponent(BRAND.whatsapp)}`}
-              className={buttonClasses({ variant: 'primary', size: 'sm', className: 'w-max' })}
+              className={buttonClasses({
+                variant: 'primary',
+                size: 'md',
+                className: 'w-max min-h-[44px] px-4'
+              })}
             >
               Talk to an Agent
             </a>
