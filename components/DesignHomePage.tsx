@@ -594,7 +594,7 @@ export default function DesignHomePage() {
 
         <div className="dest-grid">
           <a href="#contact" className="dest-card reveal" data-dest="Massawa">
-            <div className="dest-img" style={{ backgroundColor: '#0d1f38' }}></div>
+            <div className="dest-img" style={{ backgroundImage: "url('/images/dest-800.webp')", backgroundPosition: 'center 40%' }}></div>
             <div className="dest-grad"></div>
             <div className="dest-arr"><svg viewBox="0 0 24 24"><path d="M5 19L19 5M9 5h10v10"></path></svg></div>
             <div className="dest-content">
@@ -604,7 +604,7 @@ export default function DesignHomePage() {
             </div>
           </a>
           <a href="#contact" className="dest-card reveal" data-dest="Asmara">
-            <div className="dest-img" style={{ backgroundColor: '#0d1f38' }}></div>
+            <div className="dest-img" style={{ backgroundImage: "url('/images/dest-800.webp')", backgroundPosition: 'center 60%' }}></div>
             <div className="dest-grad"></div>
             <div className="dest-arr"><svg viewBox="0 0 24 24"><path d="M5 19L19 5M9 5h10v10"></path></svg></div>
             <div className="dest-content">
@@ -614,7 +614,7 @@ export default function DesignHomePage() {
             </div>
           </a>
           <a href="#contact" className="dest-card reveal" data-dest="Dahlak Islands">
-            <div className="dest-img" style={{ backgroundColor: '#0d1f38' }}></div>
+            <div className="dest-img" style={{ backgroundImage: "url('/images/dest-800.webp')", backgroundPosition: 'center 20%' }}></div>
             <div className="dest-grad"></div>
             <div className="dest-arr"><svg viewBox="0 0 24 24"><path d="M5 19L19 5M9 5h10v10"></path></svg></div>
             <div className="dest-content">
@@ -624,7 +624,7 @@ export default function DesignHomePage() {
             </div>
           </a>
           <a href="#contact" className="dest-card reveal" style={{ gridColumn: '2' }} data-dest="Keren">
-            <div className="dest-img" style={{ backgroundColor: '#0d1f38' }}></div>
+            <div className="dest-img" style={{ backgroundImage: "url('/images/dest-800.webp')", backgroundPosition: 'center 80%' }}></div>
             <div className="dest-grad"></div>
             <div className="dest-arr"><svg viewBox="0 0 24 24"><path d="M5 19L19 5M9 5h10v10"></path></svg></div>
             <div className="dest-content">
