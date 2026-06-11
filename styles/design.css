@@ -10,6 +10,7 @@
 html{scroll-behavior:smooth}
 body.design-home{cursor:none !important;background:#0A1628 !important;color:var(--cream) !important;font-family:var(--sans) !important;overflow-x:hidden !important;-webkit-font-smoothing:antialiased;line-height:1.55}
 body.design-home h1,body.design-home h2,body.design-home h3,body.design-home h4{color:var(--white) !important}
+.serv h2,.serv h3,.serv h4{color:var(--navy-1) !important}
 
 /* Site-wide 360 panorama canvas — sits behind everything */
 .site-canvas{position:fixed;inset:0;z-index:-10;pointer-events:none;width:100vw;height:100vh}
