@@ -6,10 +6,10 @@
   --border:rgba(201,168,76,0.18); --border-soft:rgba(255,255,255,0.08);
   --serif:'Cormorant Garamond',serif; --sans:'DM Sans',system-ui,sans-serif;
 }
-*{margin:0;padding:0;box-sizing:border-box}
+*{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body.design-home{cursor:none}
-body{font-family:var(--sans);background:#000;color:var(--cream);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.55}
+body.design-home{cursor:none !important;background:#0A1628 !important;color:var(--cream) !important;font-family:var(--sans) !important;overflow-x:hidden !important;-webkit-font-smoothing:antialiased;line-height:1.55}
+body.design-home h1,body.design-home h2,body.design-home h3,body.design-home h4{color:var(--white) !important}
 
 /* Site-wide 360 panorama canvas — sits behind everything */
 .site-canvas{position:fixed;inset:0;z-index:-10;pointer-events:none;width:100vw;height:100vh}
