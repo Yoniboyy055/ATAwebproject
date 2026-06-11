@@ -1,5 +1,6 @@
 'use client'
 import { useEffect } from 'react'
+import * as THREE from 'three'
 import '@/styles/design.css'
 
 export default function DesignHomePage() {
@@ -221,7 +222,7 @@ export default function DesignHomePage() {
       curtain.classList.add('gone')
       setTimeout(showHint, 700)
     }
-    setTimeout(dismissCurtain, 2400)
+    setTimeout(dismissCurtain, 3200)
 
     /* ── Look-around hint ── */
     const hint = document.getElementById('hint')
@@ -230,7 +231,7 @@ export default function DesignHomePage() {
       if (hintDismissed || hintShown) return
       hintShown = true
       hint?.classList.add('show')
-      setTimeout(dismissHint, 5000)
+      setTimeout(dismissHint, 6000)
     }
     function dismissHint() {
       if (hintDismissed || !hint) return
@@ -390,6 +391,217 @@ export default function DesignHomePage() {
     function onKeydown(e: KeyboardEvent) { if (e.key === 'Escape') closeArticle() }
     window.addEventListener('keydown', onKeydown)
 
+    /* ── Idle input tracking (shared with panorama) ── */
+    ;(window as Window & { lastUserInputAt?: number }).lastUserInputAt = Date.now()
+    const trackIdle = () => { (window as Window & { lastUserInputAt?: number }).lastUserInputAt = Date.now() }
+    ;(['mousemove', 'scroll', 'touchstart', 'keydown'] as const).forEach(ev =>
+      window.addEventListener(ev, trackIdle, { passive: true })
+    )
+
+    /* ── Section yaw map for page-aware panorama ── */
+    type SectionEntry = { sel: string; yaw: number; el: HTMLElement }
+    const SECTION_YAW_MAP: SectionEntry[] = [
+      { sel: '#hero',         yaw:  0.00 },
+      { sel: '.trust',        yaw:  0.25 },
+      { sel: '#destinations', yaw:  0.55 },
+      { sel: '#office',       yaw:  0.85 },
+      { sel: '.partners',     yaw:  1.05 },
+      { sel: '#services',     yaw: -0.45 },
+      { sel: '#why',          yaw: -0.85 },
+      { sel: '.test',         yaw: -0.30 },
+      { sel: '#journal',      yaw:  0.40 },
+      { sel: '#faq',          yaw:  0.10 },
+      { sel: '#contact',      yaw: -0.10 },
+    ].map(s => ({ ...s, el: document.querySelector<HTMLElement>(s.sel) }))
+      .filter((s): s is SectionEntry => s.el !== null)
+
+    function activeSectionYaw(): number {
+      const vy = window.scrollY + window.innerHeight * 0.45
+      let best = SECTION_YAW_MAP[0]
+      for (const s of SECTION_YAW_MAP) {
+        if (s.el.offsetTop <= vy) best = s
+      }
+      return best ? best.yaw : 0
+    }
+
+    /* ── Hotspot click-through to destination cards ── */
+    const HOTSPOT_DEST: Record<string, string> = { hs1: 'Asmara', hs2: 'Asmara', hs3: 'Keren' }
+    document.querySelectorAll<HTMLElement>('.hotspot').forEach(hs => {
+      hs.style.pointerEvents = 'auto'
+      hs.style.cursor = 'none'
+      hs.addEventListener('click', () => {
+        const dest = HOTSPOT_DEST[hs.id] || 'Asmara'
+        const card = document.querySelector<HTMLElement>(`.dest-card[data-dest="${dest}"]`)
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          card.style.transition = 'box-shadow .6s ease'
+          card.style.boxShadow = '0 0 0 2px var(--gold), 0 40px 60px -30px rgba(201,168,76,.5)'
+          setTimeout(() => { card.style.boxShadow = '' }, 1800)
+        }
+        const form = document.querySelector<HTMLFormElement>('.form-box form')
+        if (form && dest) {
+          const svc = form.querySelector<HTMLSelectElement>('select')
+          if (svc) {
+            for (const opt of svc.options) {
+              if (opt.value === 'Travel Consultation' || opt.text === 'Travel Consultation') {
+                svc.value = opt.value || opt.text; break
+              }
+            }
+          }
+          const note = form.querySelector<HTMLTextAreaElement>('textarea')
+          if (note && !note.value.trim()) {
+            note.value = `Interested in travel to ${dest}. Please share routing and seasonal options.`
+            note.classList.add('flash')
+            setTimeout(() => note.classList.remove('flash'), 1400)
+          }
+        }
+      })
+    })
+
+    /* ── Three.js 360° panorama ── */
+    const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const panoCanvas = document.getElementById('heroCanvas') as HTMLCanvasElement
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(78, window.innerWidth / window.innerHeight, 0.1, 2000)
+    camera.position.set(0, 0, 0)
+    camera.rotation.order = 'YXZ'
+
+    const renderer = new THREE.WebGLRenderer({ canvas: panoCanvas, alpha: true, antialias: true })
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setClearColor(0x0a1628, 1)
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+
+    const panoGeo = new THREE.SphereGeometry(500, 80, 50)
+    panoGeo.scale(-1, 1, 1)
+    const panoMat = new THREE.MeshBasicMaterial({ color: 0x0d1f38 })
+    const panoMesh = new THREE.Mesh(panoGeo, panoMat)
+    scene.add(panoMesh)
+
+    const texLoader = new THREE.TextureLoader()
+    const heroBgEl = document.getElementById('heroBg') as HTMLElement | null
+    texLoader.load('/images/hero.jpg', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace
+      tex.minFilter = THREE.LinearFilter
+      tex.magFilter = THREE.LinearFilter
+      panoMat.map = tex
+      panoMat.color.setRGB(1.35, 1.30, 1.22)
+      panoMat.needsUpdate = true
+      panoMat.transparent = true
+      panoMat.opacity = 0
+      let o = 0
+      const fadeIn = () => {
+        o = Math.min(1, o + 0.04)
+        panoMat.opacity = o
+        if (o < 1) requestAnimationFrame(fadeIn)
+        else if (heroBgEl) heroBgEl.style.opacity = '0'
+      }
+      requestAnimationFrame(fadeIn)
+      setTimeout(dismissCurtain, 350)
+    }, undefined, () => { dismissCurtain() })
+
+    /* Gold atmospheric particles */
+    const PARTICLE_COUNT = 900
+    const pPositions = new Float32Array(PARTICLE_COUNT * 3)
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const r = 80 + Math.random() * 260
+      const th = Math.random() * Math.PI * 2
+      const ph = Math.acos(2 * Math.random() - 1)
+      pPositions[i * 3]     = r * Math.sin(ph) * Math.cos(th)
+      pPositions[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th)
+      pPositions[i * 3 + 2] = r * Math.cos(ph)
+    }
+    const pGeo = new THREE.BufferGeometry()
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3))
+    const spriteC = document.createElement('canvas'); spriteC.width = 64; spriteC.height = 64
+    const spCtx = spriteC.getContext('2d')!
+    const spGrad = spCtx.createRadialGradient(32, 32, 0, 32, 32, 32)
+    spGrad.addColorStop(0,   'rgba(226,201,126,1)')
+    spGrad.addColorStop(0.4, 'rgba(201,168,76,0.55)')
+    spGrad.addColorStop(1,   'rgba(201,168,76,0)')
+    spCtx.fillStyle = spGrad; spCtx.fillRect(0, 0, 64, 64)
+    const spriteTex = new THREE.CanvasTexture(spriteC)
+    const pMat = new THREE.PointsMaterial({
+      size: 2.4, map: spriteTex, transparent: true,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+      color: 0xC9A84C, opacity: 0.55, sizeAttenuation: true,
+    })
+    const particlePoints = new THREE.Points(pGeo, pMat)
+    scene.add(particlePoints)
+
+    /* Hotspot screen projection */
+    const hotspotEls = Array.from(document.querySelectorAll<HTMLElement>('.hotspot'))
+    const _vec = new THREE.Vector3()
+    function updateHotspots() {
+      const w = window.innerWidth, h = window.innerHeight
+      const curtainEl = document.getElementById('curtain')
+      const revealOK = !curtainEl || curtainEl.classList.contains('gone')
+      for (const el of hotspotEls) {
+        const yawRad   = parseFloat(el.dataset.yaw   || '0')
+        const pitchRad = parseFloat(el.dataset.pitch || '0')
+        const r = 480
+        _vec.set(
+          r * Math.sin(yawRad) * Math.cos(pitchRad),
+          r * Math.sin(pitchRad),
+          -r * Math.cos(yawRad) * Math.cos(pitchRad)
+        )
+        _vec.project(camera)
+        const inFront = _vec.z < 1
+        const sx = (_vec.x * 0.5 + 0.5) * w
+        const sy = (-_vec.y * 0.5 + 0.5) * h
+        const visible = inFront && sx > 60 && sx < w - 240 && sy > 90 && sy < h - 90 && revealOK
+        el.style.transform = `translate(${sx}px, ${sy}px) translate(-50%,-50%)`
+        el.classList.toggle('show', visible)
+      }
+    }
+
+    /* Camera animation */
+    let panMX = 0, panMY = 0
+    const onPanoMove = (e: MouseEvent) => {
+      panMX = e.clientX / window.innerWidth - 0.5
+      panMY = e.clientY / window.innerHeight - 0.5
+    }
+    window.addEventListener('mousemove', onPanoMove)
+    const onPanoResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+      renderer.setSize(window.innerWidth, window.innerHeight)
+    }
+    window.addEventListener('resize', onPanoResize)
+
+    const BASE_YAW = 0
+    let camYaw = BASE_YAW, camPitch = 0
+    let tgtYaw = BASE_YAW, tgtPitch = 0
+    const MAX_YAW = 0.60, MAX_PITCH = 0.18
+    let panT = 0
+    let panoRafId: number
+
+    function panoAnimate() {
+      panT += 0.0015
+      particlePoints.rotation.y = panT * 0.25
+
+      const sy = window.scrollY
+      const maxSy = Math.max(1, document.documentElement.scrollHeight - window.innerHeight)
+      const scrollT = Math.max(0, Math.min(1, sy / maxSy))
+      const secYaw = activeSectionYaw()
+      const idleMs = Date.now() - ((window as Window & { lastUserInputAt?: number }).lastUserInputAt ?? Date.now())
+      const idleDrift = idleMs > 12000 ? (idleMs - 12000) * 0.000015 : 0
+
+      tgtYaw   = BASE_YAW + panMX * -MAX_YAW + secYaw + idleDrift
+      tgtPitch = -panMY * MAX_PITCH - scrollT * 0.05
+      if (REDUCED_MOTION) { tgtYaw = BASE_YAW; tgtPitch = 0 }
+
+      camYaw   += (tgtYaw   - camYaw)   * 0.06
+      camPitch += (tgtPitch - camPitch) * 0.06
+      camera.rotation.y = camYaw
+      camera.rotation.x = camPitch
+
+      updateHotspots()
+      renderer.render(scene, camera)
+      panoRafId = requestAnimationFrame(panoAnimate)
+    }
+    panoRafId = requestAnimationFrame(panoAnimate)
+
     return () => {
       document.body.classList.remove('design-home')
       document.body.classList.remove('hov')
@@ -411,6 +623,18 @@ export default function DesignHomePage() {
       io.disconnect()
       document.documentElement.dir = 'ltr'
       document.body.style.overflow = ''
+      cancelAnimationFrame(panoRafId)
+      window.removeEventListener('mousemove', onPanoMove)
+      window.removeEventListener('resize', onPanoResize)
+      ;(['mousemove', 'scroll', 'touchstart', 'keydown'] as const).forEach(ev =>
+        window.removeEventListener(ev, trackIdle)
+      )
+      renderer.dispose()
+      panoGeo.dispose()
+      panoMat.dispose()
+      pGeo.dispose()
+      pMat.dispose()
+      spriteTex.dispose()
     }
   }, [])
 
@@ -419,6 +643,20 @@ export default function DesignHomePage() {
       <canvas className="site-canvas" id="heroCanvas"></canvas>
       <div className="site-tint"></div>
       <div className="site-glow"></div>
+
+      {/* Panorama hotspots — positioned via Three.js projection */}
+      <div className="hotspot" id="hs1" data-yaw="0" data-pitch="0.06">
+        <div className="pin"></div>
+        <div className="lbl">St. Joseph&apos;s Cathedral<span className="y">Harnet Avenue · 1923</span></div>
+      </div>
+      <div className="hotspot" id="hs2" data-yaw="-0.85" data-pitch="0.02">
+        <div className="pin"></div>
+        <div className="lbl">Asmara Skyline<span className="y">2,300 m · UNESCO Heritage</span></div>
+      </div>
+      <div className="hotspot" id="hs3" data-yaw="0.95" data-pitch="-0.04">
+        <div className="pin"></div>
+        <div className="lbl">Highland Horizon<span className="y">Eritrea · East Africa</span></div>
+      </div>
 
       {/* Loading curtain */}
       <div className="curtain" id="curtain">
