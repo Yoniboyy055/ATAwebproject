@@ -1,44 +1,10 @@
-import LovableHero from '@/components/lovable/LovableHero'
-import ModernTrustStrip from '@/components/ModernTrustStrip'
-import LovableServices from '@/components/lovable/LovableServices'
-import LovableDestinations from '@/components/lovable/LovableDestinations'
-import LovableTestimonials from '@/components/lovable/LovableTestimonials'
-import LovableTrust from '@/components/lovable/LovableTrust'
-import LovablePackages from '@/components/lovable/LovablePackages'
-import LovableFaqPreview from '@/components/lovable/LovableFaqPreview'
-import LovableFinalCta from '@/components/lovable/LovableFinalCta'
-import HowItWorksSection from '@/components/HowItWorksSection'
-import { generateOrganizationSchema, generateLocalBusinessSchema } from '@/lib/schema'
+import DesignHomePage from '@/components/DesignHomePage'
 
 export const metadata = {
-  title: 'Amanuel Travel — Travel Home & Beyond',
-  description: 'Flights, visa guidance, and human-led support for Eritrea/Ethiopia routes. Trusted by diaspora and local travelers.'
+  title: 'Amanuel Travel Agency · Asmara, Eritrea — Connecting Eritrea to the World',
+  description: 'Premium travel agency rooted in Asmara, Eritrea. Air tickets, diaspora travel, group coordination, and human consultation. Real people, real office, no bots.'
 }
 
 export default function Home() {
-  const organizationSchema = generateOrganizationSchema()
-  const localBusinessSchema = generateLocalBusinessSchema()
-
-  return (
-    <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-      />
-      <LovableHero />
-      <ModernTrustStrip />
-      <LovableServices />
-      <LovableDestinations />
-      <LovablePackages />
-      <HowItWorksSection />
-      <LovableTrust />
-      <LovableTestimonials />
-      <LovableFaqPreview />
-      <LovableFinalCta />
-    </main>
-  )
+  return <DesignHomePage />
 }
