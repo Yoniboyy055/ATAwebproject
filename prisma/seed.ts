@@ -1,89 +1,124 @@
-import { prisma } from '../lib/prisma'
+import { PrismaClient } from '@prisma/client'
 import { hashPassword } from '../lib/password'
 
+const prisma = new PrismaClient()
+
 async function main() {
-  console.log('🌱 Starting database seeding...')
+  console.log('Starting database seeding...')
 
-  // Create packages
-  const packages = await Promise.all([
-    prisma.package.create({
-      data: {
-        type: 'Local',
-        title: 'Complete Trip Support (Local)',
-        description: 'Fast, clear support for local travelers without confusion',
-        includes: [
-          'Flight options + best routing',
-          'Date flexibility planning (save money)',
-          'Visa/document checklist (guidance)',
-          'Hotel suggestions (if needed)',
-          'WhatsApp support until confirmed',
-        ],
-        note: 'Fast, clear support—no confusion.',
-      },
-    }),
-    prisma.package.create({
-      data: {
-        type: 'Local',
-        title: 'Family / Group Trip Builder',
-        description: 'Complete support for families and groups traveling together',
-        recommended: true,
-        includes: [
-          'Multi-passenger routing + timing',
-          'Seat/baggage guidance (airline-dependent)',
-          'Stopover planning',
-          'Document checklist for each traveler',
-          'Priority WhatsApp coordination',
-        ],
-      },
-    }),
-    prisma.package.create({
-      data: {
-        type: 'Diaspora',
-        title: 'Homecoming Plus (Diaspora)',
-        description: 'Best route planning for diaspora returning home',
-        includes: [
-          'Best route planning (min stops / best timing)',
-          'Arrival coordination guidance (pickup support if available)',
-          'Airport navigation support',
-          'Visa & entry document guidance',
-          'Post-arrival settling support (accommodation, sim card, etc)',
-        ],
-      },
-    }),
-    prisma.package.create({
-      data: {
-        type: 'Diaspora',
-        title: 'Business Traveler Package',
-        description: 'Premium package for business travel needs',
-        price: 599.99,
-        includes: [
-          'Flexible scheduling with business constraints',
-          'Direct flight prioritization',
-          'Hotel & transportation integration',
-          'Visa expedited processing',
-          '24/7 premium WhatsApp support',
-          'Travel insurance options',
-        ],
-      },
-    }),
-  ])
+  // Upsert packages (safe to re-run)
+  const packageData = [
+    {
+      type: 'Local',
+      title: 'Economy Package',
+      description: 'Affordable domestic travel package for budget-conscious travelers.',
+      price: 299,
+      recommended: false,
+      includes: [
+        'Economy class flight',
+        'Airport transfer',
+        'Travel documentation assistance',
+      ],
+      note: 'Available for most Ethiopian domestic routes',
+    },
+    {
+      type: 'Local',
+      title: 'Business Package',
+      description: 'Premium domestic travel experience with priority services.',
+      price: 599,
+      recommended: true,
+      includes: [
+        'Business class flight',
+        'Priority check-in',
+        'Airport lounge access',
+        'Airport transfer',
+        'Travel documentation assistance',
+        '24/7 support',
+      ],
+      note: 'Best value for frequent travelers',
+    },
+    {
+      type: 'Diaspora',
+      title: 'Standard Diaspora Package',
+      description:
+        'Complete travel solution for the Ethiopian diaspora community returning home.',
+      price: 899,
+      recommended: false,
+      includes: [
+        'International flight booking',
+        'Airport pickup & drop-off',
+        'Hotel recommendations',
+        'Travel documentation assistance',
+        'SIM card on arrival',
+      ],
+      note: 'Valid for Ethiopian diaspora worldwide',
+    },
+    {
+      type: 'Diaspora',
+      title: 'Premium Diaspora Package',
+      description:
+        'All-inclusive premium service for diaspora travelers. We handle everything.',
+      price: 1499,
+      recommended: true,
+      includes: [
+        'International business class flight',
+        'Priority airport services',
+        'Hotel booking assistance',
+        'Full travel documentation support',
+        'Dedicated agent',
+        '24/7 concierge support',
+        'SIM card & data plan on arrival',
+        'Currency exchange assistance',
+      ],
+      note: 'Our most comprehensive package for VIP diaspora travelers',
+    },
+  ]
 
-  console.log(`✅ Created ${packages.length} packages`)
+  const packages = await Promise.all(
+    packageData.map(async (pkg) => {
+      const existing = await prisma.package.findFirst({ where: { title: pkg.title } })
+      let result
+      if (existing) {
+        result = await prisma.package.update({
+          where: { id: existing.id },
+          data: {
+            type: pkg.type,
+            description: pkg.description,
+            price: pkg.price,
+            recommended: pkg.recommended,
+            includes: pkg.includes,
+            note: pkg.note,
+          },
+        })
+        console.log(`Updated package: "${result.title}" (${result.type})`)
+      } else {
+        result = await prisma.package.create({ data: pkg })
+        console.log(`Created package: "${result.title}" (${result.type})`)
+      }
+      return result
+    })
+  )
+
+  console.log(`Upserted ${packages.length} packages`)
 
   // Create demo users
   const demoPassword = await hashPassword('DemoPassword123')
 
   const users = await Promise.all([
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { email: 'demo@example.com' },
+      update: {},
+      create: {
         email: 'demo@example.com',
         password: demoPassword,
         name: 'Demo User',
         phone: '+1234567890',
       },
     }),
-    prisma.user.create({
-      data: {
+    prisma.user.upsert({
+      where: { email: 'john@example.com' },
+      update: {},
+      create: {
         email: 'john@example.com',
         password: demoPassword,
         name: 'John Doe',
@@ -92,7 +127,7 @@ async function main() {
     }),
   ])
 
-  console.log(`✅ Created ${users.length} demo users`)
+  console.log(`Upserted ${users.length} demo users`)
 
   // Create sample bookings
   const bookings = await Promise.all([
@@ -120,7 +155,7 @@ async function main() {
     }),
   ])
 
-  console.log(`✅ Created ${bookings.length} sample bookings`)
+  console.log(`Created ${bookings.length} sample bookings`)
 
   // Create sample quotes
   const quotes = await Promise.all([
@@ -136,23 +171,23 @@ async function main() {
     }),
   ])
 
-  console.log(`✅ Created ${quotes.length} sample quotes`)
+  console.log(`Created ${quotes.length} sample quotes`)
 
-  // Create newsletter subscriptions
-  await prisma.newsletter.create({
-    data: {
-      email: 'subscriber@example.com',
-    },
+  // Create newsletter subscription
+  await prisma.newsletter.upsert({
+    where: { email: 'subscriber@example.com' },
+    update: {},
+    create: { email: 'subscriber@example.com' },
   })
 
-  console.log('✅ Created newsletter subscription')
+  console.log('Upserted newsletter subscription')
 
-  console.log('🎉 Database seeding completed successfully!')
+  console.log('Database seeding completed successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seeding failed:', e)
+    console.error('Seeding failed:', e)
     process.exit(1)
   })
   .finally(async () => {

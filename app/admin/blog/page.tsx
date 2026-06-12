@@ -1,232 +1,431 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface BlogPost {
+  id: string
   slug: string
   title: string
   excerpt: string
+  content: string
   author: string
+  category: string
+  tags: string[]
   readTime: number
   published: boolean
+  featured: boolean
+  publishedAt: string | null
   createdAt: string
-  updatedAt: string
+}
+
+const navy = '#0A1628'
+const gold = '#C9A84C'
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '8px 12px',
+  border: '1px solid #e2e8f0',
+  borderRadius: 8,
+  fontSize: 14,
+  fontFamily: 'inherit',
+  color: navy,
+  outline: 'none',
+  boxSizing: 'border-box',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  fontWeight: 600,
+  color: '#64748b',
+  marginBottom: 4,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+}
+
+const EMPTY_FORM = {
+  title: '',
+  excerpt: '',
+  content: '',
+  author: 'Amanuel Travel',
+  category: 'travel',
+  tags: '',
+  readTime: 5,
 }
 
 export default function BlogAdminPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
-  const [formData, setFormData] = useState({
-    title: '',
-    excerpt: '',
-    author: 'Amanuel Travel',
-    readTime: 5,
-  })
+  const [formData, setFormData] = useState({ ...EMPTY_FORM })
+  const [saving, setSaving] = useState(false)
+  const [editPost, setEditPost] = useState<BlogPost | null>(null)
+  const [editForm, setEditForm] = useState({ ...EMPTY_FORM })
 
-  useEffect(() => {
-    fetchPosts()
-  }, [])
-
-  const fetchPosts = async () => {
+  const load = useCallback(async () => {
+    setLoading(true)
     try {
-      const response = await fetch('/api/admin/blog')
-      if (response.ok) {
-        const data = await response.json()
-        setPosts(data.posts || [])
+      const res = await fetch('/api/admin/blog')
+      if (res.ok) {
+        const d = await res.json()
+        setPosts(d.posts || [])
       }
-    } catch (error) {
-      console.error('Failed to fetch posts:', error)
+    } catch (err) {
+      console.error('Failed to fetch posts:', err)
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const handleCreatePost = async (e: React.FormEvent) => {
+  useEffect(() => { load() }, [load])
+
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSaving(true)
     try {
-      const response = await fetch('/api/admin/blog', {
+      const res = await fetch('/api/admin/blog', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          title: formData.title,
+          excerpt: formData.excerpt,
+          content: formData.content,
+          author: formData.author,
+          category: formData.category,
+          tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
+          readTime: Number(formData.readTime),
+        }),
       })
-      if (response.ok) {
-        fetchPosts()
-        setFormData({
-          title: '',
-          excerpt: '',
-          author: 'Amanuel Travel',
-          readTime: 5,
-        })
+      if (res.ok) {
+        setFormData({ ...EMPTY_FORM })
         setShowForm(false)
+        load()
       }
-    } catch (error) {
-      console.error('Failed to create post:', error)
+    } catch (err) {
+      console.error('Failed to create post:', err)
+    } finally {
+      setSaving(false)
     }
   }
 
-  const handleTogglePublish = async (slug: string, currentState: boolean) => {
+  const handleTogglePublish = async (slug: string, current: boolean) => {
     try {
-      const response = await fetch(`/api/admin/blog/${slug}`, {
+      await fetch(`/api/admin/blog/${slug}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ published: !currentState }),
+        body: JSON.stringify({ published: !current }),
       })
-      if (response.ok) {
-        fetchPosts()
-      }
-    } catch (error) {
-      console.error('Failed to update post:', error)
+      setPosts(prev => prev.map(p => p.slug === slug ? { ...p, published: !current } : p))
+    } catch (err) {
+      console.error('Failed to toggle publish:', err)
     }
   }
 
-  const handleDeletePost = async (slug: string) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return
+  const handleDelete = async (slug: string) => {
+    if (!window.confirm('Delete this post?')) return
     try {
-      const response = await fetch(`/api/admin/blog/${slug}`, {
-        method: 'DELETE',
-      })
-      if (response.ok) {
-        fetchPosts()
-      }
-    } catch (error) {
-      console.error('Failed to delete post:', error)
+      await fetch(`/api/admin/blog/${slug}`, { method: 'DELETE' })
+      setPosts(prev => prev.filter(p => p.slug !== slug))
+    } catch (err) {
+      console.error('Failed to delete post:', err)
     }
   }
 
-  const publishedCount = posts.filter((p) => p.published).length
-  const draftCount = posts.filter((p) => !p.published).length
+  const openEdit = (post: BlogPost) => {
+    setEditPost(post)
+    setEditForm({
+      title: post.title,
+      excerpt: post.excerpt,
+      content: post.content,
+      author: post.author,
+      category: post.category,
+      tags: post.tags.join(', '),
+      readTime: post.readTime,
+    })
+  }
+
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editPost) return
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/admin/blog/${editPost.slug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: editForm.title,
+          excerpt: editForm.excerpt,
+          content: editForm.content,
+          author: editForm.author,
+          category: editForm.category,
+          tags: editForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+          readTime: Number(editForm.readTime),
+        }),
+      })
+      if (res.ok) {
+        setEditPost(null)
+        load()
+      }
+    } catch (err) {
+      console.error('Failed to update post:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const publishedCount = posts.filter(p => p.published).length
+  const draftCount = posts.filter(p => !p.published).length
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Blog Management</h1>
+    <div>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: navy, margin: '0 0 4px' }}>Blog Management</h1>
+          <p style={{ color: '#64748b', fontSize: 14, margin: 0 }}>Create and manage blog posts</p>
+        </div>
         <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium"
+          onClick={() => setShowForm(v => !v)}
+          style={{
+            padding: '8px 18px',
+            borderRadius: 8,
+            border: `2px solid ${gold}`,
+            background: showForm ? gold : 'transparent',
+            color: showForm ? '#fff' : gold,
+            fontWeight: 600,
+            fontSize: 14,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
         >
-          {showForm ? 'Cancel' : '+ New Post'}
+          {showForm ? '✕ Cancel' : '+ New Post'}
         </button>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-700">Total Posts</p>
-          <p className="text-3xl font-bold text-blue-900">{posts.length}</p>
-        </div>
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <p className="text-sm text-green-700">Published</p>
-          <p className="text-3xl font-bold text-green-900">{publishedCount}</p>
-        </div>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-sm text-yellow-700">Drafts</p>
-          <p className="text-3xl font-bold text-yellow-900">{draftCount}</p>
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+        {[
+          { label: 'Total Posts', value: posts.length, color: '#3b82f6', bg: '#eff6ff' },
+          { label: 'Published', value: publishedCount, color: '#10b981', bg: '#d1fae5' },
+          { label: 'Drafts', value: draftCount, color: '#f59e0b', bg: '#fef3c7' },
+        ].map(card => (
+          <div key={card.label} style={{ background: '#fff', borderRadius: 12, border: `1px solid ${card.bg}`, padding: '18px 20px' }}>
+            <p style={{ fontSize: 12, color: card.color, fontWeight: 600, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{card.label}</p>
+            <p style={{ fontSize: 32, fontWeight: 700, color: navy, margin: 0 }}>{card.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Create Form */}
       {showForm && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-4">Create New Post</h2>
-          <form onSubmit={handleCreatePost} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Post title"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt</label>
-              <textarea
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Brief summary of the post"
-                rows={3}
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 24, marginBottom: 24 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: navy, margin: '0 0 20px' }}>Create New Post</h2>
+          <form onSubmit={handleCreate}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
-                <input
-                  type="text"
-                  value={formData.author}
-                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <label style={labelStyle}>Title *</label>
+                <input type="text" required value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} placeholder="Post title" style={inputStyle} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Read Time (min)</label>
-                <input
-                  type="number"
-                  value={formData.readTime}
-                  onChange={(e) => setFormData({ ...formData, readTime: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min="1"
-                />
+                <label style={labelStyle}>Author</label>
+                <input type="text" value={formData.author} onChange={e => setFormData({ ...formData, author: e.target.value })} style={inputStyle} />
               </div>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium"
-            >
-              Create Post
-            </button>
+            <div style={{ marginBottom: 16 }}>
+              <label style={labelStyle}>Excerpt *</label>
+              <textarea required rows={2} value={formData.excerpt} onChange={e => setFormData({ ...formData, excerpt: e.target.value })} placeholder="Brief summary" style={{ ...inputStyle, resize: 'vertical' }} />
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={labelStyle}>Content *</label>
+              <textarea required rows={8} value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} placeholder="Full article content (markdown supported)" style={{ ...inputStyle, resize: 'vertical' }} />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+              <div>
+                <label style={labelStyle}>Category</label>
+                <select value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} style={inputStyle}>
+                  <option value="travel">Travel</option>
+                  <option value="culture">Culture</option>
+                  <option value="visa">Visa</option>
+                  <option value="tips">Tips</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Tags (comma-separated)</label>
+                <input type="text" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} placeholder="ethiopia, travel" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Read Time (min)</label>
+                <input type="number" min={1} value={formData.readTime} onChange={e => setFormData({ ...formData, readTime: parseInt(e.target.value) || 5 })} style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                type="submit"
+                disabled={saving}
+                style={{ padding: '9px 22px', borderRadius: 8, border: 'none', background: navy, color: '#fff', fontWeight: 600, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}
+              >
+                {saving ? 'Saving…' : 'Create Post'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                style={{ padding: '9px 22px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', color: '#64748b', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         </div>
       )}
 
-      {/* Posts Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Edit Modal */}
+      {editPost && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#fff', borderRadius: 12, padding: 28, width: '100%', maxWidth: 700, maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: navy, margin: '0 0 20px' }}>Edit Post</h2>
+            <form onSubmit={handleEdit}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                <div>
+                  <label style={labelStyle}>Title *</label>
+                  <input type="text" required value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Author</label>
+                  <input type="text" value={editForm.author} onChange={e => setEditForm({ ...editForm, author: e.target.value })} style={inputStyle} />
+                </div>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={labelStyle}>Excerpt *</label>
+                <textarea required rows={2} value={editForm.excerpt} onChange={e => setEditForm({ ...editForm, excerpt: e.target.value })} style={{ ...inputStyle, resize: 'vertical' }} />
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={labelStyle}>Content *</label>
+                <textarea required rows={8} value={editForm.content} onChange={e => setEditForm({ ...editForm, content: e.target.value })} style={{ ...inputStyle, resize: 'vertical' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+                <div>
+                  <label style={labelStyle}>Category</label>
+                  <select value={editForm.category} onChange={e => setEditForm({ ...editForm, category: e.target.value })} style={inputStyle}>
+                    <option value="travel">Travel</option>
+                    <option value="culture">Culture</option>
+                    <option value="visa">Visa</option>
+                    <option value="tips">Tips</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Tags (comma-separated)</label>
+                  <input type="text" value={editForm.tags} onChange={e => setEditForm({ ...editForm, tags: e.target.value })} style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>Read Time (min)</label>
+                  <input type="number" min={1} value={editForm.readTime} onChange={e => setEditForm({ ...editForm, readTime: parseInt(e.target.value) || 5 })} style={inputStyle} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  style={{ padding: '9px 22px', borderRadius: 8, border: 'none', background: navy, color: '#fff', fontWeight: 600, fontSize: 14, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}
+                >
+                  {saving ? 'Saving…' : 'Save Changes'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditPost(null)}
+                  style={{ padding: '9px 22px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff', color: '#64748b', fontWeight: 600, fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Posts Table */}
+      <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
         {loading ? (
-          <div className="col-span-full text-center text-gray-500 py-8">Loading posts...</div>
+          <div style={{ padding: 48, textAlign: 'center', color: '#94a3b8' }}>Loading…</div>
         ) : posts.length === 0 ? (
-          <div className="col-span-full text-center text-gray-500 py-8">No posts found</div>
+          <div style={{ padding: 48, textAlign: 'center', color: '#94a3b8' }}>
+            No posts yet.{' '}
+            <button onClick={() => setShowForm(true)} style={{ color: gold, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14 }}>
+              Create the first one.
+            </button>
+          </div>
         ) : (
-          posts.map((post) => (
-            <div key={post.slug} className="bg-white rounded-lg shadow p-4 space-y-3">
-              <div>
-                <h3 className="font-bold text-lg text-gray-900 line-clamp-2">{post.title}</h3>
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">{post.excerpt}</p>
-              </div>
-              <div className="flex justify-between items-center text-xs text-gray-500">
-                <span>{post.author}</span>
-                <span>{post.readTime} min read</span>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <span
-                  className={`px-2 py-1 rounded text-xs font-bold ${
-                    post.published
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}
-                >
-                  {post.published ? 'Published' : 'Draft'}
-                </span>
-              </div>
-              <div className="border-t pt-3 flex gap-2">
-                <button
-                  onClick={() => handleTogglePublish(post.slug, post.published)}
-                  className="flex-1 text-sm px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 font-medium"
-                >
-                  {post.published ? 'Unpublish' : 'Publish'}
-                </button>
-                <button
-                  onClick={() => handleDeletePost(post.slug)}
-                  className="flex-1 text-sm px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 font-medium"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#f8fafc' }}>
+                {['Title', 'Author', 'Category', 'Read Time', 'Status', 'Date', 'Actions'].map(h => (
+                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#64748b', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {posts.map(post => (
+                <tr key={post.slug} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '13px 16px', fontSize: 14, fontWeight: 600, color: navy, maxWidth: 240 }}>
+                    {post.title}
+                    {post.excerpt && <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 400, marginTop: 2 }}>{post.excerpt.slice(0, 60)}{post.excerpt.length > 60 ? '…' : ''}</div>}
+                  </td>
+                  <td style={{ padding: '13px 16px', fontSize: 13, color: '#475569' }}>{post.author}</td>
+                  <td style={{ padding: '13px 16px', fontSize: 13, color: '#475569', textTransform: 'capitalize' }}>{post.category}</td>
+                  <td style={{ padding: '13px 16px', fontSize: 13, color: '#94a3b8' }}>{post.readTime} min</td>
+                  <td style={{ padding: '13px 16px' }}>
+                    <span style={{
+                      display: 'inline-block',
+                      padding: '3px 10px',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: post.published ? '#10b981' : '#64748b',
+                      background: post.published ? '#d1fae5' : '#f1f5f9',
+                    }}>
+                      {post.published ? 'Published' : 'Draft'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '13px 16px', fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                    {new Date(post.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </td>
+                  <td style={{ padding: '13px 16px' }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      <button
+                        onClick={() => handleTogglePublish(post.slug, post.published)}
+                        style={{
+                          padding: '4px 10px',
+                          fontSize: 12,
+                          borderRadius: 6,
+                          border: `1px solid ${post.published ? '#94a3b8' : '#10b981'}`,
+                          background: 'transparent',
+                          color: post.published ? '#94a3b8' : '#10b981',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {post.published ? 'Unpublish' : 'Publish'}
+                      </button>
+                      <button
+                        onClick={() => openEdit(post)}
+                        style={{ padding: '4px 10px', fontSize: 12, borderRadius: 6, border: `1px solid ${gold}`, background: 'transparent', color: gold, cursor: 'pointer', fontFamily: 'inherit' }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(post.slug)}
+                        style={{ padding: '4px 10px', fontSize: 12, borderRadius: 6, border: '1px solid #fca5a5', background: 'transparent', color: '#ef4444', cursor: 'pointer', fontFamily: 'inherit' }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

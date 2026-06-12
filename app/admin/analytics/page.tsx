@@ -3,195 +3,159 @@
 import { useState, useEffect, useCallback } from 'react'
 
 interface AnalyticsData {
-  totalEvents: number
-  uniqueUsers: number
-  topPages: Array<{
-    page: string
-    views: number
-    avgTimeOnPage: number
-  }>
-  conversions: {
-    bookings: number
-    newsletterSignups: number
-    chatEngagements: number
-  }
-  abtestResults: Array<{
-    testName: string
-    variantA: {
-      name: string
-      conversions: number
-      visitors: number
-    }
-    variantB: {
-      name: string
-      conversions: number
-      visitors: number
-    }
+  totalEnquiries: number
+  newEnquiries: number
+  totalBookingRequests: number
+  totalUsers: number
+  newsletterSignups: number
+  revenue: number
+  recentEnquiries: Array<{
+    id: string
+    name: string
+    service: string
+    status: string
+    createdAt: string
   }>
 }
+
+const navy = '#0A1628'
+const gold = '#C9A84C'
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [dateRange, setDateRange] = useState('7d')
+  const [error, setError] = useState(false)
 
-  const fetchAnalytics = useCallback(async () => {
+  const load = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
-      const response = await fetch(`/api/admin/analytics?range=${dateRange}`)
-      if (response.ok) {
-        const result = await response.json()
-        setData(result.data)
+      const res = await fetch('/api/admin/analytics')
+      if (res.ok) {
+        const d = await res.json()
+        setData(d)
       } else {
-        console.error('Analytics API error:', response.status)
-        setData(null)
+        setError(true)
       }
-    } catch (error) {
-      console.error('Failed to fetch analytics:', error)
-      setData(null)
+    } catch (err) {
+      console.error('Failed to fetch analytics:', err)
+      setError(true)
     } finally {
       setLoading(false)
     }
-  }, [dateRange])
+  }, [])
 
-  useEffect(() => {
-    fetchAnalytics()
-  }, [fetchAnalytics])
+  useEffect(() => { load() }, [load])
 
-  const conversionRate = data
-    ? ((data.conversions.bookings / data.uniqueUsers) * 100).toFixed(2)
-    : '0'
+  const STATUS_COLORS: Record<string, { color: string; bg: string }> = {
+    new: { color: '#f59e0b', bg: '#fef3c7' },
+    read: { color: '#3b82f6', bg: '#eff6ff' },
+    replied: { color: '#10b981', bg: '#d1fae5' },
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Analytics & Insights</h1>
-        <select
-          aria-label="Date range"
-          value={dateRange}
-          onChange={(e) => setDateRange(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: navy, margin: '0 0 4px' }}>Analytics</h1>
+          <p style={{ color: '#64748b', fontSize: 14, margin: 0 }}>Real database counts and recent activity</p>
+        </div>
+        <button
+          onClick={load}
+          style={{ padding: '7px 16px', borderRadius: 20, border: '2px solid #e2e8f0', background: '#fff', color: '#64748b', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
         >
-          <option value="7d">Last 7 days</option>
-          <option value="30d">Last 30 days</option>
-          <option value="90d">Last 90 days</option>
-          <option value="1y">Last year</option>
-        </select>
+          ↻ Refresh
+        </button>
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-gray-500">Loading analytics...</div>
-      ) : data ? (
+        <div style={{ padding: 48, textAlign: 'center', color: '#94a3b8' }}>Loading…</div>
+      ) : error || !data ? (
+        <div style={{ padding: 48, textAlign: 'center', color: '#94a3b8', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          Failed to load analytics.{' '}
+          <button onClick={load} style={{ color: gold, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 14 }}>
+            Try again
+          </button>
+        </div>
+      ) : (
         <>
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-700">Total Events</p>
-              <p className="text-3xl font-bold text-blue-900">{data.totalEvents.toLocaleString()}</p>
-            </div>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <p className="text-sm text-purple-700">Unique Visitors</p>
-              <p className="text-3xl font-bold text-purple-900">{data.uniqueUsers.toLocaleString()}</p>
-            </div>
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="text-sm text-green-700">Booking Conversions</p>
-              <p className="text-3xl font-bold text-green-900">{data.conversions.bookings}</p>
-              <p className="text-xs text-green-600 mt-1">{conversionRate}% conversion rate</p>
-            </div>
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-              <p className="text-sm text-orange-700">Newsletter Signups</p>
-              <p className="text-3xl font-bold text-orange-900">{data.conversions.newsletterSignups}</p>
-            </div>
+          {/* Stat Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+            {[
+              { label: 'Total Enquiries', value: data.totalEnquiries, color: '#3b82f6' },
+              { label: 'New Enquiries', value: data.newEnquiries, color: '#f59e0b' },
+              { label: 'Booking Requests', value: data.totalBookingRequests, color: gold },
+              { label: 'Total Users', value: data.totalUsers, color: '#7c3aed' },
+              { label: 'Newsletter Signups', value: data.newsletterSignups, color: '#10b981' },
+              { label: 'Revenue (USD)', value: `$${(data.revenue || 0).toLocaleString()}`, color: navy },
+            ].map(card => (
+              <div key={card.label} style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '20px 24px' }}>
+                <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600, margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {card.label}
+                </p>
+                <p style={{ fontSize: 34, fontWeight: 700, color: card.color, margin: 0 }}>
+                  {card.value}
+                </p>
+              </div>
+            ))}
           </div>
 
-          {/* Top Pages */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">Top Pages</h2>
-            <div className="space-y-3">
-              {data.topPages.map((page, idx) => (
-                <div key={idx} className="flex items-center justify-between pb-3 border-b last:border-b-0">
-                  <div>
-                    <p className="font-medium text-gray-900">{page.page}</p>
-                    <p className="text-sm text-gray-600">{page.avgTimeOnPage.toFixed(1)}s avg time</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold text-gray-900">{page.views}</p>
-                    <p className="text-xs text-gray-500">views</p>
-                  </div>
-                </div>
-              ))}
+          {/* Recent Enquiries */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            <div style={{ padding: '18px 20px', borderBottom: '1px solid #f1f5f9' }}>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: navy, margin: 0 }}>Recent Enquiries</h2>
             </div>
+            {!data.recentEnquiries || data.recentEnquiries.length === 0 ? (
+              <div style={{ padding: 32, textAlign: 'center', color: '#94a3b8' }}>No recent enquiries.</div>
+            ) : (
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
+                    {['Name', 'Service', 'Status', 'Date'].map(h => (
+                      <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#64748b', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.recentEnquiries.map(enq => {
+                    const sc = STATUS_COLORS[enq.status] || { color: '#64748b', bg: '#f1f5f9' }
+                    return (
+                      <tr key={enq.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '12px 16px', fontSize: 14, fontWeight: 600, color: navy }}>{enq.name}</td>
+                        <td style={{ padding: '12px 16px', fontSize: 13, color: '#475569' }}>{enq.service}</td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '3px 10px',
+                            borderRadius: 12,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: sc.color,
+                            background: sc.bg,
+                          }}>
+                            {enq.status.charAt(0).toUpperCase() + enq.status.slice(1)}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px 16px', fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                          {new Date(enq.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
 
-          {/* A/B Test Results */}
-          {data.abtestResults.length > 0 && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-bold mb-4">A/B Test Results</h2>
-              <div className="space-y-6">
-                {data.abtestResults.map((test, idx) => {
-                  const variantARate = (test.variantA.conversions / test.variantA.visitors) * 100
-                  const variantBRate = (test.variantB.conversions / test.variantB.visitors) * 100
-                  const winner = variantARate > variantBRate ? 'A' : variantBRate > variantARate ? 'B' : 'Tie'
-
-                  return (
-                    <div key={idx} className="border-b last:border-b-0 pb-6 last:pb-0">
-                      <h3 className="font-bold text-gray-900 mb-4">{test.testName}</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <p className="font-medium text-gray-900 mb-2">{test.variantA.name}</p>
-                          <p className="text-2xl font-bold text-blue-600 mb-1">
-                            {variantARate.toFixed(1)}%
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {test.variantA.conversions} conversions / {test.variantA.visitors} visitors
-                          </p>
-                          {winner === 'A' && (
-                            <p className="text-xs font-bold text-green-600 mt-2">✓ Winner</p>
-                          )}
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <p className="font-medium text-gray-900 mb-2">{test.variantB.name}</p>
-                          <p className="text-2xl font-bold text-purple-600 mb-1">
-                            {variantBRate.toFixed(1)}%
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {test.variantB.conversions} conversions / {test.variantB.visitors} visitors
-                          </p>
-                          {winner === 'B' && (
-                            <p className="text-xs font-bold text-green-600 mt-2">✓ Winner</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Chat Engagement */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">Channel Engagement</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-gray-600 mb-2">Chat Engagements</p>
-                <p className="text-3xl font-bold text-gray-900">{data.conversions.chatEngagements}</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-gray-600 mb-2">WhatsApp Clicks</p>
-                <p className="text-3xl font-bold text-gray-900">-</p>
-                <p className="text-xs text-gray-500 mt-1">Track via GTM</p>
-              </div>
-              <div className="border rounded-lg p-4">
-                <p className="text-sm text-gray-600 mb-2">Form Completions</p>
-                <p className="text-3xl font-bold text-gray-900">-</p>
-                <p className="text-xs text-gray-500 mt-1">Track via GTM</p>
-              </div>
-            </div>
+          {/* Note */}
+          <div style={{ marginTop: 20, padding: '14px 18px', background: '#f8fafc', borderRadius: 10, border: '1px solid #e2e8f0' }}>
+            <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+              <strong style={{ color: navy }}>Note:</strong> Real-time event tracking (page views, sessions) requires Google Analytics or similar integration.
+            </p>
           </div>
         </>
-      ) : (
-        <div className="text-center py-8 text-gray-500">Failed to load analytics</div>
       )}
     </div>
   )

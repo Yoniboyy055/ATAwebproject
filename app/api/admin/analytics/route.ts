@@ -1,65 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { isAdmin } from '@/lib/admin'
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-// Mock analytics data
-const mockAnalytics = {
-  totalEvents: 12450,
-  uniqueUsers: 2340,
-  topPages: [
-    { page: '/packages', views: 3420, avgTimeOnPage: 245 },
-    { page: '/blog', views: 2810, avgTimeOnPage: 180 },
-    { page: '/destinations', views: 2135, avgTimeOnPage: 165 },
-    { page: '/contact', views: 1890, avgTimeOnPage: 120 },
-    { page: '/', views: 1650, avgTimeOnPage: 95 },
-  ],
-  conversions: {
-    bookings: 34,
-    newsletterSignups: 128,
-    chatEngagements: 456,
-  },
-  abtestResults: [
-    {
-      testName: 'Mobile Footer CTA',
-      variantA: {
-        name: 'Need Help Planning Your Trip?',
-        conversions: 12,
-        visitors: 420,
-      },
-      variantB: {
-        name: 'Get Expert Travel Help',
-        conversions: 18,
-        visitors: 380,
-      },
-    },
-  ],
-}
-
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const [
+      totalEnquiries, newEnquiries,
+      totalBookingRequests, totalUsers,
+      newsletterSignups, revenueResult, recentEnquiries
+    ] = await Promise.allSettled([
+      prisma.enquiry.count(),
+      prisma.enquiry.count({ where: { status: 'new' } }),
+      prisma.bookingRequest.count(),
+      prisma.user.count(),
+      prisma.newsletter.count(),
+      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'completed' } }),
+      prisma.enquiry.findMany({ take: 5, orderBy: { createdAt: 'desc' }, select: { id: true, name: true, service: true, status: true, createdAt: true } }),
+    ])
 
-    if (!isAdmin(session.user.email)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const revenue = revenueResult.status === 'fulfilled' ? (revenueResult.value._sum.amount ?? 0) : 0
+    const recent = recentEnquiries.status === 'fulfilled' ? recentEnquiries.value : []
 
-    const range = request.nextUrl.searchParams.get('range') || '7d'
-
-    // In production, calculate based on date range
-    // For now, return mock data
     return NextResponse.json({
-      data: mockAnalytics,
-      range,
+      totalEnquiries: totalEnquiries.status === 'fulfilled' ? totalEnquiries.value : 0,
+      newEnquiries: newEnquiries.status === 'fulfilled' ? newEnquiries.value : 0,
+      totalBookingRequests: totalBookingRequests.status === 'fulfilled' ? totalBookingRequests.value : 0,
+      totalUsers: totalUsers.status === 'fulfilled' ? totalUsers.value : 0,
+      newsletterSignups: newsletterSignups.status === 'fulfilled' ? newsletterSignups.value : 0,
+      revenue,
+      recentEnquiries: recent,
     })
-  } catch (error) {
-    console.error('Error fetching analytics:', error)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+  } catch (err) {
+    console.error('[admin/analytics] error:', err)
+    return NextResponse.json({ totalEnquiries: 0, newEnquiries: 0, totalBookingRequests: 0, totalUsers: 0, newsletterSignups: 0, revenue: 0, recentEnquiries: [] })
   }
 }

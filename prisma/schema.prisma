@@ -233,6 +233,45 @@ model Newsletter {
   @@map("newsletters")
 }
 
+// Enquiry from the contact form on the homepage
+model Enquiry {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  email     String
+  service   String
+  details   String?  @db.Text
+  status    String   @default("new") // "new", "read", "replied"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("enquiries")
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String?   @db.Text
+  content     String    @db.Text
+  author      String    @default("Amanuel Travel")
+  category    String    @default("travel")
+  tags        String[]
+  image       String?
+  published   Boolean   @default(false)
+  featured    Boolean   @default(false)
+  readTime    Int       @default(5)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([published])
+  @@map("blog_posts")
+}
+
 // Booking request from frontend form (public visitors)
 model BookingRequest {
   id            String   @id @default(cuid())
