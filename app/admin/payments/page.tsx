@@ -28,7 +28,6 @@ export default function PaymentsAdminPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [apiTotal, setApiTotal] = useState<number | null>(null)
-  const [apiCompleted, setApiCompleted] = useState<number | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -39,7 +38,6 @@ export default function PaymentsAdminPage() {
         const d = await res.json()
         setPayments(d.payments || [])
         if (d.total !== undefined) setApiTotal(d.total)
-        if (d.completed !== undefined) setApiCompleted(d.completed)
       }
     } catch (err) {
       console.error('Failed to fetch payments:', err)
