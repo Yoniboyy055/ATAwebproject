@@ -6,13 +6,16 @@ export const runtime = 'nodejs'
 
 export async function GET() {
   try {
-    const [totalBookings, pendingBookings, totalUsers, totalEnquiries, newEnquiries] = await Promise.allSettled([
+    const [totalBookings, pendingBookings, totalUsers, totalEnquiries, newEnquiries, revenueResult] = await Promise.allSettled([
       prisma.bookingRequest.count(),
       prisma.bookingRequest.count({ where: { status: 'new' } }),
       prisma.user.count(),
       prisma.enquiry.count(),
       prisma.enquiry.count({ where: { status: 'new' } }),
+      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'completed' } }),
     ])
+
+    const totalRevenue = revenueResult.status === 'fulfilled' ? (revenueResult.value._sum.amount ?? 0) : 0
 
     return NextResponse.json({
       totalBookings: totalBookings.status === 'fulfilled' ? totalBookings.value : 0,
@@ -20,7 +23,7 @@ export async function GET() {
       totalUsers: totalUsers.status === 'fulfilled' ? totalUsers.value : 0,
       totalEnquiries: totalEnquiries.status === 'fulfilled' ? totalEnquiries.value : 0,
       newEnquiries: newEnquiries.status === 'fulfilled' ? newEnquiries.value : 0,
-      totalRevenue: 0,
+      totalRevenue,
     })
   } catch (err) {
     console.error('[admin/stats] error:', err)
