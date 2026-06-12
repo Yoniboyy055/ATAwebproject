@@ -1,35 +1,79 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { blogPosts, BlogPost } from '@/lib/blog'
+import { useState, useEffect } from 'react'
+
+interface BlogPost {
+  id: string
+  slug: string
+  title: string
+  excerpt: string
+  author: string
+  category: string
+  tags: string[]
+  image?: string
+  readTime: number
+  publishedAt: string | null
+  createdAt: string
+}
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/blog')
+        if (res.ok) {
+          const d = await res.json()
+          setPosts(d.posts || [])
+        }
+      } catch (err) {
+        console.error('Failed to fetch blog posts:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
 
   const categories = [
     { id: 'destination', label: 'Destinations' },
     { id: 'travel-tips', label: 'Travel Tips' },
     { id: 'visa', label: 'Visa & Documents' },
     { id: 'cultural', label: 'Culture' },
+    { id: 'travel', label: 'Travel' },
+    { id: 'culture', label: 'Culture' },
+    { id: 'tips', label: 'Tips' },
   ]
 
-  let filteredPosts = blogPosts
+  // Deduplicate categories
+  const uniqueCategories = categories.filter((cat, idx, arr) =>
+    arr.findIndex(c => c.id === cat.id) === idx
+  )
+
+  let filteredPosts = posts.filter(p => p.publishedAt !== null)
 
   if (searchQuery) {
     filteredPosts = filteredPosts.filter(
-      (post) =>
+      post =>
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }
 
   if (selectedCategory) {
-    filteredPosts = filteredPosts.filter((post) => post.category === selectedCategory)
+    filteredPosts = filteredPosts.filter(post => post.category === selectedCategory)
   }
 
-  filteredPosts.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+  filteredPosts.sort((a, b) => {
+    const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0
+    const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0
+    return dateB - dateA
+  })
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -68,7 +112,7 @@ export default function BlogPage() {
             >
               All Articles
             </button>
-            {categories.map((cat) => (
+            {uniqueCategories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
@@ -84,31 +128,43 @@ export default function BlogPage() {
           </div>
         </div>
 
-        {/* Results Info */}
-        <p className="text-slate-600 mb-6">
-          Showing {filteredPosts.length} article{filteredPosts.length !== 1 ? 's' : ''}
-        </p>
-
-        {/* Blog Posts Grid */}
-        {filteredPosts.length > 0 ? (
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
-            {filteredPosts.map((post) => (
-              <BlogCard key={post.id} post={post} />
-            ))}
-          </div>
+        {loading ? (
+          <div className="text-center py-12 text-slate-500">Loading articles…</div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-xl text-slate-600 mb-4">No articles found</p>
-            <button
-              onClick={() => {
-                setSearchQuery('')
-                setSelectedCategory(null)
-              }}
-              className="text-emerald-600 hover:underline font-medium"
-            >
-              Clear filters
-            </button>
-          </div>
+          <>
+            {/* Results Info */}
+            <p className="text-slate-600 mb-6">
+              Showing {filteredPosts.length} article{filteredPosts.length !== 1 ? 's' : ''}
+            </p>
+
+            {/* Blog Posts Grid */}
+            {filteredPosts.length > 0 ? (
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-1">
+                {filteredPosts.map((post) => (
+                  <BlogCard key={post.id} post={post} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                {posts.length === 0 ? (
+                  <p className="text-xl text-slate-600">No articles published yet. Check back soon!</p>
+                ) : (
+                  <>
+                    <p className="text-xl text-slate-600 mb-4">No articles found</p>
+                    <button
+                      onClick={() => {
+                        setSearchQuery('')
+                        setSelectedCategory(null)
+                      }}
+                      className="text-emerald-600 hover:underline font-medium"
+                    >
+                      Clear filters
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
@@ -116,6 +172,8 @@ export default function BlogPage() {
 }
 
 function BlogCard({ post }: { post: BlogPost }) {
+  const publishedDate = post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : ''
+
   return (
     <Link href={`/blog/${post.slug}`}>
       <div className="bg-white rounded-lg shadow-sm hover:shadow-md overflow-hidden transition-shadow cursor-pointer h-full">
@@ -132,16 +190,16 @@ function BlogCard({ post }: { post: BlogPost }) {
                 <span className="text-xs font-semibold uppercase text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
                   {post.category.replace('-', ' ')}
                 </span>
-                <span className="text-xs text-slate-500">
-                  {post.publishedAt.toLocaleDateString()}
-                </span>
+                {publishedDate && (
+                  <span className="text-xs text-slate-500">{publishedDate}</span>
+                )}
               </div>
 
               <h2 className="text-2xl font-bold text-slate-900 mb-2">{post.title}</h2>
               <p className="text-slate-600 mb-4">{post.excerpt}</p>
 
               <div className="flex flex-wrap gap-2 mb-4">
-                {post.tags.slice(0, 2).map((tag) => (
+                {(post.tags || []).slice(0, 2).map((tag) => (
                   <span key={tag} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
                     #{tag}
                   </span>
@@ -151,7 +209,7 @@ function BlogCard({ post }: { post: BlogPost }) {
 
             <div className="flex items-center justify-between text-sm text-slate-600">
               <span>By {post.author}</span>
-              <span>{post.readingTime} min read</span>
+              <span>{post.readTime} min read</span>
             </div>
 
             <div className="mt-4">
