@@ -13,148 +13,152 @@ interface Payment {
   createdAt: string
 }
 
+const navy = '#0A1628'
+const gold = '#C9A84C'
+
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  pending: { label: 'Pending', color: '#f59e0b', bg: '#fef3c7' },
+  completed: { label: 'Completed', color: '#10b981', bg: '#d1fae5' },
+  failed: { label: 'Failed', color: '#ef4444', bg: '#fee2e2' },
+  refunded: { label: 'Refunded', color: '#64748b', bg: '#f1f5f9' },
+}
+
 export default function PaymentsAdminPage() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<string>('all')
+  const [filter, setFilter] = useState('all')
+  const [apiTotal, setApiTotal] = useState<number | null>(null)
+  const [apiCompleted, setApiCompleted] = useState<number | null>(null)
 
-  const fetchPayments = useCallback(async () => {
+  const load = useCallback(async () => {
+    setLoading(true)
     try {
       const url = filter === 'all' ? '/api/admin/payments' : `/api/admin/payments?status=${filter}`
-      const response = await fetch(url)
-      if (response.ok) {
-        const data = await response.json()
-        setPayments(data.payments || [])
+      const res = await fetch(url)
+      if (res.ok) {
+        const d = await res.json()
+        setPayments(d.payments || [])
+        if (d.total !== undefined) setApiTotal(d.total)
+        if (d.completed !== undefined) setApiCompleted(d.completed)
       }
-    } catch (error) {
-      console.error('Failed to fetch payments:', error)
+    } catch (err) {
+      console.error('Failed to fetch payments:', err)
     } finally {
       setLoading(false)
     }
   }, [filter])
 
-  useEffect(() => {
-    fetchPayments()
-  }, [fetchPayments])
+  useEffect(() => { load() }, [load])
 
-  const statusColors = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    completed: 'bg-green-100 text-green-800',
-    failed: 'bg-red-100 text-red-800',
-    refunded: 'bg-gray-100 text-gray-800',
-  }
-
-  const totalRevenue = payments
-    .filter((p) => p.status === 'completed')
-    .reduce((sum, p) => sum + p.amount, 0)
-
-  const totalPending = payments
-    .filter((p) => p.status === 'pending')
-    .reduce((sum, p) => sum + p.amount, 0)
+  const completedRevenue = payments.filter(p => p.status === 'completed').reduce((s, p) => s + p.amount, 0)
+  const pendingAmount = payments.filter(p => p.status === 'pending').reduce((s, p) => s + p.amount, 0)
+  const avgTransaction = payments.length > 0 ? (completedRevenue + pendingAmount) / payments.length : 0
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Payments & Revenue</h1>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <p className="text-sm text-green-700">Completed Revenue</p>
-          <p className="text-3xl font-bold text-green-900">${totalRevenue.toLocaleString()}</p>
-        </div>
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-sm text-yellow-700">Pending Amount</p>
-          <p className="text-3xl font-bold text-yellow-900">${totalPending.toLocaleString()}</p>
-        </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-700">Total Transactions</p>
-          <p className="text-3xl font-bold text-blue-900">{payments.length}</p>
-        </div>
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <p className="text-sm text-purple-700">Avg Transaction</p>
-          <p className="text-3xl font-bold text-purple-900">
-            ${payments.length > 0 ? ((totalRevenue + totalPending) / payments.length).toLocaleString(undefined, { maximumFractionDigits: 0 }) : 0}
-          </p>
-        </div>
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: navy, margin: '0 0 4px' }}>Payments & Revenue</h1>
+        <p style={{ color: '#64748b', fontSize: 14, margin: 0 }}>Payment records and transaction history</p>
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-2 flex-wrap">
-        {['all', 'completed', 'pending', 'failed', 'refunded'].map((status) => (
-          <button
-            key={status}
-            onClick={() => {
-              setLoading(true)
-              setFilter(status)
-            }}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
-              filter === status
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </button>
+      {/* Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+        {[
+          { label: 'Completed Revenue', value: `$${completedRevenue.toLocaleString()}`, color: '#10b981' },
+          { label: 'Pending Amount', value: `$${pendingAmount.toLocaleString()}`, color: '#f59e0b' },
+          { label: 'Total Transactions', value: apiTotal ?? payments.length, color: '#3b82f6' },
+          { label: 'Avg Transaction', value: `$${avgTransaction.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, color: '#7c3aed' },
+        ].map(card => (
+          <div key={card.label} style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '18px 20px' }}>
+            <p style={{ fontSize: 12, color: '#64748b', fontWeight: 600, margin: '0 0 6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{card.label}</p>
+            <p style={{ fontSize: 26, fontWeight: 700, color: card.color, margin: 0 }}>{card.value}</p>
+          </div>
         ))}
       </div>
 
-      {/* Payments Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      {/* Filter Tabs */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        {['all', 'completed', 'pending', 'failed', 'refunded'].map(f => (
+          <button
+            key={f}
+            onClick={() => { setLoading(true); setFilter(f) }}
+            style={{
+              padding: '7px 16px',
+              borderRadius: 20,
+              border: filter === f ? `2px solid ${gold}` : '2px solid #e2e8f0',
+              background: filter === f ? `${gold}18` : '#fff',
+              color: filter === f ? navy : '#64748b',
+              fontWeight: filter === f ? 600 : 400,
+              fontSize: 13,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+        <button
+          onClick={load}
+          style={{ marginLeft: 'auto', padding: '7px 14px', borderRadius: 20, border: '2px solid #e2e8f0', background: '#fff', color: '#64748b', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          ↻ Refresh
+        </button>
+      </div>
+
+      {/* Table */}
+      <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading payments...</div>
+          <div style={{ padding: 48, textAlign: 'center', color: '#94a3b8' }}>Loading…</div>
         ) : payments.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No payments found</div>
+          <div style={{ padding: 48, textAlign: 'center', color: '#94a3b8' }}>No payments found.</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Payment ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Guest</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Method</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {payments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 text-sm font-mono text-gray-900">
-                      {payment.id.substring(0, 8)}...
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#f8fafc' }}>
+                {['Payment ID', 'Guest', 'Amount', 'Method', 'Status', 'Date'].map(h => (
+                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, fontWeight: 600, color: '#64748b', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {payments.map(payment => {
+                const sc = STATUS_CONFIG[payment.status] || { label: payment.status, color: '#64748b', bg: '#f1f5f9' }
+                return (
+                  <tr key={payment.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '13px 16px', fontSize: 13, fontFamily: 'monospace', color: '#475569' }}>
+                      {payment.id.substring(0, 8)}…
                     </td>
-                    <td className="px-6 py-3 text-sm">
-                      <div className="font-medium text-gray-900">{payment.guestName}</div>
-                      <div className="text-xs text-gray-600">{payment.bookingId.substring(0, 8)}...</div>
+                    <td style={{ padding: '13px 16px', fontSize: 14 }}>
+                      <div style={{ fontWeight: 600, color: navy }}>{payment.guestName}</div>
+                      <div style={{ fontSize: 12, color: '#94a3b8' }}>{payment.bookingId.substring(0, 8)}…</div>
                     </td>
-                    <td className="px-6 py-3 text-sm font-bold text-gray-900">
-                      ${payment.amount.toFixed(2)} {payment.currency}
+                    <td style={{ padding: '13px 16px', fontSize: 14, fontWeight: 700, color: navy }}>
+                      ${payment.amount.toFixed(2)} <span style={{ fontSize: 12, fontWeight: 400, color: '#94a3b8' }}>{payment.currency}</span>
                     </td>
-                    <td className="px-6 py-3 text-sm text-gray-600">{payment.paymentMethod}</td>
-                    <td className="px-6 py-3 text-sm">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          statusColors[payment.status as keyof typeof statusColors]
-                        }`}
-                      >
-                        {payment.status}
+                    <td style={{ padding: '13px 16px', fontSize: 13, color: '#475569' }}>{payment.paymentMethod}</td>
+                    <td style={{ padding: '13px 16px' }}>
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '3px 10px',
+                        borderRadius: 12,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        color: sc.color,
+                        background: sc.bg,
+                      }}>
+                        {sc.label}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-sm text-gray-600">
-                      {new Date(payment.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-3 text-sm space-x-2">
-                      <button className="text-blue-600 hover:text-blue-800 font-medium">View</button>
-                      {payment.status === 'completed' && (
-                        <button className="text-red-600 hover:text-red-800 font-medium">Refund</button>
-                      )}
+                    <td style={{ padding: '13px 16px', fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                      {new Date(payment.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                )
+              })}
+            </tbody>
+          </table>
         )}
       </div>
     </div>
