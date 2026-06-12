@@ -33,18 +33,44 @@ export default function DesignHomePage() {
 
     /* ── Enquiry form ── */
     function handleEnquiry(e: Event) {
+      e.preventDefault()
       const f = e.target as HTMLFormElement
-      if (f.action.includes('REPLACE_WITH_YOUR_FORMSPREE_ID')) {
-        e.preventDefault()
-        const data = new FormData(f)
-        const lines: string[] = []
-        data.forEach((v, k) => lines.push(`${k}: ${v}`))
-        const subject = encodeURIComponent('New travel enquiry · ' + (data.get('Service Required') || ''))
-        const body = encodeURIComponent('New travel enquiry from amanueltravel.com\n\n' + lines.join('\n'))
-        window.location.href = `mailto:amanueltravel@gmail.com?subject=${subject}&body=${body}`
-        setTimeout(() => alert('Opening your email client to send the enquiry.'), 100)
-        return false
-      }
+      const data = new FormData(f)
+      const btn = f.querySelector('button[type="submit"]') as HTMLButtonElement | null
+      const btnSpan = btn?.querySelector('span')
+      if (btn) btn.disabled = true
+      if (btnSpan) btnSpan.textContent = 'Sending…'
+      fetch('/api/enquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.get('name'),
+          phone: data.get('phone'),
+          email: data.get('email'),
+          service: data.get('service'),
+          details: data.get('details'),
+        }),
+      })
+        .then(r => {
+          if (r.ok) {
+            f.reset()
+            const box = f.closest('.form-box') as HTMLElement | null
+            if (box) {
+              const msg = document.createElement('p')
+              msg.style.cssText = 'text-align:center;color:#C9A84C;font-weight:600;padding:16px 0;'
+              msg.textContent = '✓ Enquiry received! We\'ll be in touch shortly.'
+              box.appendChild(msg)
+              setTimeout(() => msg.remove(), 6000)
+            }
+          } else {
+            alert('Something went wrong — please contact us via WhatsApp or email.')
+          }
+        })
+        .catch(() => alert('Network error — please try WhatsApp or email.'))
+        .finally(() => {
+          if (btn) btn.disabled = false
+          if (btnSpan) btnSpan.textContent = 'Send Enquiry'
+        })
     }
     const enquiryForm = document.querySelector('.form-box form')
     enquiryForm?.addEventListener('submit', handleEnquiry)
@@ -1095,24 +1121,24 @@ export default function DesignHomePage() {
 
           <div className="form-box reveal">
             <h3>Send an <em>Enquiry</em></h3>
-            <form action="https://formspree.io/f/REPLACE_WITH_YOUR_FORMSPREE_ID" method="POST">
+            <form action="#">
               <div className="f-row">
                 <div className="field" style={{ marginBottom: 0 }}>
                   <label>Full Name</label>
-                  <input type="text" placeholder="Your full name" required />
+                  <input type="text" name="name" placeholder="Your full name" required />
                 </div>
                 <div className="field" style={{ marginBottom: 0 }}>
                   <label>Phone</label>
-                  <input type="tel" placeholder="+xxx ..." required />
+                  <input type="tel" name="phone" placeholder="+xxx ..." required />
                 </div>
               </div>
               <div className="field">
                 <label>Email Address</label>
-                <input type="email" placeholder="you@example.com" required />
+                <input type="email" name="email" placeholder="you@example.com" required />
               </div>
               <div className="field">
                 <label>Service Required</label>
-                <select required>
+                <select name="service" required>
                   <option value="">Select a service</option>
                   <option>Air Ticket Booking</option>
                   <option>Travel Facilitation</option>
@@ -1124,7 +1150,7 @@ export default function DesignHomePage() {
               </div>
               <div className="field">
                 <label>Travel Details</label>
-                <textarea placeholder="Tell us about your travel — dates, destination, number of travelers..." rows={4}></textarea>
+                <textarea name="details" placeholder="Tell us about your travel — dates, destination, number of travelers..." rows={4}></textarea>
               </div>
               <button type="submit" className="f-submit"><span>Send Enquiry</span><span>→</span></button>
             </form>

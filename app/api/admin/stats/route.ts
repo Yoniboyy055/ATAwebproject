@@ -1,44 +1,36 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { prisma } from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-// Mock data - in production, fetch from Prisma
-const mockStats = {
-  totalBookings: 127,
-  pendingBookings: 8,
-  totalRevenue: 45230,
-  totalUsers: 342,
-  completedBookings: 119,
-  cancelledBookings: 5,
-}
-
 export async function GET() {
   try {
-    const session = await getServerSession()
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // In production, validate admin role
-    // const adminEmails = ['admin@amanueltravel.com', 'staff@amanueltravel.com']
-    // if (!adminEmails.includes(session.user?.email || '')) {
-    //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    // }
+    const [totalBookings, pendingBookings, totalUsers, totalEnquiries, newEnquiries] = await Promise.allSettled([
+      prisma.bookingRequest.count(),
+      prisma.bookingRequest.count({ where: { status: 'new' } }),
+      prisma.user.count(),
+      prisma.enquiry.count(),
+      prisma.enquiry.count({ where: { status: 'new' } }),
+    ])
 
     return NextResponse.json({
-      stats: {
-        totalBookings: mockStats.totalBookings,
-        pendingBookings: mockStats.pendingBookings,
-        totalRevenue: mockStats.totalRevenue,
-        totalUsers: mockStats.totalUsers,
-        completedBookings: mockStats.completedBookings,
-        cancelledBookings: mockStats.cancelledBookings,
-      },
+      totalBookings: totalBookings.status === 'fulfilled' ? totalBookings.value : 0,
+      pendingBookings: pendingBookings.status === 'fulfilled' ? pendingBookings.value : 0,
+      totalUsers: totalUsers.status === 'fulfilled' ? totalUsers.value : 0,
+      totalEnquiries: totalEnquiries.status === 'fulfilled' ? totalEnquiries.value : 0,
+      newEnquiries: newEnquiries.status === 'fulfilled' ? newEnquiries.value : 0,
+      totalRevenue: 0,
     })
-  } catch (error) {
-    console.error('Error fetching stats:', error)
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+  } catch (err) {
+    console.error('[admin/stats] error:', err)
+    return NextResponse.json({
+      totalBookings: 0,
+      pendingBookings: 0,
+      totalUsers: 0,
+      totalEnquiries: 0,
+      newEnquiries: 0,
+      totalRevenue: 0,
+    })
   }
 }
