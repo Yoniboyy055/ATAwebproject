@@ -158,7 +158,7 @@ Warm, direct, unhurried; homecoming register without tourist-brochure gloss. Sec
 - Provisional-hold acknowledgement: "A provisional hold request asks ATA to hold availability if possible. It is not a guaranteed seat and creates no payment obligation. ATA will confirm whether a hold is possible and for how long."
 
 ### 5.3 Receipts and status strings (M-35)
-Authoritative table: copy contract §3.2. Deck addition — receipt screen structure (all types):
+Authoritative table: copy contract §3.2 — full 15-state lifecycle (Draft → Submitted → … → Manually confirmed → … → Archived), with **Manually confirmed** as the only confirmation-bearing state. Deck addition — receipt screen structure (all types, shown at Submitted):
 > **Request received — {reference_id}**
 > This is not a confirmed booking, reservation, seat, price, or payment.
 > **What happens next:** a person at ATA reviews your request and replies by {chosen_channel}. {response_window — [ACR, T-09]}
@@ -199,7 +199,7 @@ Questions adopted from reference (SRC-UI-003/004/005 — genuinely objection-mat
 - Publishable now (after editorial + ATA sign-off, zero factual claims): 2.1, 3.1A/C, 3.7, 4.8, 4.9, 4.15, 4.16, 5.1, 5.3 structure, 5.4, F-01, 7.
 - Blocked on ATA confirmation: all `{fact}` slots, trust claims, consent texts, response windows, contact channels, F-02 specifics, F-03–F-10.
 - Blocked on research (WP-03, citation-first): UNESCO statement, destination blurbs, altitude/climate claims, packing rationale, best-time (also [ODR] V-014).
-- Blocked on DEP-01: per-state strings beyond the eight named statuses (contract §3.2).
+- Status strings: resolved — the full 15-state lifecycle is confirmed and every externally visible state has defined customer wording (contract §3.2); internal-only states (Draft, Qualified, Archived) render no customer copy.
 - Never drafted by YK Systems: cancellation/refund terms, legal policy text, testimonials.
 
 ---

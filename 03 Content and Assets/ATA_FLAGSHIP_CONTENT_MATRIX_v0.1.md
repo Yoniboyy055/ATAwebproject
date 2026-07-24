@@ -59,7 +59,7 @@ Render values: **R** renders when published · **H** hidden until published · *
 | M-32 | Verification-ledger explainer line | UI string (Codex ledger pattern) | Deck 4.16 | Editorial | R | — |
 | M-33 | Request form microcopy (labels, helper text) | form strings | Deck 5.1 | Editorial | R | — |
 | M-34 | Consent checkbox texts (booking, provisional) | consent version records | Deck 5.2 | Legal-adjacent | R after approval | [ACR] + professional review |
-| M-35 | Receipt/status strings (all states) | status message map | Deck 5.3 + contract §3.2 | Editorial bound to workflow | R | [VSR] DEP-01 for unenumerated states |
+| M-35 | Receipt/status strings (all states) | status message map | Deck 5.3 + contract §3.2 | Editorial bound to workflow | R | — (full 15-state lifecycle confirmed; per-state strings in contract §3.2) |
 | M-36 | Mini "who is ATA" strip (detail page) | UI string | Deck 4.17 | Trust/identity | H until identity verified | [ACR] (V-004) |
 | M-37 | Open Graph title/description (flagship) | SEO fields (future extension) | Deck 7 | Editorial | R | — (facts excluded) |
 | M-38 | Error/fallback states (form failure) | UI strings | Deck 5.4 | Editorial | R | — |
