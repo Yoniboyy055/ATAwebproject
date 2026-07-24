@@ -235,7 +235,7 @@ Recommended positioning spine, to be drafted fully in WP-02:
 
 ### 5.4 Claims requiring independent research
 
-- Asmara's actual UNESCO World Heritage inscription and correct descriptive language (V-010) — *note boundary: confirming the inscription does not confirm ATA's itinerary, access, guiding, pricing, or operating capacity*
+- Whether and how Asmara holds UNESCO World Heritage status, and the correct descriptive language for it (V-010) — *note boundary: confirming the inscription does not confirm ATA's itinerary, access, guiding, pricing, or operating capacity*
 - Highlands/coast climate contrast and honest seasonal guidance (feeds V-014)
 - Massawa Old Town historical framing (Ottoman/Italian heritage) and current condition
 - Escarpment drive characterization (distance, duration, road character) supporting honest difficulty copy
@@ -251,16 +251,16 @@ Matrix status: YK Systems analysis (DRAFT). Placement references use §7 homepag
 |---|---|---|---|---|---|---|
 | T-01 | Company credibility — "Is ATA real?" | Gate condition for any diaspora payment decision | Verified business identity, physical address, named principal, history, channels | ATA registration/identity facts; owner sign-off | Why ATA block (§7.9); footer; About page | REQUIRES ATA CONFIRMATION |
 | T-02 | Package authenticity — "Does this tour actually run?" | Reference content is aspirational; travelers sense vagueness | Confirmed itinerary, named (or honestly generalized) suppliers, real departures | ATA operational confirmation (V-009) | Flagship detail (§9); FAQ | REQUIRES ATA CONFIRMATION |
-| T-03 | Price transparency — "Why this price? Why should I trust it?" | Conflicting reference prices (V-001) make any published number suspect | Clear pricing model or honest "quote on request" with process explanation | ATA pricing decision | Detail-page booking card (§9.11); quote-request flow (§11.3) | REQUIRES ATA CONFIRMATION |
-| T-04 | Safety — general and route-specific | First-time visitors and families will not enquire without it | Factual, sourced safety posture; road/boat specifics answered plainly | Research (cited) + ATA operational answers | FAQ; Important Information (§9.16) | REQUIRES RESEARCH + ATA CONFIRMATION |
+| T-03 | Price transparency — "Why this price? Why should I trust it?" | Conflicting reference prices (V-001) make any published number suspect | Clear pricing model or honest "quote on request" with process explanation | ATA pricing decision | Pricing presentation (§9.11) and request CTA block (§9.21); quote-request flow (§11.3) | REQUIRES ATA CONFIRMATION |
+| T-04 | Safety — general and route-specific | First-time visitors and families will not enquire without it | Factual, sourced safety posture; road/boat specifics answered plainly | Research (cited) + ATA operational answers | FAQ; Important Information (§9.17) | REQUIRES RESEARCH + ATA CONFIRMATION |
 | T-05 | Transport quality — escarpment drive comfort | Multigenerational groups' top practical fear (§4.3) | Vehicle type/standard, journey time, stops | ATA supplier confirmation | Itinerary Day 3 notes; FAQ | REQUIRES ATA CONFIRMATION |
 | T-06 | Accommodation standard | "4 Nights Accommodation" (SRC-UI-003) is meaninglessly vague | Named hotels or honest class description | ATA supplier confirmation (V-009) | Inclusions block; FAQ | REQUIRES ATA CONFIRMATION |
 | T-07 | Guide quality and language | "Professional Guide" claim is unverified (V-006) | Guide profile, languages, experience — only as evidenced | ATA guide facts | Highlights; Why ATA | REQUIRES ATA CONFIRMATION |
-| T-08 | Cancellation and refunds | "Free cancellation up to 7 days" (V-007) is an unapproved legal term | Real cancellation/refund policy in plain language | ATA policy + professional review | Policies page; booking-request consent step (§11.5) | REQUIRES ATA CONFIRMATION — flag for legal/professional review |
+| T-08 | Cancellation and refunds | "Free cancellation up to 7 days" (V-007) is an unapproved legal term | Real cancellation/refund policy in plain language | ATA policy + professional review | Policies page; booking-request consent step (§11.4) | REQUIRES ATA CONFIRMATION — flag for legal/professional review |
 | T-09 | Communication reliability | Diaspora travelers span time zones; silence kills trust | Stated response expectation; named response owner; channel options | ATA capacity commitment | Every confirmation state (§11); contact page | REQUIRES ATA CONFIRMATION |
-| T-10 | Family suitability | "All Ages Welcome" (SRC-UI-004) is unearned | Per-day pace notes; age-specific guidance; elder/child accommodations | ATA operational confirmation + research (activity risk) | Difficulty block (§9.6); FAQ | REQUIRES ATA CONFIRMATION + RESEARCH |
+| T-10 | Family suitability | "All Ages Welcome" (SRC-UI-004) is unearned | Per-day pace notes; age-specific guidance; elder/child accommodations | ATA operational confirmation + research (activity risk) | Difficulty block (§9.5); FAQ | REQUIRES ATA CONFIRMATION + RESEARCH |
 | T-11 | Customer support after booking request | Fear of being dropped post-request | Defined follow-up steps and timing (§11) | ATA process commitment | Confirmation states; FAQ | REQUIRES ATA CONFIRMATION |
-| T-12 | Media authenticity — "Are these photos real?" | Reference imagery appears AI-generated/stock (V-011); fake imagery destroys the exact trust this audience needs | Real, owned, consented photography of actual locations | Media licence/ownership audit | Gallery (§9.7); hero | REQUIRES ATA CONFIRMATION |
+| T-12 | Media authenticity — "Are these photos real?" | Reference imagery appears AI-generated/stock (V-011); fake imagery destroys the exact trust this audience needs | Real, owned, consented photography of actual locations | Media licence/ownership audit | Gallery (§9.6); hero | REQUIRES ATA CONFIRMATION |
 | T-13 | Booking confirmation ambiguity — "Did I just book?" | Request-based model must never feel like limbo *or* false confirmation | Explicit status language: what a request is, what happens next, when it becomes confirmed | Copy discipline (§11, §18.4 CTA rules) | All request flows and confirmation screens | DRAFT YK SYSTEMS COPY (WP-02) |
 | T-14 | Payment expectations — "When and how do I pay?" | No payment exists in Phase 1; silence creates suspicion | Plain statement: no online payment; ATA confirms details personally after request | ATA process confirmation | FAQ; booking-request flow | REQUIRES ATA CONFIRMATION |
 | T-15 | Local operational capacity — "Can a small agency deliver this?" | The flagship spans two cities, transport, boat, hotels | Honest scale framing; partner acknowledgment where confirmed | ATA operational facts | Why ATA; About | REQUIRES ATA CONFIRMATION |
@@ -367,7 +367,7 @@ Context: SRC-OWN-001 — the website alone will not generate customers; campaign
 - **Review:** itinerary skim via anchor nav (§10.4).
 - **Action:** sticky CTA → availability request (§11.4 short form).
 - **Confirmation:** immediate on-screen state + expectation of ATA reply window (§11).
-- **APs & mitigations:** slow load on mobile data → performance budget (Codex); price shock/absence → honest price posture visible before form (§12.3); form length → short-form-first pattern (§11.8).
+- **APs & mitigations:** slow load on mobile data → performance budget (Codex); price shock/absence → honest price posture visible before form (§12.3); form length → progressive-disclosure short form (§11 shared base fields).
 
 ### 8.2 Direct / branded visitor
 - **Entry:** homepage via typed URL or business card.
@@ -586,7 +586,7 @@ Entries V-001–V-012 originate in KB v0.1 (authoritative register owned by Chat
 | V-007 | Cancellation policy | "Free cancellation up to 7 days" (SRC-UI-003) | High | Omitted; interim process statement (§12.3); flagged for professional review | ATA-approved cancellation/refund terms |
 | V-008 | Reviews/rating | 4.9/126; Daniel H., Selam M., Yonas T. quotes (SRC-UI-003/004/005) | High | Section omitted at launch | Real, evidenced testimonials with consent |
 | V-009 | Tour facts/activity availability | All itinerary lines, "All Ages," "Easy," hotels, boat, snorkeling, entrance fees (SRC-UI-003/004/005) | High | All labeled REQUIRES ATA CONFIRMATION (§9) | ATA supplier/operational confirmation per item |
-| V-010 | UNESCO wording | "UNESCO-like architecture of Asmara" (SRC-UI-003/004) | Medium | Phrase banned; researched replacement in WP-03 | Research with primary citation; the true inscription is stronger than the mockup phrase |
+| V-010 | UNESCO wording | "UNESCO-like architecture of Asmara" (SRC-UI-003/004) | Medium | Phrase banned; researched replacement in WP-03 | Research with primary citation; the reference wording appears to understate a verifiable heritage listing — WP-03 must confirm with primary sources before any replacement wording is drafted |
 | V-011 | Media ownership | Professional/apparently AI-generated imagery throughout references | High | No reference image ships; §12.3 imagery rule | Licence/consent audit; ATA-supplied authentic media |
 | V-012 | Catalog scale | 15 concepts vs one-tour Phase 1 (SRC-UI-002; SRC-OWN-001) | Medium | Catalog unpublished; card/grid kept as template | Owner direction stands: 1 now, ~4 later |
 | V-013 *(proposed — PRELIMINARY)* | Flights-first repo posture | Homepage metadata "Air tickets…," `/flights` route, flights-led services copy (P-01/P-02/P-08) | High | No code change in WP-01; recorded for Codex | Codex reuse-vs-rebuild decision; YK Systems approval of route/copy treatment |
@@ -671,7 +671,7 @@ WP-01 analyzed the five Visit Eritrea references (SRC-UI-001–005), the SOW v0.
 3. All booking language in the references implies confirmation and inventory that don't exist; request-based replacement language is mandatory (V-005, §11).
 4. The reviews/rating block is fabricated social proof and must be omitted, not imitated (V-008).
 5. The trust strip's four claims are all unverifiable; an honest substitute strip is defined (V-006, §7.4).
-6. "UNESCO-like architecture" is wrong in ATA's favor — the real inscription is stronger; research replaces it (V-010).
+6. "UNESCO-like architecture" is banned wording; WP-03 research is expected to support stronger, accurate wording, pending primary-source verification (V-010).
 7. A genuine strategy conflict exists between summer-homecoming positioning and the reference's October–April best-time claim (V-014) — decision required, not copywriting.
 8. Reference imagery cannot ship (ownership/authenticity — V-011); 8–12 authentic licensed images are a launch-critical dependency (§12.2).
 9. The existing repository is flights-first with reachable payment routes and sample-priced seed packages — directly conflicting with Phase 1 strategy (PRELIMINARY; V-013/V-015/V-017, Codex to verify).
