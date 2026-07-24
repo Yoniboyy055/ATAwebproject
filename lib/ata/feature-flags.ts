@@ -6,6 +6,8 @@ export type AtaFeatureFlags = {
   customerAccounts: boolean
   publicReviews: boolean
   legacySharedPasswordAdmin: boolean
+  stagingAdmin: boolean
+  stagingPersistence: boolean
 }
 
 export type AtaEnvironment = Record<string, string | undefined>
@@ -29,5 +31,8 @@ export function getAtaFeatureFlags(
     publicReviews: false,
     legacySharedPasswordAdmin:
       testMode && enabled(env.ATA_LEGACY_ADMIN_ENABLED),
+    stagingAdmin: testMode && enabled(env.ATA_STAGING_ADMIN_ENABLED),
+    stagingPersistence:
+      testMode && enabled(env.ATA_STAGING_PERSISTENCE_ENABLED),
   }
 }

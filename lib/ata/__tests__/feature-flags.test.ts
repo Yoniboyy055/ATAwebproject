@@ -10,6 +10,8 @@ describe('ATA feature flags', () => {
       customerAccounts: false,
       publicReviews: false,
       legacySharedPasswordAdmin: false,
+      stagingAdmin: false,
+      stagingPersistence: false,
     })
   })
 

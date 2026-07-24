@@ -17,17 +17,17 @@ function identity(role: IdentityContext['role']): IdentityContext {
 describe('ATA identity-backed authorization', () => {
   it('rejects anonymous and viewer publication attempts', () => {
     expect(canPublishTour(null)).toBe(false)
-    expect(canPublishTour(identity(AtaAdminRole.VIEWER))).toBe(false)
+    expect(canPublishTour(identity(AtaAdminRole.READ_ONLY_AUDITOR))).toBe(false)
   })
 
   it('allows only approver-level identities to publish', () => {
-    expect(canPublishTour(identity(AtaAdminRole.EDITOR))).toBe(false)
-    expect(canPublishTour(identity(AtaAdminRole.APPROVER))).toBe(true)
-    expect(canPublishTour(identity(AtaAdminRole.ADMIN))).toBe(true)
+    expect(canPublishTour(identity(AtaAdminRole.ATA_CONTENT_MANAGER))).toBe(false)
+    expect(canPublishTour(identity(AtaAdminRole.ATA_ADMINISTRATOR))).toBe(true)
+    expect(canPublishTour(identity(AtaAdminRole.ATA_OWNER))).toBe(true)
   })
 
   it('allows editors to manage requests without granting publication', () => {
-    const editor = identity(AtaAdminRole.EDITOR)
+    const editor = identity(AtaAdminRole.ATA_OPERATIONS_MANAGER)
     expect(canManageRequests(editor)).toBe(true)
     expect(canPublishTour(editor)).toBe(false)
   })

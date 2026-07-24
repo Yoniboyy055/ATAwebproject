@@ -6,21 +6,21 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 // User model for authentication and profile
 model User {
-  id            String     @id @default(cuid())
-  email         String     @unique
-  name          String?
-  password      String?    // hashed password for credentials login
-  image         String?
-  phone         String?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String? // hashed password for credentials login
+  image     String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   accounts      Account[]
@@ -36,18 +36,18 @@ model User {
 
 // NextAuth Account model (for OAuth providers)
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -79,10 +79,10 @@ model VerificationToken {
 // Package model
 model Package {
   id          String   @id @default(cuid())
-  type        String   // "Local" or "Diaspora"
+  type        String // "Local" or "Diaspora"
   title       String
   description String?  @db.Text
-  price       Float?   // optional price
+  price       Float? // optional price
   recommended Boolean  @default(false)
   includes    String[] // array of included services
   note        String?  @db.Text
@@ -90,44 +90,44 @@ model Package {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  bookings    Booking[]
-  quotes      Quote[]
+  bookings Booking[]
+  quotes   Quote[]
 
   @@map("packages")
 }
 
 // Booking model
 model Booking {
-  id               String   @id @default(cuid())
-  userId           String
-  packageId        String
-  status           String   @default("pending") // pending, confirmed, completed, cancelled
-  
+  id        String @id @default(cuid())
+  userId    String
+  packageId String
+  status    String @default("pending") // pending, confirmed, completed, cancelled
+
   // Trip details
-  departureDate    DateTime
-  returnDate       DateTime?
-  passengers       Int      @default(1)
-  
+  departureDate DateTime
+  returnDate    DateTime?
+  passengers    Int       @default(1)
+
   // Contact info
-  phoneNumber      String?
-  notes            String?  @db.Text
-  
+  phoneNumber String?
+  notes       String? @db.Text
+
   // Pricing
-  totalPrice       Float?
-  currency         String   @default("USD")
-  
+  totalPrice Float?
+  currency   String @default("USD")
+
   // Travel details (to be collected)
-  destination      String?
-  airline          String?
-  flightDetails    String?  @db.Text
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  destination   String?
+  airline       String?
+  flightDetails String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  package          Package  @relation(fields: [packageId], references: [id])
-  payment          Payment?
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package  @relation(fields: [packageId], references: [id])
+  payment Payment?
 
   @@index([userId])
   @@index([packageId])
@@ -136,29 +136,29 @@ model Booking {
 
 // Quote request model
 model Quote {
-  id           String   @id @default(cuid())
-  userId       String
-  packageId    String?
-  
+  id        String  @id @default(cuid())
+  userId    String
+  packageId String?
+
   // Quote details
-  type         String   // "flight", "package", "custom"
-  description  String?  @db.Text
-  requirements String?  @db.Text
-  
+  type         String // "flight", "package", "custom"
+  description  String? @db.Text
+  requirements String? @db.Text
+
   // Contact
-  phoneNumber  String?
-  email        String?
-  
-  status       String   @default("pending") // pending, responded, accepted, rejected
-  quote        Float?   // quoted price
-  currency     String   @default("USD")
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  phoneNumber String?
+  email       String?
+
+  status   String @default("pending") // pending, responded, accepted, rejected
+  quote    Float? // quoted price
+  currency String @default("USD")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  package      Package? @relation(fields: [packageId], references: [id])
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  package Package? @relation(fields: [packageId], references: [id])
 
   @@index([userId])
   @@index([packageId])
@@ -172,7 +172,7 @@ model SavedPackage {
   packageId String
   createdAt DateTime @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, packageId])
   @@map("saved_packages")
@@ -182,13 +182,13 @@ model SavedPackage {
 model Review {
   id        String   @id @default(cuid())
   userId    String
-  rating    Int      // 1-5
+  rating    Int // 1-5
   title     String?
   text      String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("reviews")
@@ -196,27 +196,27 @@ model Review {
 
 // Payment model (Stripe integration)
 model Payment {
-  id               String   @id @default(cuid())
-  bookingId        String   @unique
-  userId           String
-  
-  stripePaymentId  String   @unique  // Stripe payment intent ID
-  stripeSessionId  String?  @unique  // Stripe session ID (for checkout)
-  
-  amount           Float
-  currency         String   @default("USD")
-  status           String   @default("pending") // pending, processing, completed, failed
-  
-  paymentMethod    String?  // card, bank_transfer, etc
-  
-  metadata         String?  @db.Text // JSON metadata
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id        String @id @default(cuid())
+  bookingId String @unique
+  userId    String
+
+  stripePaymentId String  @unique // Stripe payment intent ID
+  stripeSessionId String? @unique // Stripe session ID (for checkout)
+
+  amount   Float
+  currency String @default("USD")
+  status   String @default("pending") // pending, processing, completed, failed
+
+  paymentMethod String? // card, bank_transfer, etc
+
+  metadata String? @db.Text // JSON metadata
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  booking          Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([bookingId])
@@ -225,9 +225,9 @@ model Payment {
 
 // Newsletter subscription model
 model Newsletter {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  email      String   @unique
+  createdAt  DateTime @default(now())
   subscribed Boolean  @default(true)
 
   @@map("newsletters")
@@ -274,9 +274,9 @@ model BlogPost {
 
 // Booking request from frontend form (public visitors)
 model BookingRequest {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  tripType      String   // "one-way" or "round-trip"
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  tripType      String // "one-way" or "round-trip"
   passengers    Int
   fromCity      String
   toCity        String
@@ -285,12 +285,146 @@ model BookingRequest {
   fullName      String
   phone         String
   email         String?
-  notes         String?  @db.Text
-  contactMethod String   // "whatsapp", "phone", or "email"
-  status        String   @default("new") // "new", "contacted", "closed"
+  notes         String?   @db.Text
+  contactMethod String // "whatsapp", "phone", or "email"
+  status        String    @default("new") // "new", "contacted", "closed"
 
   @@index([phone])
   @@index([email])
   @@index([createdAt])
   @@map("booking_requests")
+}
+
+// WP-03 additive staging model. No migration is applied by this work package.
+model AtaAdminMembership {
+  id               String    @id @default(cuid())
+  identitySubject  String
+  identityProvider String
+  email            String
+  role             String
+  environment      String    @default("staging")
+  active           Boolean   @default(true)
+  assignedBy       String
+  assignedAt       DateTime  @default(now())
+  revokedBy        String?
+  revokedAt        DateTime?
+
+  @@unique([identityProvider, identitySubject, environment])
+  @@index([email, environment])
+  @@map("ata_admin_memberships")
+}
+
+model AtaBusinessFact {
+  id                String    @id @default(cuid())
+  category          String
+  submittedValue    String    @db.Text
+  source            String
+  sourceType        String
+  reviewState       String    @default("SUBMITTED")
+  publicationState  String    @default("PRIVATE")
+  submittedBy       String
+  submittedAt       DateTime  @default(now())
+  verificationNotes String?   @db.Text
+  verifiedBy        String?
+  verifiedAt        DateTime?
+  approvedBy        String?
+  approvedAt        DateTime?
+  reviewAt          DateTime?
+  evidenceFileId    String?
+  version           Int       @default(1)
+  replacementId     String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([category, reviewState, publicationState])
+  @@map("ata_business_facts")
+}
+
+model AtaTour {
+  id                 String       @id @default(cuid())
+  slug               String       @unique
+  workingTitle       String
+  publicTitle        String?
+  summary            String?      @db.Text
+  destination        String?
+  duration           String?
+  dateStatus         String       @default("UNVERIFIED")
+  dates              Json?
+  priceStatus        String       @default("UNVERIFIED")
+  priceMinor         Int?
+  currency           String?
+  capacity           Int?
+  availabilityState  String       @default("UNVERIFIED")
+  inclusions         Json?
+  exclusions         Json?
+  requirements       String?      @db.Text
+  accommodation      String?      @db.Text
+  transportation     String?      @db.Text
+  paymentStatus      String       @default("UNVERIFIED")
+  cancellationStatus String       @default("UNVERIFIED")
+  media              Json?
+  evidenceSource     String?
+  verificationState  String       @default("UNVERIFIED")
+  approvalState      String       @default("DRAFT")
+  publicationState   String       @default("PRIVATE")
+  version            Int          @default(1)
+  lastReviewedAt     DateTime?
+  approvedBy         String?
+  reviewNotes        String?      @db.Text
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  requests           AtaRequest[]
+
+  @@index([verificationState, approvalState, publicationState])
+  @@map("ata_tours")
+}
+
+model AtaRequest {
+  id                      String    @id @default(cuid())
+  tourId                  String?
+  requestType             String
+  status                  String    @default("SUBMITTED")
+  fullName                String
+  email                   String?
+  phone                   String?
+  requestOwnerId          String?
+  assignedStaffId         String?
+  internalNotes           String?   @db.Text
+  customerSafeNotes       String?   @db.Text
+  followUpAt              DateTime?
+  requiredDocuments       Json?
+  missingInformation      Json?
+  confirmationAuthorityId String?
+  confirmedAt             DateTime?
+  cancellationReason      String?   @db.Text
+  closureReason           String?   @db.Text
+  environment             String    @default("staging")
+  createdBy               String
+  updatedBy               String
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  tour                    AtaTour?  @relation(fields: [tourId], references: [id])
+
+  @@index([status, followUpAt])
+  @@index([assignedStaffId])
+  @@map("ata_requests")
+}
+
+model AtaAuditEvent {
+  id            String   @id @default(cuid())
+  actorSubject  String
+  actorRole     String
+  action        String
+  entityType    String
+  entityId      String
+  previousValue Json?
+  newValue      Json?
+  environment   String
+  requestId     String?
+  tourId        String?
+  occurredAt    DateTime @default(now())
+
+  @@index([entityType, entityId, occurredAt])
+  @@index([actorSubject, occurredAt])
+  @@map("ata_audit_events")
 }
