@@ -50,13 +50,13 @@ export async function sendBookingConfirmation(data: BookingConfirmationData) {
       <body>
         <div class="container">
           <div class="header">
-            <h1>Booking Confirmed!</h1>
+            <h1>Request Received</h1>
             <p>Thank you for choosing Amannual Travel</p>
           </div>
           
           <div class="content">
             <p>Hello ${data.customerName},</p>
-            <p>Your booking request has been received and confirmed. Here are your booking details:</p>
+            <p>Your booking request has been received for review. It is not a confirmed booking, reservation, seat, price, or payment.</p>
             
             <div class="reference">
               Booking Reference: <br/>${data.bookingReference}
@@ -129,7 +129,7 @@ export async function sendBookingConfirmation(data: BookingConfirmationData) {
     const result = await resend.emails.send({
       from: fromEmail,
       to: data.customerEmail,
-      subject: `Booking Confirmed - Reference: ${data.bookingReference}`,
+      subject: `Request Received - Reference: ${data.bookingReference}`,
       html: emailHtml,
     })
 

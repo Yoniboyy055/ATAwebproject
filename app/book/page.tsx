@@ -277,7 +277,7 @@ export default function BookingPage() {
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 text-center">
-              Booking Confirmed!
+              Request Received
             </h2>
             <p className="text-gray-600 mb-2 text-center">
               Thank you for your booking request, <span className="font-semibold">{formData.fullName}</span>.

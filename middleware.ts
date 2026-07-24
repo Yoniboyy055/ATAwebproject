@@ -25,6 +25,39 @@ async function verify(token: string): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
 
+  const testMode =
+    process.env.ATA_INTEGRATION_MODE === 'test' &&
+    process.env.VERCEL_ENV !== 'production'
+  const legacyAdminEnabled =
+    testMode && process.env.ATA_LEGACY_ADMIN_ENABLED === 'true'
+  const customerAccountsEnabled =
+    testMode && process.env.ATA_CUSTOMER_ACCOUNTS_ENABLED === 'true'
+
+  if (
+    !customerAccountsEnabled &&
+    (pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/auth') ||
+      pathname.startsWith('/api/user') ||
+      pathname.startsWith('/api/auth/register') ||
+      pathname.startsWith('/book') ||
+      pathname.startsWith('/flights') ||
+      pathname.startsWith('/packages') ||
+      pathname.startsWith('/reviews') ||
+      pathname.startsWith('/api/bookings') ||
+      pathname.startsWith('/api/quotes') ||
+      pathname.startsWith('/api/packages') ||
+      pathname.startsWith('/api/reviews'))
+  ) {
+    return new NextResponse('Not found', { status: 404 })
+  }
+
+  if (
+    !legacyAdminEnabled &&
+    (pathname.startsWith('/admin') || pathname.startsWith('/api/admin'))
+  ) {
+    return new NextResponse('Not found', { status: 404 })
+  }
+
   // Always allow login page and auth endpoint
   if (pathname === '/admin/login' || pathname.startsWith('/api/admin/auth')) {
     return NextResponse.next()
@@ -50,5 +83,20 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/admin/:path*'],
+  matcher: [
+    '/admin/:path*',
+    '/api/admin/:path*',
+    '/dashboard/:path*',
+    '/auth/:path*',
+    '/api/user/:path*',
+    '/api/auth/register',
+    '/book/:path*',
+    '/flights/:path*',
+    '/packages/:path*',
+    '/reviews/:path*',
+    '/api/bookings/:path*',
+    '/api/quotes/:path*',
+    '/api/packages/:path*',
+    '/api/reviews/:path*',
+  ],
 }
