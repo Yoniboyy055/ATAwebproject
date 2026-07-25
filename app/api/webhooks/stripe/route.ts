@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 import { prisma } from '@/lib/prisma'
 import { headers } from 'next/headers'
+import { getAtaFeatureFlags } from '@/lib/ata/feature-flags'
 
 // Make Stripe optional - return 400 if not configured
 const stripe = process.env.STRIPE_SECRET_KEY 
@@ -16,6 +17,10 @@ const stripe = process.env.STRIPE_SECRET_KEY
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
 export async function POST(request: NextRequest) {
+  if (!getAtaFeatureFlags().livePayments) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   try {
     // Return error if Stripe not configured
     if (!stripe || !webhookSecret) {

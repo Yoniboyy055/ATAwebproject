@@ -73,7 +73,6 @@ export function generateTravelPackageSchema(packageData: {
       '@type': 'Offer',
       price: packageData.price,
       priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
     },
     duration: packageData.duration,
     destinationName: packageData.destination,

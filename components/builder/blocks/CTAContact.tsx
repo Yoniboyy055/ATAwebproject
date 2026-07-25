@@ -7,7 +7,7 @@ import { z } from "zod";
 import { ReactNode } from "react";
 
 const CTAContactPropsSchema = z.object({
-  heading: z.string().optional().default("Ready to Book?"),
+  heading: z.string().optional().default("Ask About This Tour"),
   description: z.string().optional(),
   primaryCta: z.object({
     text: z.string().optional().default("Contact Us"),

@@ -168,9 +168,9 @@ export default async function PackageDetailPage({
       {/* Final CTA */}
       <section className="bg-blue-600 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to Book?</h2>
+          <h2 className="text-3xl font-bold mb-4">Ask About This Tour</h2>
           <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-            Contact us today to reserve your spot for this amazing journey.
+            Send a request for ATA to review. No booking, reservation, seat, price, or payment is confirmed automatically.
           </p>
           <a
             href="/contact"

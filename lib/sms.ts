@@ -25,7 +25,7 @@ export async function sendBookingSMS(data: BookingSMSData) {
 
   const fullPhone = `${data.phoneCountry}${data.phoneNumber}`.replace(/[^\d+]/g, '')
 
-  const message = `Hello ${data.customerName}! Your booking from ${data.fromCity} to ${data.toCity} on ${new Date(data.departDate).toLocaleDateString()} is confirmed. Reference: ${data.bookingReference}. Total: $${data.total.toFixed(2)}. - Amannual Travel`
+  const message = `Hello ${data.customerName}. ATA received your request from ${data.fromCity} to ${data.toCity} for ${new Date(data.departDate).toLocaleDateString()}. Reference: ${data.bookingReference}. It is not a confirmed booking, reservation, seat, price, or payment.`
 
   try {
     const result = await twilioClient.messages.create({

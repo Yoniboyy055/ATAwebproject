@@ -12,18 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/auth/signin`,
-      lastModified,
-      changeFrequency: 'never',
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/dashboard`,
-      lastModified,
-      changeFrequency: 'daily',
-      priority: 0.8,
-    },
-    {
       url: `${baseUrl}/blog`,
       lastModified,
       changeFrequency: 'daily',
@@ -49,12 +37,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/services`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/packages`,
       lastModified,
       changeFrequency: 'weekly',
       priority: 0.9,

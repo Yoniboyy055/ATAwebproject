@@ -7,6 +7,7 @@ export const runtime = 'nodejs'
 import { prisma } from '@/lib/prisma'
 import { authOptions } from '@/lib/auth'
 import { z } from 'zod'
+import { getAtaFeatureFlags } from '@/lib/ata/feature-flags'
 
 // Make Stripe optional - return 400 if not configured
 const stripe = process.env.STRIPE_SECRET_KEY
@@ -22,6 +23,10 @@ const CreatePaymentSchema = z.object({
 })
 
 export async function POST(request: NextRequest) {
+  if (!getAtaFeatureFlags().livePayments) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  }
+
   try {
     // Return error if Stripe not configured
     if (!stripe) {
