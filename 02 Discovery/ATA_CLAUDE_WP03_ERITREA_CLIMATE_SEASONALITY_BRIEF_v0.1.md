@@ -112,7 +112,11 @@ Asmara sits at ~2,325 m. That is high enough that some travellers — particular
 > **Two climates, one journey.**
 > Asmara sits at about 2,325 m: mild and temperate all year, cool in the evenings, with most of its rain falling between June and September.
 > Massawa is at sea level on the Red Sea: warm through the year and genuinely hot in mid-summer, when daytime temperatures commonly reach the high thirties to low forties Celsius.
-> Pack for both. Tell us when you want to travel and ATA will tell you honestly what that season looks like on the ground.
+> Pack for both.
+
+**Closing invitation — separate, and NOT part of the factual frame:**
+> "Tell us when you want to travel and ATA will tell you honestly what that season looks like on the ground."
+**[ATA CONFIRMATION REQUIRED]** — this sentence is an **operational service commitment**, not a climate fact. It asserts that ATA will give honest seasonal guidance on request. Do not publish it unless ATA confirms it actually does so, exactly as with §7.4. The factual frame above it is unaffected and can ship without this line.
 
 ### 7.2 Packing rationale (resolves WP-02 M-24)
 > "Pack for two climates: cool highland evenings in Asmara, and hot coastal days in Massawa."
@@ -139,7 +143,8 @@ This is now **research-supported** (Asmara lows ~7–11 °C; Massawa highs ~29�
 
 | Proposed content | Suggested target | Eligibility |
 |---|---|---|
-| §7.1 two-climate frame | `bestTime` envelope (**M-25**) — currently blocked on V-014 | **Conditional** — unblocks M-25 without an ATA seasonal decision, because it states climate facts rather than a recommendation |
+| §7.1 two-climate frame (factual paragraphs only) | `bestTime` envelope (**M-25**) — currently blocked on V-014 | **Conditional** — unblocks M-25 without an ATA seasonal decision, because it states climate facts rather than a recommendation |
+| §7.1 closing invitation | `bestTime` / request CTA | **Blocked** — operational service commitment; ATA confirmation required |
 | §7.2 packing rationale | `packing[]` intro (**M-24**) | **Conditional** — research-supported; list content still ATA's |
 | §6 altitude line | `importantInfo` (**M-26**) | **Conditional** — ATA + professional review |
 | §7.3 / §7.4 | `bestTime` recommendation layer | **Blocked** — ATA seasonal decision (V-014) |

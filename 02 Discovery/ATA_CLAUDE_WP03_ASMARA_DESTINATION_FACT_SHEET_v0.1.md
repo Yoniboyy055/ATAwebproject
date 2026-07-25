@@ -42,7 +42,8 @@ These are the sites the reference itinerary (SRC-UI-003 Day 2) lists. Research b
 | Designer | **Mario Messina** | High |
 | Note | The largest cinema built in Asmara in the late colonial period; frequently cited among the world's finest surviving Art Deco cinemas | Medium-High (the "world's finest" framing is a widely-repeated characterisation — attribute it, don't assert it) |
 
-**Draft wording:** "Cinema Impero (1937), Mario Messina's Art Deco cinema on Harnet Avenue — one of the most complete of its kind anywhere."
+**Draft wording:** "Cinema Impero (1937), Mario Messina's Art Deco cinema on Harnet Avenue — widely described by architectural writers as one of the most complete surviving cinemas of its kind."
+**Note:** the comparative is **attributed, not asserted** (P-17). Dropping the clause entirely is also acceptable and slightly safer.
 
 ### Asmara Cathedral (Church of Our Lady of the Rosary)
 | Attribute | Finding | Confidence |

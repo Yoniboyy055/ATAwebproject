@@ -31,7 +31,7 @@ A diaspora traveller arriving expecting a restored heritage quarter and finding 
 **Recommended posture (Claude synthesis — ATA approval required):** name the condition plainly and treat it as part of the meaning, not a defect to conceal. Do not use "charm" to paper over war damage.
 
 **Draft wording:**
-> "Massawa's old town is layered — Ottoman, Egyptian and Italian, built from coral cut out of the Red Sea. Much of it still carries the damage of the independence war, and some of it stands as ruins. It is not a restored heritage quarter; it is a working port town with a long memory, and it is one of the most striking places on the Eritrean coast."
+> "Massawa's old town is layered — Ottoman, Egyptian and Italian, built from coral cut out of the Red Sea. Much of it still carries the damage of the independence war, and some of it stands as ruins. It is not a restored heritage quarter; it is a working port town with a long memory."
 
 **[ATA CONFIRMATION REQUIRED]** — ATA must confirm this characterisation matches current ground conditions, which it knows far better than any source I can reach. Condition claims are also **time-sensitive**: any restoration since the sources were written would date this wording. Recommended review interval: **12 months**.
 

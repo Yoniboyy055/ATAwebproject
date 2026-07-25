@@ -76,9 +76,9 @@ The job was re-run without any code change and completed **successfully** (job `
 Five topics, exactly as scoped: precise UNESCO wording for Asmara; Eritrea climate and seasonality for V-014; Asmara destination facts; Massawa destination facts; the Asmara–Massawa escarpment and journey.
 
 - **Sources reviewed and recorded:** 39 (S-01–S-39), tiered 1–4 with disqualified sources marked ✗
-- **Claims recorded:** 47
-- **Publication-eligible after editorial + ATA sign-off:** 26
-- **Conditional on a named precondition:** 15
+- **Claims recorded:** 57 (U ×15, C ×12, AS ×11, MW ×10, ES ×8, TR ×1)
+- **Publication-eligible after editorial + ATA sign-off:** 30
+- **Conditional on a named precondition:** 21
 - **Blocked or rejected:** 6
 - **Requiring professional review:** 4
 - **APPROVED SOURCE FACT count: still zero** — WP-03 raises the *evidence* level; only ATA and YK Systems can raise the *approval* level
@@ -92,7 +92,7 @@ Five topics, exactly as scoped: precise UNESCO wording for Asmara; Eritrea clima
 | Escarpment driving time (~1 h 39 min) | **Rejected** — algorithmic estimate, implausible for a 2,300 m switchback descent. Publishing it would understate the day |
 | Massawa precipitation (14 rainy days / 74 mm per month, Dec–Feb) | **Rejected** — internally inconsistent with hot-desert classification and FAO's coastal range |
 | "Africa's first modernist World Heritage site" | **Qualified** — attribute to source; do not assert as UNESCO's wording |
-| 480 ha / ~4,300 buildings | **Qualified** — confirm at primary source or omit |
+| Property area / building count (480–481 ha; 4,300–4,340+ buildings) | **Qualified** — sources vary; confirm at primary source or omit |
 | "Pearl of the Red Sea" | **Qualified** — present as a traditional epithet, attributed |
 | "Little Rome" | **Prohibited** — colonial-nostalgic framing, poorly suited to a diaspora audience |
 
@@ -174,7 +174,27 @@ The four WP-03 exception conditions were monitored throughout. **Two were trigge
 
 Two source conflicts were found (cathedral date, Asmara population). Neither was material enough to halt the package: both were resolved by **omitting the disputed value**, and the surrounding wording works without it. No publication-integrity problem was discovered.
 
-## 12. Recommended next work package
+## 12. Pre-merge review corrections (YK Systems review pass)
+
+A final pre-merge review was performed against the WP-03 deliverables. **Seven defects were found in this package's own output and corrected.** None was a factual error in a researched claim; all were integrity, traceability or self-consistency defects — the class that quietly erodes an audit trail.
+
+| # | Defect | Severity | Files affected | Correction |
+|---|---|---|---|---|
+| 1 | Verified-claims register summary counts wrong — stated 47 claims / 26 eligible / 15 conditional; actual row counts are **57 / 30 / 21** | Medium | claims register; completion report §4; PR body | Counts recomputed programmatically and corrected everywhere |
+| 2 | The blocked-claims narrative listed the Massawa precipitation figure (never a register row) and **omitted ES-08** | Medium | claims register | Narrative rewritten to name the six actual ⛔ rows by ID; the rejected precipitation figure recorded separately as a non-claim |
+| 3 | Fact-sheet IDs AS-02, AS-03, AS-05, AS-06 and MW-02 had no counterpart in the canonical register; elevation carried two IDs (AS-02 and C-04) | Medium | claims register; both fact sheets | **ID reconciliation table** added to the register mapping every fact-sheet-local ID to its canonical ID. No proposition was actually missing — only the label |
+| 4 | **ID namespace collision:** `C-01`–`C-11` meant *climate claims* in one register and *conditional claims* in another | Medium | prohibited/high-risk register | Conditional series renamed **`CD-01`–`CD-11`** with a disambiguation note |
+| 5 | Three **unattributed comparative superlatives** in proposed copy, breaching this package's own P-17 and source-quality rule 6 | **Medium-High** | Asmara fact sheet; Massawa fact sheet; UNESCO brief §4.3; proposed copy §2 | Cinema Impero comparative now **attributed**; UNESCO wording changed to a non-comparative description matching criterion (iv); Massawa "one of the most striking places" removed |
+| 6 | The two-climate frame's closing line — "ATA will tell you honestly what that season looks like" — is an **operational service commitment**, was unmarked, and was characterised as a climate fact | Medium | climate brief §7.1/§8; proposed copy §5/§6 | Line split out, marked **[ATA CONFIRMATION REQUIRED]**, field mapping corrected to **Blocked**, and the two over-broad compliance claims in proposed copy §6 narrowed to what is actually true |
+| 7 | Dashboard matrix recorded 7 of the 10 required fields — no **confidence**, no **limitations**, no claim-ID traceability | Medium | dashboard matrix | Companion **evidence-detail table** added, keyed to the same `D-` IDs, carrying source claim IDs, confidence and limitations for all 18 rows |
+
+Additionally, U-08's figures were refined from "≈480 ha / ≈4,300 buildings" to reflect the fuller source range (**480–481 ha; 4,300–4,340+ buildings**), and the publication precondition CD-02 was updated to match. The figures remain **confirm-or-omit**.
+
+**Source re-verification.** Load-bearing claims were re-checked against sources during the review. The FAO three-rainy-season structure, the highland/lowland/coastal rainfall ranges, Massawa's July 40.8 °C / 27.7 °C and hot-desert classification, Fiat Tagliero (1938, Pettazzi), Cinema Impero (1937, Messina), the 1937 cableway at 71.8 km, Asmara's ~2,325 m elevation, and the UNESCO inscription facts (2017, ref 1550, criteria ii and iv, 8 July, first in Eritrea) all **corroborated**. One useful addition: sources confirm the cableway was **dismantled by the British after the Second World War**, which strengthens the existing prohibition on implying it can be ridden.
+
+**The primary-source limitation is unchanged.** `whc.unesco.org` still returns HTTP 403 to this environment; re-verification was again via search extract. Every UNESCO publication precondition therefore stands exactly as written.
+
+## 13. Recommended next work package
 
 **WP-04 — Launch-Critical Clarification Pack for ATA.** The remaining unknowns are not researchable; they are ATA-held facts and decisions, and that set is now precise enough to ask about in one focused pass. Deliverable: `12 Client Approvals/ATA_LAUNCH_CRITICAL_CLARIFICATIONS_DRAFT_v0.1.md`.
 

@@ -33,19 +33,21 @@
 
 ## B. Conditional — publishable only with the stated precondition
 
+**ID note:** conditional items use the **CD-** prefix. They are a different series from the **C-** climate claims in the verified-claims register — do not conflate `CD-01` with `C-01`.
+
 | # | Claim | Precondition |
 |---|---|---|
-| C-01 | Any UNESCO inscription wording | Human confirmation of exact phrasing at `whc.unesco.org/en/list/1550/` |
-| C-02 | The 480 ha / 4,300 buildings figures | Primary-source confirmation, or omit the numbers |
-| C-03 | "Africa's first modernist World Heritage site" | Attribute to source; do not assert as UNESCO's wording |
-| C-04 | Massawa old-town condition/ruin wording | ATA confirmation of current ground conditions; 12-month review |
-| C-05 | Altitude-adjustment note | ATA + professional review; keep non-medical |
-| C-06 | Historical narration touching colonisation or the independence war | ATA approval; Eritrean cultural review recommended |
-| C-07 | Any seasonal *recommendation* | ATA seasonal-operations decision (V-014) |
-| C-08 | Road distance (~111 km) | Hedge ("roughly") or omit; ATA may supply better |
-| C-09 | Travel-permit information (TR-01) | Official-source verification **and** ATA process confirmation |
-| C-10 | Cathedral name | ATA chooses among three names in circulation |
-| C-11 | "Pearl of the Red Sea" | Present as a traditional epithet, attributed — not as objective fact |
+| CD-01 | Any UNESCO inscription wording | Human confirmation of exact phrasing at `whc.unesco.org/en/list/1550/` |
+| CD-02 | The property-area and building-count figures (sources give 480–481 ha and 4,300–4,340+ buildings) | Primary-source confirmation, or omit the numbers |
+| CD-03 | "Africa's first modernist World Heritage site" | Attribute to source; do not assert as UNESCO's wording |
+| CD-04 | Massawa old-town condition/ruin wording | ATA confirmation of current ground conditions; 12-month review |
+| CD-05 | Altitude-adjustment note | ATA + professional review; keep non-medical |
+| CD-06 | Historical narration touching colonisation or the independence war | ATA approval; Eritrean cultural review recommended |
+| CD-07 | Any seasonal *recommendation* | ATA seasonal-operations decision (V-014) |
+| CD-08 | Road distance (~111 km) | Hedge ("roughly") or omit; ATA may supply better |
+| CD-09 | Travel-permit information (TR-01) | Official-source verification **and** ATA process confirmation |
+| CD-10 | Cathedral name | ATA chooses among three names in circulation |
+| CD-11 | "Pearl of the Red Sea" | Present as a traditional epithet, attributed — not as objective fact |
 
 ## C. Standing rule
 

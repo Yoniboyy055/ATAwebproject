@@ -28,7 +28,7 @@
 
 **Site lines (descriptive layer only):**
 - "The Fiat Tagliero service station (1938) — Giuseppe Pettazzi's concrete aeroplane, wings outstretched over a forecourt."
-- "Cinema Impero (1937), Mario Messina's Art Deco cinema on Harnet Avenue — one of the most complete of its kind anywhere."
+- "Cinema Impero (1937), Mario Messina's Art Deco cinema on Harnet Avenue — widely described by architectural writers as one of the most complete surviving cinemas of its kind." *(comparative attributed, not asserted — P-17)*
 - "The Lombard-Romanesque Catholic cathedral on Harnet Avenue." *(date omitted — source disagreement; name pending ATA choice)*
 - "Medeber, where Asmara's craftspeople turn salvaged metal into new tools, pots and furniture — a working workshop quarter, not a souvenir market."
 - "Harnet Avenue — Asmara's palm-lined main street, and the spine of the historic centre."
@@ -56,7 +56,9 @@
 > **Two climates, one journey.**
 > Asmara sits at about 2,325 m: mild and temperate all year, cool in the evenings, with most of its rain falling between June and September.
 > Massawa is at sea level on the Red Sea: warm through the year and genuinely hot in mid-summer, when daytime temperatures commonly reach the high thirties to low forties Celsius.
-> Pack for both. Tell us when you want to travel and ATA will tell you honestly what that season looks like on the ground.
+> Pack for both.
+
+*Closing invitation, held separately —* "Tell us when you want to travel and ATA will tell you honestly what that season looks like on the ground." **[ATA CONFIRMATION REQUIRED]** — an operational service commitment, not a climate fact.
 
 **Packing intro:** "Pack for two climates: cool highland evenings in Asmara, and hot coastal days in Massawa."
 
@@ -65,7 +67,7 @@
 ## 6. Editorial notes for WP-02 integration
 
 1. **These are drop-ins for existing WP-02 slots**, not a new copy structure. The WP-02 deck's `{braced}` tokens are the insertion points.
-2. **Register matches WP-02's voice** — warm, direct, unhurried, second person, honesty-forward. No superlatives, no scarcity, no promotional adjectives.
+2. **Register matches WP-02's voice** — warm, direct, unhurried, second person, honesty-forward. No scarcity, no promotional adjectives. **No comparative claim is asserted in ATA's voice**; where one appears (Cinema Impero) it is explicitly attributed, per P-17.
 3. **The two-climate frame and the Massawa condition disclosure both make honesty the selling point.** That is consistent with WP-01's core finding: with no reviews and no verified guarantees, ATA's differentiator is candour.
-4. **Nothing here asserts an ATA operational fact.** Every sentence is either a verified external fact or a description of place — never a promise about service.
+4. **The eligible copy asserts no ATA operational fact.** Every sentence in it is either a verified external fact or a description of place. The two exceptions are the §5 closing invitation and the §7.4 summer line in the climate brief — both are **service commitments**, both are marked **[ATA CONFIRMATION REQUIRED]**, and neither may be published unless ATA confirms it is true.
 5. **Sequencing recommendation:** ship D-02/D-04/D-05/D-08 wording first (fully eligible), then UNESCO wording on confirmation. That gives a page with real, honest content before ATA's larger confirmation set arrives.

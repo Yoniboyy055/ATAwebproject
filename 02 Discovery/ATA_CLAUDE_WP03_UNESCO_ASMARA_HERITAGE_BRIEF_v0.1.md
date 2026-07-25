@@ -66,7 +66,7 @@ Shorter variant for tight mobile space:
 > "A UNESCO World Heritage city centre, inscribed in 2017."
 
 ### 4.3 Extended educational (overview / long-form)
-> "In 2017, UNESCO inscribed Asmara's historic centre on the World Heritage List as *Asmara: A Modernist African City* — Eritrea's first World Heritage site. What UNESCO recognised is unusual: not a single monument, but an entire planned city. Laid out in successive phases between 1893 and 1941, Asmara combines an orthogonal street grid with later radial elements, and carries one of the world's most complete concentrations of early modernist and rationalist architecture — cinemas, workshops, churches, mosques, offices and homes built with modern materials but relying on local craft, labour and building traditions. Walking Asmara is walking the inscribed property itself."
+> "In 2017, UNESCO inscribed Asmara's historic centre on the World Heritage List as *Asmara: A Modernist African City* — Eritrea's first World Heritage site. What UNESCO recognised is unusual: not a single monument, but an entire planned city. Laid out in successive phases between 1893 and 1941, Asmara combines an orthogonal street grid with later radial elements, and preserves a coherent, largely intact ensemble of early modernist and rationalist architecture — cinemas, workshops, churches, mosques, offices and homes built with modern materials but relying on local craft, labour and building traditions. Walking Asmara is walking the inscribed property itself."
 
 ### 4.4 Prohibited / high-risk wording
 

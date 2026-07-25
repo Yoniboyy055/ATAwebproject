@@ -19,7 +19,7 @@
 | U-05 | Heritage | Inscribed under criteria (ii) and (iv) | F | UNESCO decision 41 COM 8B.11 | High | Same | 24 mo | Yes | No | M-18 | ⚠️ same |
 | U-06 | Heritage | First World Heritage site in Eritrea | F | EEAS; UCL; Eritrean MoI | High | — | 24 mo | Yes | No | M-18 | ⚠️ same |
 | U-07 | Heritage | Characterised as Africa's first modernist WH site | F/S | UCL, university, 2022 | Medium | A characterisation, may not be UNESCO's wording — attribute, don't assert | 24 mo | Yes | No | M-18 | ⚠️ attribute only |
-| U-08 | Heritage | Property ≈480 ha, ≈4,300 surveyed historical buildings | F | UNESCO / nomination material via extract | Medium-High | Figures unconfirmed at primary source | 24 mo | Yes | No | M-18 | ⚠️ confirm or omit |
+| U-08 | Heritage | Property ≈481 ha, with **more than 4,300** surveyed historical buildings (nomination material reports 4,340+) | F | UNESCO / nomination material via extract; UCL nomination dossier | Medium-High | Figures unconfirmed at primary source; sources give 480–481 ha and 4,300–4,340+ buildings, so publish rounded or omit | 24 mo | Yes | No | M-18 | ⚠️ confirm or omit |
 | U-09 | Heritage | Boundaries: Abba Shawel (N) – Gejeret/Tiravolo (S); escarpment edge (E) – Forto/Italian cemetery (W) | F | Same | Medium | Same | 24 mo | Yes | No | internal | ⚠️ internal use only |
 | U-10 | Heritage | Buffer zone follows urban fabric and natural features to hilltops/escarpment edge | F | Same | Medium | Same | 24 mo | No | No | internal | ⚠️ internal |
 | U-11 | Heritage | Planned form results from phases 1893–1941 under Italian colonial occupation | F | UNESCO brief synthesis extract | High | Same | 24 mo | Yes | No | M-18 | ⚠️ confirm |
@@ -101,9 +101,27 @@
 
 ## Summary counts
 
-- **Claims recorded:** 47
-- **Publication-eligible (✅) after editorial + ATA sign-off:** 26
-- **Conditional (⚠️):** 15
-- **Blocked / rejected (⛔):** 6 — cathedral date (source disagreement), Asmara population (variance), driving time (unreliable), Massawa precipitation figure (internally inconsistent, see climate brief §4), museum opening status (operational), marine-activity availability/safety (operational)
+Counts below are row counts of this register, verified programmatically against the tables above.
+
+- **Claims recorded:** 57 — U ×15, C ×12, AS ×11, MW ×10, ES ×8, TR ×1
+- **Publication-eligible (✅) after editorial + ATA sign-off:** 30
+- **Conditional (⚠️):** 21
+- **Blocked / rejected (⛔):** 6 — **AS-10** cathedral date (source disagreement), **AS-13** museum opening status (operational), **AS-15** Asmara population (variance), **MW-11** marine-activity availability/safety (operational), **ES-06** driving time (unreliable source), **ES-08** road condition/route status/realistic duration (operational)
 - **Requiring professional review:** 4 — U-13 (colonial-heritage tone), C-12 (altitude/health), MW-11 (water safety), TR-01 (entry/permits)
+
+One further figure was **found and rejected but is not a row here**, because it never reached claim status: the Massawa Dec–Feb precipitation figure (14 rainy days / 74 mm per month), which is internally inconsistent with the hot-desert classification and with FAO's 0–300 mm coastal range. It is recorded in the climate brief §4 so that it is not reused.
+
+## ID reconciliation — fact sheets vs this register
+
+The destination fact sheets number propositions locally. Where a fact-sheet ID differs from this register's ID for the **same** proposition, this register is canonical. No proposition is missing; only the label differs.
+
+| Fact-sheet ID | Proposition | Canonical ID here |
+|---|---|---|
+| AS-02 (Asmara sheet) | Asmara elevation ~2,325 m | **C-04** |
+| AS-03 (Asmara sheet) | Asmara at the escarpment edge of the Eritrean Highlands | **ES-03** |
+| AS-05 (Asmara sheet) | Historic centre inscribed by UNESCO, 2017 | **U-01 / U-02** |
+| AS-06 (Asmara sheet) | Asmara population — do not publish | **AS-15** |
+| MW-02 (Massawa sheet) | Massawa at sea level; hot desert climate | **C-08** |
+
+AS-01 and AS-04 carry the same meaning in both documents.
 - **APPROVED SOURCE FACT count: still zero.** Nothing has been through ATA confirmation or release. WP-03 raises the *evidence* level; only ATA and YK Systems can raise the *approval* level.
