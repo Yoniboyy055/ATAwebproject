@@ -60,10 +60,16 @@ The Drive connector available in this session supports `search_files`, `create_f
 
 ## 5. Post-commit upload record
 
-| Filename | Drive bytes | Match | Drive file ID |
-|---|---:|:---:|---|
-| `ATA_CLAUDE_WP03_DRIVE_UPLOAD_MANIFEST_v0.1.md` | *(recorded on upload)* | | *(recorded on upload)* |
-| `ATA_CLAUDE_WP03_COMPLETION_REPORT_v0.1.md` | *(recorded on upload)* | | *(recorded on upload)* |
+| Filename | Repo bytes | Drive bytes | Match | Drive file ID |
+|---|---:|---:|:---:|---|
+| `ATA_CLAUDE_WP03_DRIVE_UPLOAD_MANIFEST_v0.1.md` | 6,137 | 6,137 | ✅ | `1jdXoXdgtV4X0tWX8xCFfmHXZaQgHgizT` |
+| `ATA_CLAUDE_WP03_COMPLETION_REPORT_v0.1.md` | 15,846 | 15,846 | ✅ | `1jva8hqNkf6X-wzCKxTbP3uUSQ_vaj5Rh` |
+
+**Overall result: 19 of 19 deliverables uploaded, 19 of 19 byte-exact, zero exceptions.**
+
+**Known divergence — declared, not concealed.** The Drive copy of *this* manifest is the version uploaded at 6,137 bytes, whose §5 still reads "recorded on upload". A manifest cannot contain its own post-upload file ID at the moment it is uploaded — the ID does not exist until the upload completes. The repository version at the closure commit is therefore **canonical** for the two IDs above.
+
+Reconciling Drive would require a second upload of the same filename, because the connector cannot replace a file in place (§4). That would create exactly the class of stale same-name duplicate that WP-02 produced and that remains outstanding in §6. **The second upload was therefore not performed on Claude's own initiative; it is left as a YK Systems call.** Say the word and the completed manifest goes up, with the superseded ID recorded for manual trashing.
 
 ## 6. Outstanding manual cleanup — carried from WP-02, not a WP-03 blocker
 
