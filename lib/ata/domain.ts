@@ -84,16 +84,16 @@ export const CustomerRequestInputSchema = z.object({
   preferredContact: z.enum(['EMAIL', 'PHONE', 'WHATSAPP']),
   message: z.string().trim().max(2000).nullable(),
   consentAccepted: z.literal(true),
-  consentVersion: z.literal('wp02-test-v1'),
+  consentVersion: z.literal('wp03c-preview-v1'),
   website: z.string().max(0).optional(),
 })
 
 export const CustomerRequestReceiptSchema = z.object({
   requestId: z.string().min(1),
-  status: z.literal('NEW'),
+  status: z.literal('SUBMITTED'),
   testOnly: z.literal(true),
   message: z.literal(
-    'Your request was received for test review. It is not a confirmed booking, reservation, price, seat, or payment.'
+    'Your request has been received. This is not a confirmed booking, reservation, seat, price, or payment. A person at ATA will review it and reply on your chosen channel.'
   ),
 })
 

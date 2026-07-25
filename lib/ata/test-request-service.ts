@@ -23,9 +23,9 @@ export async function submitTestRequest(
 
   return CustomerRequestReceiptSchema.parse({
     requestId: `ATA-TEST-${crypto.randomUUID()}`,
-    status: 'NEW',
+    status: 'SUBMITTED',
     testOnly: true,
     message:
-      'Your request was received for test review. It is not a confirmed booking, reservation, price, seat, or payment.',
+      'Your request has been received. This is not a confirmed booking, reservation, seat, price, or payment. A person at ATA will review it and reply on your chosen channel.',
   })
 }

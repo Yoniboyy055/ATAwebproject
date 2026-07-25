@@ -11,7 +11,7 @@ const input = {
   preferredContact: 'EMAIL' as const,
   message: null,
   consentAccepted: true as const,
-  consentVersion: 'wp02-test-v1' as const,
+  consentVersion: 'wp03c-preview-v1' as const,
   website: '',
 }
 
@@ -20,14 +20,14 @@ describe('ATA test request service', () => {
     await expect(submitTestRequest(input, {})).rejects.toThrow('disabled')
   })
 
-  it('returns a test-only NEW receipt without confirmation language', async () => {
+  it('returns a test-only SUBMITTED receipt without confirmation language', async () => {
     const receipt = await submitTestRequest(input, {
       ATA_INTEGRATION_MODE: 'test',
       ATA_TEST_REQUESTS_ENABLED: 'true',
       VERCEL_ENV: 'preview',
     })
 
-    expect(receipt.status).toBe('NEW')
+    expect(receipt.status).toBe('SUBMITTED')
     expect(receipt.testOnly).toBe(true)
     expect(receipt.message).toContain('not a confirmed booking')
     expect(receipt.message).toContain('not')

@@ -47,7 +47,7 @@ describe('ATA tour and request domain', () => {
       preferredContact: 'EMAIL',
       message: null,
       consentAccepted: true,
-      consentVersion: 'wp02-test-v1',
+      consentVersion: 'wp03c-preview-v1',
       website: '',
     }
 

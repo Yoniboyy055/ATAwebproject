@@ -23,8 +23,9 @@ describe('WP-03 control boundaries', () => {
     const item = {id:'1',category:'tour',submittedValue:'x',source:'owner',sourceType:'written',submittedBy:'owner',
       submittedAt:new Date().toISOString(),reviewState:'VERIFIED',verificationNotes:null,verifiedBy:'v',verifiedAt:new Date().toISOString(),
       approvedBy:'a',approvedAt:new Date().toISOString(),publicationState:'APPROVED_FOR_PUBLICATION',
-      reviewAt:null,evidenceFileId:null,version:1,replacementId:null} as VerifiedContent
-    expect(mayPublish(item)).toBe(true)
+      reviewAt:null,evidenceFileId:null,version:1,replacementId:null,releasedBy:null,releasedAt:null} as VerifiedContent
+    expect(mayPublish(item)).toBe(false)
+    expect(mayPublish({...item,publicationState:'PUBLISHED',releasedBy:'r',releasedAt:new Date().toISOString()})).toBe(true)
     expect(mayPublish({...item,reviewState:'SUBMITTED'})).toBe(false)
   })
   it('limits audit events to staging and test', () => {

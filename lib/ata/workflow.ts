@@ -1,3 +1,5 @@
+import { CUSTOMER_STATUS_COPY } from './content-contract'
+
 export const RequestStatuses = [
   'DRAFT','SUBMITTED','UNDER_REVIEW','MORE_INFORMATION_REQUIRED','QUALIFIED',
   'QUOTE_PREPARATION','QUOTE_SENT','CUSTOMER_RESPONSE_PENDING',
@@ -22,7 +24,5 @@ export function transitionRequest(from: RequestStatus, to: RequestStatus, author
   return to
 }
 export function customerStatusMessage(status: RequestStatus) {
-  return status === 'MANUALLY_CONFIRMED'
-    ? 'Your booking was manually confirmed by an authorized ATA representative.'
-    : 'Your request is being reviewed. It is not a confirmed booking, reservation, seat, price, or payment.'
+  return CUSTOMER_STATUS_COPY[status]
 }

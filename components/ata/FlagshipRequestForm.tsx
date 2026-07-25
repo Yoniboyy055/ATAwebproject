@@ -1,13 +1,13 @@
 'use client'
 
 import { FormEvent, useState } from 'react'
+import { FLAGSHIP_PREVIEW_COPY } from '@/lib/ata/content-contract'
 
 const requestTypes = [
   ['INFORMATION', 'Ask a question'],
   ['CONSULTATION', 'Request a consultation'],
   ['QUOTE', 'Request a quote'],
   ['BOOKING_REQUEST', 'Request to book'],
-  ['PROVISIONAL_RESERVATION', 'Request a provisional reservation'],
 ] as const
 
 type Receipt = {
@@ -45,7 +45,7 @@ export default function FlagshipRequestForm() {
           preferredContact: form.get('preferredContact'),
           message: form.get('message') || null,
           consentAccepted: form.get('consentAccepted') === 'on',
-          consentVersion: 'wp02-test-v1',
+          consentVersion: 'wp03c-preview-v1',
           website: form.get('website') || '',
         }),
       })
@@ -75,16 +75,17 @@ export default function FlagshipRequestForm() {
         tabIndex={-1}
       >
         <p className="text-xs font-bold uppercase tracking-[0.18em]">
-          Test request received
+          Request received
         </p>
         <p className="mt-3 text-lg font-semibold">{receipt.message}</p>
-        <p className="mt-3 break-all font-mono text-xs">{receipt.requestId}</p>
+        <p className="mt-3 break-all font-mono text-xs">Reference: {receipt.requestId}</p>
       </div>
     )
   }
 
   return (
     <form className="space-y-5" onSubmit={submit}>
+      <p className="text-sm leading-6 text-slate-600">{FLAGSHIP_PREVIEW_COPY.requestIntro}</p>
       <div>
         <label htmlFor="type">What would you like ATA to review?</label>
         <select id="type" name="type" required className="w-full rounded-xl border-slate-300">
@@ -140,9 +141,9 @@ export default function FlagshipRequestForm() {
       <label className="flex items-start gap-3 text-sm font-normal text-slate-700">
         <input name="consentAccepted" type="checkbox" required className="mt-1 h-4 w-4" />
         <span>
-          I agree that this information may be used to review and respond to this
-          test request. Nothing submitted here confirms a booking, reservation,
-          seat, price, or payment.
+          I agree that ATA may use these details to respond to my request. This
+          working consent text requires ATA and professional review. This is not
+          a confirmed booking, reservation, seat, price, or payment.
         </span>
       </label>
 
@@ -157,7 +158,7 @@ export default function FlagshipRequestForm() {
         disabled={pending}
         className="w-full rounded-full bg-[#0b3b3c] px-6 py-4 font-bold text-white hover:bg-[#062a2b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c75b39] disabled:cursor-wait disabled:opacity-60"
       >
-        {pending ? 'Sending test request…' : 'Send test request'}
+        {pending ? 'Sending request…' : 'Submit request'}
       </button>
     </form>
   )
