@@ -108,6 +108,7 @@ Counts below are row counts of this register, verified programmatically against 
 - **Conditional (⚠️):** 21
 - **Blocked / rejected (⛔):** 6 — **AS-10** cathedral date (source disagreement), **AS-13** museum opening status (operational), **AS-15** Asmara population (variance), **MW-11** marine-activity availability/safety (operational), **ES-06** driving time (unreliable source), **ES-08** road condition/route status/realistic duration (operational)
 - **Requiring professional review:** 4 — U-13 (colonial-heritage tone), C-12 (altitude/health), MW-11 (water safety), TR-01 (entry/permits)
+- **APPROVED SOURCE FACT count: still zero.** Nothing has been through ATA confirmation or release. WP-03 raises the *evidence* level; only ATA and YK Systems can raise the *approval* level.
 
 One further figure was **found and rejected but is not a row here**, because it never reached claim status: the Massawa Dec–Feb precipitation figure (14 rainy days / 74 mm per month), which is internally inconsistent with the hot-desert classification and with FAO's 0–300 mm coastal range. It is recorded in the climate brief §4 so that it is not reused.
 
@@ -124,4 +125,3 @@ The destination fact sheets number propositions locally. Where a fact-sheet ID d
 | MW-02 (Massawa sheet) | Massawa at sea level; hot desert climate | **C-08** |
 
 AS-01 and AS-04 carry the same meaning in both documents.
-- **APPROVED SOURCE FACT count: still zero.** Nothing has been through ATA confirmation or release. WP-03 raises the *evidence* level; only ATA and YK Systems can raise the *approval* level.

@@ -146,13 +146,15 @@ Net: the package **reduces publication risk** and **raises visibility** of one p
 
 ## 9. Google Drive delivery
 
-**17 of 17 research files uploaded to `02 Discovery` (`16mC5WaB0VFA1mjM0G3ieDyv3ObHe1AMV`), all byte-exact against commit `6c7d6f2`. Zero upload exceptions.** This report and the Drive upload manifest are uploaded after the commit that creates them.
+**All 19 deliverables are present in `02 Discovery` (`16mC5WaB0VFA1mjM0G3ieDyv3ObHe1AMV`) and byte-exact against the final review commit.** The original 17 were uploaded byte-exact against `6c7d6f2`; the pre-merge review then corrected nine files, and each corrected file was re-uploaded and re-verified.
+
+**Ten superseded same-name duplicates now require manual trashing** — the connector cannot replace a file in place, so a correction necessarily leaves the pre-correction copy behind. Every superseded file ID is listed against its replacement in the Drive upload manifest §5a. Nothing is lost by trashing them: each is byte-identical to a pre-correction commit held in git history.
 
 Uploads went into the **existing** ATA Flagship Tour Launch structure; **no new top-level project folder was created**. Full per-file record — filename, version, byte size, match, Drive file ID — is in the Drive upload manifest.
 
 **Verification limit:** the connector exposes no checksum field, so byte-size + name + parent + readability is the strongest verification obtainable. Full end-to-end SHA-256 is not available through this interface. Stated, not glossed.
 
-**Manual cleanup outstanding (not a blocker):** two stale WP-02 duplicates in `03 Content and Assets` — `1m6lO6cd9_S6Qls9mdXStjiMneDWrV-mf` and `18-M5fg6BUltmcFhFEKmyxhvYOcfr6ZVh` — still require manual trashing, since the connector offers no delete operation.
+**Manual cleanup outstanding (not a blocker):** in addition to the ten above, two stale WP-02 duplicates in `03 Content and Assets` — `1m6lO6cd9_S6Qls9mdXStjiMneDWrV-mf` and `18-M5fg6BUltmcFhFEKmyxhvYOcfr6ZVh` — still require manual trashing, since the connector offers no delete operation.
 
 ## 10. Controls observed
 
@@ -176,7 +178,7 @@ Two source conflicts were found (cathedral date, Asmara population). Neither was
 
 ## 12. Pre-merge review corrections (YK Systems review pass)
 
-A final pre-merge review was performed against the WP-03 deliverables. **Seven defects were found in this package's own output and corrected.** None was a factual error in a researched claim; all were integrity, traceability or self-consistency defects — the class that quietly erodes an audit trail.
+A final pre-merge review was performed against the WP-03 deliverables. **Eight defects were found in this package's own output and corrected** — seven in the original deliverables, one introduced by the correction pass itself and caught before commit. None was a factual error in a researched claim; all were integrity, traceability or self-consistency defects — the class that quietly erodes an audit trail.
 
 | # | Defect | Severity | Files affected | Correction |
 |---|---|---|---|---|
@@ -187,6 +189,9 @@ A final pre-merge review was performed against the WP-03 deliverables. **Seven d
 | 5 | Three **unattributed comparative superlatives** in proposed copy, breaching this package's own P-17 and source-quality rule 6 | **Medium-High** | Asmara fact sheet; Massawa fact sheet; UNESCO brief §4.3; proposed copy §2 | Cinema Impero comparative now **attributed**; UNESCO wording changed to a non-comparative description matching criterion (iv); Massawa "one of the most striking places" removed |
 | 6 | The two-climate frame's closing line — "ATA will tell you honestly what that season looks like" — is an **operational service commitment**, was unmarked, and was characterised as a climate fact | Medium | climate brief §7.1/§8; proposed copy §5/§6 | Line split out, marked **[ATA CONFIRMATION REQUIRED]**, field mapping corrected to **Blocked**, and the two over-broad compliance claims in proposed copy §6 narrowed to what is actually true |
 | 7 | Dashboard matrix recorded 7 of the 10 required fields — no **confidence**, no **limitations**, no claim-ID traceability | Medium | dashboard matrix | Companion **evidence-detail table** added, keyed to the same `D-` IDs, carrying source claim IDs, confidence and limitations for all 18 rows |
+| 8 | **Introduced by correction #1 and caught in the same pass:** restructuring the summary section orphaned the "APPROVED SOURCE FACT count: still zero" bullet, stranding it outside the list it belongs to | Low | claims register | Bullet restored to the summary-counts list |
+
+Defect 8 is recorded rather than quietly fixed because it is the honest shape of this work: a correction pass can introduce its own defects, and the only defence is re-reading the corrected file rather than trusting the edit.
 
 Additionally, U-08's figures were refined from "≈480 ha / ≈4,300 buildings" to reflect the fuller source range (**480–481 ha; 4,300–4,340+ buildings**), and the publication precondition CD-02 was updated to match. The figures remain **confirm-or-omit**.
 
