@@ -2,8 +2,8 @@
 
 **Destination folder:** `ATA Flagship Tour Launch / 02 Discovery`
 **Folder ID:** `16mC5WaB0VFA1mjM0G3ieDyv3ObHe1AMV`
-**Source commit:** `ef132a4` on `claude/wp03-verified-destination-claims-research`
-**Supersedes:** `6c7d6f2` — nine files were corrected by the pre-merge review pass (completion report §12)
+**Source commit:** `a48dcca` on `claude/wp03-verified-destination-claims-research`
+**Supersedes:** `6c7d6f2` and `f6ef016` — nine deliverables were corrected by the pre-merge review pass (completion report §12)
 **Baseline:** `ea65b7a`
 **Upload date:** 25 July 2026 (initial) · 25 July 2026 (corrected re-upload)
 
@@ -63,7 +63,7 @@ The Drive connector available in this session supports `search_files`, `create_f
 
 | Filename | Repo bytes | Drive bytes | Match | Drive file ID |
 |---|---:|---:|:---:|---|
-| `ATA_CLAUDE_WP03_COMPLETION_REPORT_v0.1.md` | 20,973 | 20,973 | ✅ | `__COMPLETION_ID__` |
+| `ATA_CLAUDE_WP03_COMPLETION_REPORT_v0.1.md` | 20,973 | 20,973 | ✅ | `17rOkDSXjE6ksGPjO775nanewAI-0_vBr` |
 | `ATA_CLAUDE_WP03_DRIVE_UPLOAD_MANIFEST_v0.1.md` | *(this file)* | — | — | recorded in the review reply |
 
 **Overall result: 19 of 19 deliverables present in Drive and byte-exact against the final commit.**
@@ -84,7 +84,7 @@ The pre-merge review corrected nine deliverables. Because the connector cannot r
 | `..._DASHBOARD_CONTENT_RECOMMENDATION_MATRIX_v0.1.md` | `15DSfj__Qf3eF9lB9qJPkCYg5TFZWYqvv` | `1YW647KyXgBoMy6P6gQze4nyp-aZF1cfd` |
 | `..._PROPOSED_COPY_RECOMMENDATIONS_v0.1.md` | `15feqo17SHlDay8hzOfYWPcL5jQ0tSW17` | `1cBy7u2YBJqMJPCJC3eqSaNDh8DgIoW0c` |
 | `..._PROHIBITED_HIGH_RISK_CLAIMS_REGISTER_v0.1.md` | `1CYlBksV-IxLCdtj4k-tjbTsc91bglW8U` | `1-r6RZ5x3OPeWQ9cejxk3Qth9C2JIerVf` |
-| `..._COMPLETION_REPORT_v0.1.md` | `1jva8hqNkf6X-wzCKxTbP3uUSQ_vaj5Rh` | `__COMPLETION_ID__` |
+| `..._COMPLETION_REPORT_v0.1.md` | `1jva8hqNkf6X-wzCKxTbP3uUSQ_vaj5Rh` | `17rOkDSXjE6ksGPjO775nanewAI-0_vBr` |
 | `..._DRIVE_UPLOAD_MANIFEST_v0.1.md` | `1jdXoXdgtV4X0tWX8xCFfmHXZaQgHgizT` | recorded in the review reply |
 
 **Every superseded copy is byte-identical to a pre-correction commit**, so nothing is lost by trashing them; the repository history holds those versions.
