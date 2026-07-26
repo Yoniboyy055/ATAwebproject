@@ -1,108 +1,23 @@
-import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import FlagshipRequestForm from '@/components/ata/FlagshipRequestForm'
+import PreviewBanner from '@/components/ata/PreviewBanner'
+import PublicNav from '@/components/ata/PublicNav'
 import { getAtaFeatureFlags } from '@/lib/ata/feature-flags'
-import { FLAGSHIP_PREVIEW_COPY } from '@/lib/ata/content-contract'
 
-export const metadata: Metadata = {
-  title: 'ATA Flagship Foundation Preview',
-  description: 'A non-production technical preview with no verified commercial tour facts.',
-  robots: { index: false, follow: false },
-}
+export const metadata={title:'ATA flagship journey preview',robots:{index:false,follow:false}}
 
-export default function FlagshipPreviewPage() {
-  if (!getAtaFeatureFlags().flagshipPreview) notFound()
-
-  return (
-    <main className="min-h-screen bg-[#f3efe4] text-[#102f30]">
-      <section className="relative overflow-hidden border-b border-[#102f30]/15">
-        <div className="absolute inset-y-0 right-0 hidden w-[38%] bg-[#0b3b3c] lg:block" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 md:py-24 lg:grid-cols-[1.35fr_.65fr] lg:px-12">
-          <div>
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.24em] text-[#a43f2c]">
-              {FLAGSHIP_PREVIEW_COPY.eyebrow}
-            </p>
-            <h1 className="mt-8 max-w-4xl text-5xl font-black leading-[0.92] tracking-[-0.055em] sm:text-7xl lg:text-8xl">
-              {FLAGSHIP_PREVIEW_COPY.title}
-            </h1>
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-[#315253]">
-              {FLAGSHIP_PREVIEW_COPY.summary}
-            </p>
-          </div>
-
-          <aside className="relative z-10 self-end rounded-[2rem] bg-[#f8f5ec] p-7 shadow-2xl shadow-black/10 lg:translate-y-16">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a43f2c]">
-              Controlled preview
-            </p>
-            <h2 className="mt-4 text-3xl font-black leading-tight">
-              Flagship journey
-            </h2>
-            <dl className="mt-8 space-y-4 border-t border-[#102f30]/15 pt-5 text-sm">
-              <div className="flex justify-between gap-6">
-                <dt>Publication</dt><dd className="font-bold">Draft</dd>
-              </div>
-              <div className="flex justify-between gap-6">
-                <dt>Commercial facts</dt><dd className="font-bold">Hidden</dd>
-              </div>
-              <div className="flex justify-between gap-6">
-                <dt>Payments</dt><dd className="font-bold">Disabled</dd>
-              </div>
-              <div className="flex justify-between gap-6">
-                <dt>Request service</dt><dd className="font-bold">Test only</dd>
-              </div>
-            </dl>
-          </aside>
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[.8fr_1.2fr] lg:px-12 lg:py-28">
-        <div>
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-[#a43f2c]">
-            Verification ledger
-          </p>
-          <h2 className="mt-5 text-4xl font-black tracking-[-0.04em]">
-            Approved facts only.
-          </h2>
-          <p className="mt-5 max-w-lg leading-7 text-[#315253]">
-            {FLAGSHIP_PREVIEW_COPY.ledger}
-          </p>
-          <div className="mt-10 space-y-3">
-            {['Duration', 'Availability', 'Itinerary', 'Inclusions', 'Policies'].map((item) => (
-              <div key={item} className="flex items-center justify-between border-b border-[#102f30]/15 py-3">
-                <span className="font-semibold">{item}</span>
-                <span className="rounded-full bg-[#d8d0bd] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider">
-                  Awaiting approval
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <article className="border-l-4 border-[#a43f2c] bg-white p-5">
-              <h3 className="font-black">{FLAGSHIP_PREVIEW_COPY.pricePlaceholder}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#315253]">{FLAGSHIP_PREVIEW_COPY.priceDetail}</p>
-            </article>
-            <article className="border-l-4 border-[#0b3b3c] bg-white p-5">
-              <h3 className="font-black">{FLAGSHIP_PREVIEW_COPY.datePlaceholder}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#315253]">{FLAGSHIP_PREVIEW_COPY.dateDetail}</p>
-            </article>
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] bg-white p-6 shadow-xl shadow-[#102f30]/10 sm:p-10">
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a43f2c]">
-            Test-only workflow
-          </p>
-          <h2 className="mt-4 text-3xl font-black tracking-[-0.035em]">
-            Ask ATA to review a request
-          </h2>
-          <p className="mb-8 mt-3 text-sm leading-6 text-slate-600">
-            This preview stores nothing and sends no email, SMS, payment, or
-            production notification.
-          </p>
-          <FlagshipRequestForm />
-        </div>
-      </section>
-    </main>
-  )
+export default function FlagshipPreviewPage(){
+  if(!getAtaFeatureFlags().flagshipPreview) notFound()
+  return <main className="min-h-screen bg-[#f4f1e9] text-[#17393b]">
+    <PreviewBanner/><PublicNav/>
+    <section className="relative min-h-[680px] overflow-hidden bg-[#0b3032] text-white"><Image src="/images/dest-asmara-1200.webp" alt="A view of Asmara" fill priority className="object-cover opacity-55" sizes="100vw"/><div className="absolute inset-0 bg-gradient-to-t from-[#092a2c] via-[#092a2c]/45 to-transparent"/><div className="relative mx-auto flex min-h-[680px] max-w-7xl items-end px-5 pb-20 lg:px-10"><div className="max-w-4xl"><p className="text-xs font-bold uppercase tracking-[.28em] text-[#f3cb7a]">Flagship working experience · Controlled preview</p><h1 className="mt-6 font-serif text-6xl leading-[.92] sm:text-7xl lg:text-8xl">Asmara to Massawa.<br/><em className="font-normal text-[#f3cb7a]">A journey in descent.</em></h1><p className="mt-7 max-w-2xl text-lg leading-8 text-white/75">A proposed journey framework connecting the highlands, the route toward the coast and Massawa. Operational details remain subject to ATA review.</p></div></div></section>
+    <section className="border-b border-[#17393b]/15"><div className="mx-auto grid max-w-7xl gap-px bg-[#17393b]/15 lg:grid-cols-3">{[['Price','Request current pricing','ATA has not published a price.'],['Dates','Dates to be confirmed','Registration of interest is open in this preview.'],['Confirmation','Manual confirmation only','A request or quote is not confirmation.']].map(([a,b,c])=><article key={a} className="bg-[#f4f1e9] p-7 lg:p-10"><p className="text-xs font-bold uppercase tracking-wider text-[#a3482e]">{a}</p><h2 className="mt-3 font-serif text-3xl">{b}</h2><p className="mt-3 text-sm leading-6 text-[#557173]">{c}</p></article>)}</div></section>
+    <section className="mx-auto max-w-7xl px-5 py-24 lg:px-10 lg:py-32"><div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr]"><div><p className="text-xs font-bold uppercase tracking-[.25em] text-[#a3482e]">Journey framework</p><h2 className="mt-5 font-serif text-5xl leading-none">Three chapters, one considered route.</h2><p className="mt-6 leading-7 text-[#557173]">Public language stays intentionally neutral until ATA approves operating facts, exact timings, inclusions and service promises.</p></div><div className="space-y-5">{[['01','Asmara','A highland starting point, introduced through carefully verified destination context.'],['02','The road toward the coast','A changing landscape between highland and sea, presented without unapproved timings or route promises.'],['03','Massawa','A coastal chapter framed around place and atmosphere, pending ATA’s confirmed itinerary.']].map(([n,t,d])=><article key={n} className="grid gap-5 rounded-2xl border border-[#17393b]/15 bg-white p-6 sm:grid-cols-[70px_1fr]"><span className="font-serif text-4xl text-[#a3482e]">{n}</span><div><h3 className="font-serif text-3xl">{t}</h3><p className="mt-3 leading-7 text-[#557173]">{d}</p></div></article>)}</div></div></section>
+    <section className="bg-[#cbdad3] px-5 py-24 lg:px-10"><div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-2"><div className="relative min-h-[480px] overflow-hidden rounded-[2rem]"><Image src="/images/dest-massawa-800.webp" alt="A view of Massawa" fill className="object-cover" sizes="(max-width:1024px)100vw,50vw"/></div><div className="rounded-[2rem] bg-white p-8 lg:p-12"><p className="text-xs font-bold uppercase tracking-[.25em] text-[#a3482e]">Important information</p><h2 className="mt-5 font-serif text-4xl">What remains controlled</h2><ul className="mt-7 space-y-4 text-sm leading-6">{['Exact itinerary and duration await ATA approval.','Accommodation, transport and inclusions are not yet published.','Seasonality and climate information will use approved source wording.','Dates, capacity and available spaces are not invented.','Images are subject to media-rights review before release.'].map(x=><li key={x} className="border-b border-[#17393b]/10 pb-4">— {x}</li>)}</ul></div></div></section>
+    <section id="request" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 lg:grid-cols-[.8fr_1.2fr] lg:px-10 lg:py-32"><div><p className="text-xs font-bold uppercase tracking-[.25em] text-[#a3482e]">Start a conversation</p><h2 className="mt-5 font-serif text-5xl leading-none">Ask ATA to review your request.</h2><p className="mt-6 leading-7 text-[#557173]">This preview does not create a booking. ATA reviews the request, may ask for more information and may prepare a quote. Only “Manually confirmed” represents confirmation.</p><Link href="/ata-review" className="mt-8 inline-block border-b border-[#17393b] pb-2 font-bold">Return to review guide</Link></div><div className="rounded-[2rem] bg-white p-6 shadow-xl shadow-[#17393b]/10 sm:p-10"><FlagshipRequestForm/></div></section>
+    <div className="fixed bottom-3 left-3 right-3 z-40 flex gap-2 rounded-2xl border border-white/15 bg-[#0b3032]/95 p-2 text-sm text-white shadow-2xl backdrop-blur md:hidden"><a href="#request" className="flex-1 rounded-xl bg-[#f0b44b] px-4 py-3 text-center font-bold text-[#17393b]">Request a conversation</a></div>
+  </main>
 }
 
