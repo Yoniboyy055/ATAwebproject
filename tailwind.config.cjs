@@ -6,12 +6,30 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        serif: ['var(--font-display)', 'Georgia', 'Cambria', 'serif'],
+        sans: ['var(--font-body)', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+      },
       colors: {
         primary: {
           DEFAULT: '#0f4c5c',
           400: '#2b6e77',
         },
         accent: "#0aa95a",
+        ata: {
+          ink: '#101f2b',
+          'ink-soft': '#5a6b78',
+          'ink-muted': '#8b98a3',
+          canvas: '#f7f3ec',
+          shell: '#efe9de',
+          brass: '#a2762d',
+          'brass-light': '#c9a35a',
+          hairline: '#e2dacb',
+        },
+      },
+      letterSpacing: {
+        eyebrow: '0.24em',
+        display: '-0.035em',
       },
       borderRadius: {
         soft: '0.75rem',

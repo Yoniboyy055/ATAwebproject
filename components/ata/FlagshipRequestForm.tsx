@@ -15,6 +15,11 @@ type Receipt = {
   message: string
 }
 
+const field =
+  'w-full border border-ata-hairline bg-white px-4 py-3.5 text-[15px] font-light text-ata-ink transition-colors focus:border-ata-brass focus:outline-none'
+const fieldLabel =
+  'mb-2.5 block text-[10px] font-medium uppercase tracking-eyebrow text-ata-ink-muted'
+
 export default function FlagshipRequestForm() {
   const [receipt, setReceipt] = useState<Receipt | null>(null)
   const [error, setError] = useState('')
@@ -70,25 +75,31 @@ export default function FlagshipRequestForm() {
   if (receipt) {
     return (
       <div
-        className="rounded-3xl border border-emerald-300 bg-emerald-50 p-6 text-emerald-950"
+        className="border-l-2 border-ata-brass bg-ata-canvas px-7 py-8"
         role="status"
         tabIndex={-1}
       >
-        <p className="text-xs font-bold uppercase tracking-[0.18em]">
+        <p className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-brass">
           Request received
         </p>
-        <p className="mt-3 text-lg font-semibold">{receipt.message}</p>
-        <p className="mt-3 break-all font-mono text-xs">Reference: {receipt.requestId}</p>
+        <p className="mt-4 font-serif text-[24px] font-light leading-snug text-ata-ink">
+          {receipt.message}
+        </p>
+        <p className="mt-5 break-all text-[13px] font-light text-ata-ink-soft">
+          Your reference: <span className="font-mono">{receipt.requestId}</span>
+        </p>
       </div>
     )
   }
 
   return (
-    <form className="space-y-5" onSubmit={submit}>
-      <p className="text-sm leading-6 text-slate-600">{FLAGSHIP_PREVIEW_COPY.requestIntro}</p>
+    <form className="space-y-7" onSubmit={submit}>
+      <p className="text-[16px] font-light leading-8 text-ata-ink-soft">
+        {FLAGSHIP_PREVIEW_COPY.requestIntro}
+      </p>
       <div>
-        <label htmlFor="type">What would you like ATA to review?</label>
-        <select id="type" name="type" required className="w-full rounded-xl border-slate-300">
+        <label htmlFor="type" className={fieldLabel}>How can we help?</label>
+        <select id="type" name="type" required className={field}>
           {requestTypes.map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -97,40 +108,40 @@ export default function FlagshipRequestForm() {
         </select>
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         <div>
-          <label htmlFor="fullName">Full name</label>
-          <input id="fullName" name="fullName" required className="w-full rounded-xl border-slate-300" />
+          <label htmlFor="fullName" className={fieldLabel}>Full name</label>
+          <input id="fullName" name="fullName" required className={field} />
         </div>
         <div>
-          <label htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" required className="w-full rounded-xl border-slate-300" />
+          <label htmlFor="email" className={fieldLabel}>Email</label>
+          <input id="email" name="email" type="email" required className={field} />
         </div>
         <div>
-          <label htmlFor="phone">Phone</label>
-          <input id="phone" name="phone" type="tel" required className="w-full rounded-xl border-slate-300" />
+          <label htmlFor="phone" className={fieldLabel}>Phone</label>
+          <input id="phone" name="phone" type="tel" required className={field} />
         </div>
         <div>
-          <label htmlFor="preferredContact">Preferred contact</label>
-          <select id="preferredContact" name="preferredContact" className="w-full rounded-xl border-slate-300">
+          <label htmlFor="preferredContact" className={fieldLabel}>Preferred contact</label>
+          <select id="preferredContact" name="preferredContact" className={field}>
             <option value="EMAIL">Email</option>
             <option value="PHONE">Phone</option>
             <option value="WHATSAPP">WhatsApp</option>
           </select>
         </div>
         <div>
-          <label htmlFor="travelerCount">Travelers, if known</label>
-          <input id="travelerCount" name="travelerCount" type="number" min="1" max="30" className="w-full rounded-xl border-slate-300" />
+          <label htmlFor="travelerCount" className={fieldLabel}>Travellers, if known</label>
+          <input id="travelerCount" name="travelerCount" type="number" min="1" max="30" className={field} />
         </div>
         <div>
-          <label htmlFor="preferredDate">Preferred date, if known</label>
-          <input id="preferredDate" name="preferredDate" type="date" className="w-full rounded-xl border-slate-300" />
+          <label htmlFor="preferredDate" className={fieldLabel}>Preferred date, if known</label>
+          <input id="preferredDate" name="preferredDate" type="date" className={field} />
         </div>
       </div>
 
       <div>
-        <label htmlFor="message">What should ATA know?</label>
-        <textarea id="message" name="message" rows={4} maxLength={2000} className="w-full rounded-xl border-slate-300" />
+        <label htmlFor="message" className={fieldLabel}>Tell us about your trip</label>
+        <textarea id="message" name="message" rows={5} maxLength={2000} className={field} />
       </div>
 
       <div className="hidden" aria-hidden="true">
@@ -138,17 +149,19 @@ export default function FlagshipRequestForm() {
         <input id="website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <label className="flex items-start gap-3 text-sm font-normal text-slate-700">
-        <input name="consentAccepted" type="checkbox" required className="mt-1 h-4 w-4" />
+      <label className="flex items-start gap-3.5 border-t border-ata-hairline pt-7 text-[14px] font-light leading-7 text-ata-ink-soft">
+        <input name="consentAccepted" type="checkbox" required className="mt-1.5 h-4 w-4 shrink-0" />
         <span>
           I agree that ATA may use these details to respond to my request. This
-          working consent text requires ATA and professional review. This is not
-          a confirmed booking, reservation, seat, price, or payment.
+          is not a confirmed booking, reservation, seat, price, or payment.
         </span>
       </label>
 
       {error && (
-        <p className="rounded-xl bg-rose-50 p-3 text-sm font-semibold text-rose-800" role="alert">
+        <p
+          className="border-l-2 border-rose-500 bg-rose-50 px-4 py-3 text-[14px] font-normal text-rose-900"
+          role="alert"
+        >
           {error}
         </p>
       )}
@@ -156,9 +169,9 @@ export default function FlagshipRequestForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-[#0b3b3c] px-6 py-4 font-bold text-white hover:bg-[#062a2b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c75b39] disabled:cursor-wait disabled:opacity-60"
+        className="w-full bg-ata-ink px-6 py-[18px] text-[11px] font-medium uppercase tracking-eyebrow text-white transition-colors hover:bg-ata-brass focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-ata-brass disabled:cursor-wait disabled:opacity-60"
       >
-        {pending ? 'Sending request…' : 'Submit request'}
+        {pending ? 'Sending…' : 'Send to ATA'}
       </button>
     </form>
   )

@@ -21,15 +21,15 @@ export function getAtaFeatureFlags(
 ): AtaFeatureFlags {
   const testMode =
     env.ATA_INTEGRATION_MODE === 'test' && env.VERCEL_ENV !== 'production'
-  const wp04vPreview =
-    env.VERCEL_ENV === 'preview' &&
-    env.VERCEL_GIT_COMMIT_REF ===
-      'codex/ata-wp04v-visible-experience-preview'
+  // Any Vercel preview deployment, never production. Previously pinned to a
+  // single branch name, which silently 404'd the journey page on every other
+  // preview — including review branches for this same work.
+  const previewDeployment = env.VERCEL_ENV === 'preview'
   return {
     flagshipPreview:
-      wp04vPreview || (testMode && enabled(env.ATA_FLAGSHIP_PREVIEW_ENABLED)),
+      previewDeployment || (testMode && enabled(env.ATA_FLAGSHIP_PREVIEW_ENABLED)),
     testRequestService:
-      wp04vPreview || (testMode && enabled(env.ATA_TEST_REQUESTS_ENABLED)),
+      previewDeployment || (testMode && enabled(env.ATA_TEST_REQUESTS_ENABLED)),
     livePayments: false,
     productionNotifications: false,
     customerAccounts: testMode && enabled(env.ATA_CUSTOMER_ACCOUNTS_ENABLED),
@@ -37,7 +37,7 @@ export function getAtaFeatureFlags(
     legacySharedPasswordAdmin:
       testMode && enabled(env.ATA_LEGACY_ADMIN_ENABLED),
     stagingAdmin:
-      wp04vPreview || (testMode && enabled(env.ATA_STAGING_ADMIN_ENABLED)),
+      previewDeployment || (testMode && enabled(env.ATA_STAGING_ADMIN_ENABLED)),
     stagingPersistence:
       testMode && enabled(env.ATA_STAGING_PERSISTENCE_ENABLED),
   }
