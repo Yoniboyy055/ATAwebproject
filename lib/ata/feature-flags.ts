@@ -21,17 +21,23 @@ export function getAtaFeatureFlags(
 ): AtaFeatureFlags {
   const testMode =
     env.ATA_INTEGRATION_MODE === 'test' && env.VERCEL_ENV !== 'production'
-
+  const wp04vPreview =
+    env.VERCEL_ENV === 'preview' &&
+    env.VERCEL_GIT_COMMIT_REF ===
+      'codex/ata-wp04v-visible-experience-preview'
   return {
-    flagshipPreview: testMode && enabled(env.ATA_FLAGSHIP_PREVIEW_ENABLED),
-    testRequestService: testMode && enabled(env.ATA_TEST_REQUESTS_ENABLED),
+    flagshipPreview:
+      wp04vPreview || (testMode && enabled(env.ATA_FLAGSHIP_PREVIEW_ENABLED)),
+    testRequestService:
+      wp04vPreview || (testMode && enabled(env.ATA_TEST_REQUESTS_ENABLED)),
     livePayments: false,
     productionNotifications: false,
     customerAccounts: testMode && enabled(env.ATA_CUSTOMER_ACCOUNTS_ENABLED),
     publicReviews: false,
     legacySharedPasswordAdmin:
       testMode && enabled(env.ATA_LEGACY_ADMIN_ENABLED),
-    stagingAdmin: testMode && enabled(env.ATA_STAGING_ADMIN_ENABLED),
+    stagingAdmin:
+      wp04vPreview || (testMode && enabled(env.ATA_STAGING_ADMIN_ENABLED)),
     stagingPersistence:
       testMode && enabled(env.ATA_STAGING_PERSISTENCE_ENABLED),
   }

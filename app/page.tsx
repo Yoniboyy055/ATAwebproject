@@ -1,54 +1,52 @@
-import DesignHomePage from '@/components/DesignHomePage'
-import Script from 'next/script'
+import Image from 'next/image'
+import Link from 'next/link'
 import type { Metadata } from 'next'
+import { ArrowRight, BadgeCheck, CalendarClock, CheckCircle2, Headphones, MapPin, ShieldCheck, Users } from 'lucide-react'
+import PreviewBanner from '@/components/ata/PreviewBanner'
+import PublicNav from '@/components/ata/PublicNav'
 
-export const metadata: Metadata = {
-  title: 'Amanuel Travel Agency · Asmara, Eritrea — Connecting Eritrea to the World',
-  description: 'Amanuel Travel Agency — premium travel support from Asmara, Eritrea. Air tickets, diaspora travel, group coordination, and human consultation. Real people, real office, no bots.',
-  themeColor: '#0A1628',
-  authors: [{ name: 'Amanuel Travel Agency', url: 'https://amanueltravel.com' }],
-  openGraph: {
-    type: 'website',
-    title: 'Amanuel Travel Agency — Connecting Eritrea to the World',
-    description: 'Premium travel support from Asmara. Air tickets, diaspora travel, consultations. Real people. Real office.',
-    url: 'https://amanueltravel.com',
-    siteName: 'Amanuel Travel Agency',
-    images: [{ url: '/images/hero.jpg', width: 1500, height: 663, alt: 'Asmara boulevard · Amanuel Travel Agency' }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Amanuel Travel Agency — Connecting Eritrea to the World',
-    description: 'Premium travel support from Asmara. Air tickets, diaspora travel, consultations. Real people. Real office.',
-    images: ['/images/hero.jpg'],
-  },
-}
+export const metadata: Metadata = { title:'Amanuel Travel Agency — Eritrea journeys shaped with care', description:'A premium preview of ATA’s human-guided Eritrea travel experience.', robots:{index:false,follow:false} }
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'TravelAgency',
-  name: 'Amanuel Travel Agency',
-  description: 'Premium travel support from Asmara, Eritrea — air tickets, diaspora travel, group coordination, and human consultation.',
-  url: 'https://amanueltravel.com',
-  telephone: '+291-1-180240',
-  email: 'amanueltravel@gmail.com',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: 'Warsay Street, House 189, Alpha Building',
-    addressLocality: 'Asmara',
-    addressCountry: 'ER',
-  },
-  sameAs: ['https://www.facebook.com/AmanuelTravelAgency'],
-}
+const destinations=[
+  {name:'Asmara',note:'Highland capital',image:'/images/dest-asmara-800.webp'},
+  {name:'Massawa',note:'Red Sea port city',image:'/images/dest-massawa-800.webp'},
+  {name:'Dahlak',note:'Island landscapes',image:'/images/dest-dahlak-800.webp'},
+  {name:'Keren',note:'Highland destination',image:'/images/dest-keren-800.webp'},
+]
 
-export default function Home() {
-  return (
-    <>
-      <Script
-        id="jsonld-travel-agency"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <DesignHomePage />
-    </>
-  )
+export default function Home(){
+ return <main className="min-h-screen bg-white text-[#102a43]">
+  <PreviewBanner/><PublicNav/>
+  <section className="relative isolate min-h-[690px] overflow-hidden bg-[#071c32] text-white lg:min-h-[760px]">
+   <Image src="/images/dest-asmara-1200.webp" alt="Panoramic view across Asmara" fill priority className="object-cover object-center" sizes="100vw"/>
+   <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,22,39,.94)_0%,rgba(4,22,39,.77)_43%,rgba(4,22,39,.25)_72%,rgba(4,22,39,.42)_100%)]"/>
+   <div className="relative mx-auto grid min-h-[690px] max-w-[1440px] items-end px-5 pb-24 pt-28 lg:min-h-[760px] lg:grid-cols-[1fr_390px] lg:items-center lg:px-8 lg:py-24">
+    <div className="max-w-3xl">
+     <div className="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[.2em] text-[#e6bd67]"><span className="h-px w-10 bg-[#e6bd67]"/>Travel designed around you</div>
+     <h1 className="max-w-3xl font-serif text-6xl font-semibold leading-[.88] tracking-[-.045em] sm:text-7xl lg:text-[6.6rem]">Return to Eritrea.<br/><span className="text-[#e6bd67]">Travel with care.</span></h1>
+     <p className="mt-7 max-w-xl text-lg leading-8 text-white/82">From first questions to final manual confirmation, ATA brings personal guidance and a controlled process to every journey.</p>
+     <div className="mt-9 flex flex-wrap gap-3"><Link href="/tours/flagship-preview" className="inline-flex items-center gap-2 rounded-lg bg-[#c58d22] px-6 py-4 font-bold text-white hover:bg-[#dda43a]">Explore the flagship journey <ArrowRight size={18}/></Link><Link href="#how-it-works" className="rounded-lg border border-white/35 bg-white/5 px-6 py-4 font-bold backdrop-blur hover:bg-white/10">See how ATA works</Link></div>
+    </div>
+    <aside className="mt-12 hidden overflow-hidden rounded-2xl border border-white/20 bg-white/95 text-[#102a43] shadow-2xl shadow-black/30 backdrop-blur lg:block">
+      <div className="border-b border-[#dce4ea] px-6 py-5"><p className="text-xs font-bold uppercase tracking-[.16em] text-[#a16e16]">Start with a conversation</p><h2 className="mt-2 font-serif text-3xl">What are you planning?</h2></div>
+      <div className="space-y-3 p-5">{[['Destination','Eritrea'],['Travel dates','Dates to be confirmed'],['Travellers','Tell ATA about your group']].map(([a,b])=><div key={a} className="rounded-xl border border-[#dce4ea] p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-[#6a7c8f]">{a}</p><p className="mt-1 text-sm font-semibold">{b}</p></div>)}<Link href="/tours/flagship-preview#request" className="block rounded-xl bg-[#0b3155] px-5 py-4 text-center font-bold text-white">Request personal guidance</Link><p className="text-center text-[11px] leading-4 text-[#687a8d]">A request is not a booking confirmation.</p></div>
+    </aside>
+   </div>
+   <div className="absolute bottom-0 left-0 right-0 border-t border-white/15 bg-[#071c32]/88 backdrop-blur"><div className="mx-auto grid max-w-[1440px] grid-cols-2 divide-x divide-white/15 px-5 md:grid-cols-4 lg:px-8">{[[Users,'Human guidance'],[ShieldCheck,'Controlled process'],[BadgeCheck,'Facts reviewed'],[Headphones,'ATA support']].map(([Icon,label])=><div key={String(label)} className="flex items-center justify-center gap-2 py-4 text-xs font-semibold text-white/85"><Icon size={17} className="text-[#e6bd67]"/>{String(label)}</div>)}</div></div>
+  </section>
+
+  <section className="mx-auto max-w-[1440px] px-5 py-20 lg:px-8 lg:py-24">
+   <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[#a16e16]">Featured experience</p><h2 className="mt-3 font-serif text-4xl font-semibold text-[#09233f] sm:text-5xl">One remarkable route. Carefully presented.</h2></div><Link href="/tours/flagship-preview" className="inline-flex items-center gap-2 font-bold text-[#0b4c78]">View the full journey <ArrowRight size={18}/></Link></div>
+   <article className="mt-10 grid overflow-hidden rounded-3xl border border-[#dbe3ea] bg-[#f7f9fb] shadow-[0_24px_70px_rgba(9,35,63,.12)] lg:grid-cols-[1.25fr_.75fr]">
+    <div className="relative min-h-[430px]"><Image src="/images/dest-massawa.jpg" alt="View toward Massawa and the Red Sea" fill className="object-cover" sizes="(max-width:1024px)100vw,65vw"/><div className="absolute inset-0 bg-gradient-to-t from-[#071c32]/85 via-transparent to-transparent"/><div className="absolute bottom-7 left-7 right-7 text-white"><span className="rounded-md bg-[#c58d22] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider">ATA flagship preview</span><h3 className="mt-4 font-serif text-4xl font-semibold sm:text-5xl">Asmara to Massawa</h3><p className="mt-2 text-white/80">From highland atmosphere toward the Red Sea coast.</p></div></div>
+    <div className="flex flex-col p-7 lg:p-9"><div className="grid grid-cols-2 gap-3">{[[MapPin,'Route','Asmara → Massawa'],[CalendarClock,'Dates','To be confirmed'],[Users,'Format','Guided by ATA'],[CheckCircle2,'Pricing','Request current pricing']].map(([Icon,a,b])=><div key={String(a)} className="rounded-xl border border-[#dbe3ea] bg-white p-4"><Icon size={18} className="text-[#b67f1f]"/><p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-[#718296]">{String(a)}</p><p className="mt-1 text-sm font-bold">{String(b)}</p></div>)}</div><p className="mt-6 leading-7 text-[#5d7084]">A controlled journey framework connecting ATA’s destination storytelling, human review and request workflow. Exact timings, inclusions and operational details remain subject to ATA approval.</p><Link href="/tours/flagship-preview" className="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#092d50] px-5 py-4 font-bold text-white">Explore journey details <ArrowRight size={18}/></Link></div>
+   </article>
+  </section>
+
+  <section id="destinations" className="bg-[#eef3f6] py-20 lg:py-24"><div className="mx-auto max-w-[1440px] px-5 lg:px-8"><div className="max-w-2xl"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#a16e16]">Explore Eritrea</p><h2 className="mt-3 font-serif text-4xl font-semibold text-[#09233f] sm:text-5xl">Places that shape the journey</h2><p className="mt-4 leading-7 text-[#5d7084]">Destination sections use controlled preview language until ATA approves the final public facts.</p></div><div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{destinations.map((d,i)=><article key={d.name} className={`group relative overflow-hidden rounded-2xl bg-[#09233f] ${i===0?'lg:col-span-2':''} min-h-[350px]`}><Image src={d.image} alt={`View of ${d.name}`} fill className="object-cover transition duration-700 group-hover:scale-105" sizes="(max-width:640px)100vw,50vw"/><div className="absolute inset-0 bg-gradient-to-t from-[#06182b] via-transparent to-transparent"/><div className="absolute bottom-0 left-0 right-0 p-6 text-white"><p className="text-xs uppercase tracking-[.16em] text-[#e6bd67]">{d.note}</p><h3 className="mt-1 font-serif text-3xl font-semibold">{d.name}</h3></div></article>)}</div></div></section>
+
+  <section id="how-it-works" className="mx-auto max-w-[1440px] px-5 py-20 lg:px-8 lg:py-24"><div className="grid gap-14 lg:grid-cols-[.8fr_1.2fr]"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[#a16e16]">A clear human process</p><h2 className="mt-3 font-serif text-5xl font-semibold leading-[.95] text-[#09233f]">Your request moves forward with people—not guesswork.</h2><p className="mt-6 leading-7 text-[#5d7084]">ATA reviews each request, prepares information and controls when an arrangement is truly confirmed.</p></div><div className="grid gap-4 sm:grid-cols-2">{[['01','Share your plans','Tell ATA what you need. A submitted request is not confirmation.'],['02','ATA reviews','A person checks the details and may ask for more information.'],['03','Review the quote','ATA may prepare a quote. A quote is not confirmation.'],['04','ATA confirms manually','Only “Manually confirmed” represents confirmation.']].map(([n,t,b])=><article key={n} className="rounded-2xl border border-[#dbe3ea] p-6"><span className="text-sm font-bold text-[#b67f1f]">{n}</span><h3 className="mt-8 font-serif text-2xl font-semibold text-[#09233f]">{t}</h3><p className="mt-3 text-sm leading-6 text-[#607286]">{b}</p></article>)}</div></div></section>
+  <section className="bg-[#092d50] px-5 py-16 text-white lg:px-8"><div className="mx-auto flex max-w-[1440px] flex-col justify-between gap-8 lg:flex-row lg:items-center"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[#e6bd67]">Plan with ATA</p><h2 className="mt-3 font-serif text-4xl font-semibold">A considered journey begins with a conversation.</h2></div><Link href="/tours/flagship-preview#request" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#c58d22] px-6 py-4 font-bold">Request personal guidance <ArrowRight size={18}/></Link></div></section>
+  <footer className="bg-[#06182b] px-5 py-12 text-white lg:px-8"><div className="mx-auto grid max-w-[1440px] gap-10 md:grid-cols-[1fr_auto_auto]"><div><p className="font-serif text-2xl">Amanuel Travel Agency</p><p className="mt-3 max-w-md text-sm leading-6 text-white/55">A controlled digital travel experience with human guidance, owner administration and a clear customer-request workflow.</p></div><div><p className="text-xs font-bold uppercase tracking-wider text-[#e6bd67]">Explore</p><div className="mt-4 grid gap-3 text-sm text-white/70"><Link href="/tours/flagship-preview">Flagship journey</Link><Link href="/ata-review">ATA review guide</Link></div></div><div><p className="text-xs font-bold uppercase tracking-wider text-[#e6bd67]">Owner preview</p><div className="mt-4 grid gap-3 text-sm text-white/70"><Link href="/ata-admin">Open dashboard</Link></div></div></div></footer>
+ </main>
 }

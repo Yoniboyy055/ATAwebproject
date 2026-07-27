@@ -7,8 +7,12 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   const pathname = usePathname()
   const isHome = pathname === '/'
   const isAdmin = pathname.startsWith('/admin')
+  const isAtaExperience =
+    pathname.startsWith('/tours/flagship-preview') ||
+    pathname.startsWith('/ata-admin') ||
+    pathname.startsWith('/ata-review')
 
-  if (isHome || isAdmin) {
+  if (isHome || isAdmin || isAtaExperience) {
     return <>{children}</>
   }
 

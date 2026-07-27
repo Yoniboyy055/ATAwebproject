@@ -1,108 +1,48 @@
-import type { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ArrowLeft, CalendarDays, Check, ChevronDown, CircleAlert, Clock3, MapPin, ShieldCheck, Users, X } from 'lucide-react'
 import FlagshipRequestForm from '@/components/ata/FlagshipRequestForm'
+import PreviewBanner from '@/components/ata/PreviewBanner'
+import PublicNav from '@/components/ata/PublicNav'
 import { getAtaFeatureFlags } from '@/lib/ata/feature-flags'
-import { FLAGSHIP_PREVIEW_COPY } from '@/lib/ata/content-contract'
 
-export const metadata: Metadata = {
-  title: 'ATA Flagship Foundation Preview',
-  description: 'A non-production technical preview with no verified commercial tour facts.',
-  robots: { index: false, follow: false },
+export const metadata={title:'Asmara to Massawa — ATA flagship preview',robots:{index:false,follow:false}}
+const chapters=[
+ {n:'01',title:'Arrival and orientation in Asmara',place:'Asmara highlands',image:'/images/dest-asmara-800.webp',body:'ATA introduces the journey and reviews the practical plan with the traveller. Exact arrival services and timings await ATA approval.'},
+ {n:'02',title:'Discovering Asmara',place:'Asmara',image:'/images/dest-asmara-1200.webp',body:'A structured destination chapter using verified public context. Specific visits and inclusions remain controlled until approved.'},
+ {n:'03',title:'The journey toward the coast',place:'Highlands to coast',image:'/images/hero.jpg',body:'A changing landscape between highland and sea, presented without unapproved travel-time, route or stop promises.'},
+ {n:'04',title:'A Massawa chapter',place:'Red Sea coast',image:'/images/dest-massawa.jpg',body:'A coastal experience framework shaped around place and atmosphere. Activities remain subject to ATA’s final operating plan.'},
+]
+
+export default function FlagshipPreviewPage(){
+ if(!getAtaFeatureFlags().flagshipPreview) notFound()
+ return <main className="min-h-screen bg-[#f5f7f9] text-[#102a43]">
+  <PreviewBanner/><PublicNav/>
+  <div className="border-b border-[#dce4ea] bg-white"><div className="mx-auto max-w-[1440px] px-5 py-4 lg:px-8"><Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#526a80]"><ArrowLeft size={16}/> Home</Link><span className="mx-3 text-[#a9b5c0]">/</span><span className="text-sm font-bold text-[#092d50]">Asmara to Massawa</span></div></div>
+  <section className="bg-white"><div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-9 lg:grid-cols-[.85fr_1.15fr] lg:px-8 lg:py-12">
+   <div className="flex flex-col justify-center">
+    <span className="w-fit rounded-md bg-[#f1dfb8] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#79500b]">ATA flagship · Controlled preview</span>
+    <h1 className="mt-5 font-serif text-5xl font-semibold leading-[.92] tracking-[-.035em] text-[#09233f] sm:text-6xl lg:text-7xl">Asmara to<br/>Massawa</h1>
+    <p className="mt-4 font-serif text-2xl italic text-[#b27a1c]">From highland atmosphere toward the Red Sea.</p>
+    <p className="mt-6 max-w-xl leading-7 text-[#5d7084]">A proposed journey framework linking Asmara, the route toward the coast and Massawa—presented for ATA review without inventing operational details.</p>
+    <div className="mt-7 grid grid-cols-2 gap-3">{[[Clock3,'Duration','To be confirmed'],[Users,'Travel style','ATA-guided'],[MapPin,'Route','Asmara → Massawa'],[ShieldCheck,'Status','Request only']].map(([Icon,a,b])=><div key={String(a)} className="flex gap-3 rounded-xl border border-[#dce4ea] p-3"><Icon size={18} className="mt-0.5 text-[#b27a1c]"/><div><p className="text-[9px] font-bold uppercase tracking-wider text-[#718296]">{String(a)}</p><p className="mt-1 text-xs font-bold">{String(b)}</p></div></div>)}</div>
+   </div>
+   <div className="grid min-h-[500px] grid-cols-3 grid-rows-2 gap-3"><div className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl"><Image src="/images/dest-asmara-1200.webp" alt="View across Asmara" fill priority className="object-cover" sizes="(max-width:1024px)66vw,40vw"/></div><div className="relative overflow-hidden rounded-2xl"><Image src="/images/dest-massawa-800.webp" alt="View of Massawa" fill className="object-cover" sizes="33vw"/></div><div className="relative overflow-hidden rounded-2xl"><Image src="/images/hero.jpg" alt="Landscape between the highlands and coast" fill className="object-cover" sizes="33vw"/><span className="absolute bottom-3 right-3 rounded-lg bg-[#071c32]/85 px-3 py-2 text-xs font-bold text-white">Journey gallery</span></div></div>
+  </div></section>
+  <div className="sticky top-0 z-30 hidden border-y border-[#dce4ea] bg-white/95 shadow-sm backdrop-blur lg:block"><div className="mx-auto flex max-w-[1440px] items-center gap-8 px-8 py-4 text-sm font-bold"><a href="#overview" className="text-[#b27a1c]">Overview</a><a href="#itinerary">Journey framework</a><a href="#included">What to expect</a><a href="#important">Important information</a><a href="#request">Request</a><a href="#request" className="ml-auto rounded-lg bg-[#c58d22] px-5 py-3 text-white">Plan with ATA</a></div></div>
+
+  <section id="overview" className="mx-auto grid max-w-[1440px] gap-9 px-5 py-14 lg:grid-cols-[1fr_360px] lg:px-8 lg:py-16">
+   <div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Journey overview</p><h2 className="mt-3 font-serif text-4xl font-semibold text-[#09233f]">A carefully governed flagship experience</h2><p className="mt-5 max-w-3xl text-lg leading-8 text-[#5d7084]">This preview demonstrates how ATA can present a rich travel experience while keeping factual verification, business approval and public release separate.</p><div className="mt-9 grid gap-4 sm:grid-cols-3">{[['Asmara','A highland opening chapter'],['The route','A changing journey toward the coast'],['Massawa','A Red Sea destination chapter']].map(([a,b],i)=><article key={a} className="rounded-2xl border border-[#dce4ea] bg-white p-5 shadow-sm"><span className="text-xs font-bold text-[#b27a1c]">0{i+1}</span><h3 className="mt-6 font-serif text-2xl font-semibold text-[#09233f]">{a}</h3><p className="mt-2 text-sm leading-6 text-[#617487]">{b}</p></article>)}</div></div>
+   <aside className="h-fit overflow-hidden rounded-2xl border border-[#d5dee6] bg-white shadow-[0_18px_50px_rgba(9,35,63,.12)] lg:sticky lg:top-24"><div className="bg-[#092d50] px-6 py-5 text-white"><p className="text-xs font-bold uppercase tracking-wider text-[#e6bd67]">Plan this journey</p><h2 className="mt-1 font-serif text-2xl font-semibold">Request ATA guidance</h2></div><div className="space-y-4 p-6"><div><p className="text-xs font-bold uppercase tracking-wider text-[#718296]">Current price</p><p className="mt-1 font-serif text-2xl font-semibold text-[#09233f]">Request current pricing</p></div><div className="border-t border-[#dce4ea] pt-4"><p className="text-xs font-bold uppercase tracking-wider text-[#718296]">Dates and availability</p><p className="mt-1 font-semibold">Dates to be confirmed</p><p className="mt-1 text-xs text-[#617487]">Registration of interest is open.</p></div><a href="#request" className="block rounded-xl bg-[#c58d22] px-5 py-4 text-center font-bold text-white">Request a conversation</a><p className="rounded-xl bg-[#f3f6f8] p-3 text-xs leading-5 text-[#5d7084]"><b>Important:</b> A request, quote, acceptance in principle or pending payment is not confirmation. Only “Manually confirmed” represents confirmation.</p></div></aside>
+  </section>
+
+  <section id="itinerary" className="bg-white py-16"><div className="mx-auto max-w-[1100px] px-5 lg:px-8"><div className="text-center"><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Journey framework</p><h2 className="mt-3 font-serif text-5xl font-semibold text-[#09233f]">Highlands to coast, chapter by chapter</h2><p className="mx-auto mt-4 max-w-2xl leading-7 text-[#5d7084]">This is a presentation framework, not a published operating itinerary.</p></div><div className="relative mt-12 space-y-5 before:absolute before:bottom-8 before:left-[27px] before:top-8 before:w-px before:bg-[#c6d2dc] sm:before:left-[38px]">{chapters.map(c=><article key={c.n} className="relative grid gap-5 rounded-2xl border border-[#dce4ea] bg-[#f8fafb] p-5 sm:grid-cols-[76px_1fr_260px] sm:p-6"><div className="relative z-10 grid h-14 w-14 place-items-center rounded-full border-4 border-white bg-[#092d50] font-serif text-lg font-bold text-white shadow">{c.n}</div><div><p className="text-xs font-bold uppercase tracking-wider text-[#b27a1c]">{c.place}</p><h3 className="mt-2 font-serif text-2xl font-semibold text-[#09233f]">{c.title}</h3><p className="mt-3 text-sm leading-6 text-[#5d7084]">{c.body}</p></div><div className="relative min-h-[180px] overflow-hidden rounded-xl"><Image src={c.image} alt={c.place} fill className="object-cover" sizes="260px"/></div></article>)}</div></div></section>
+
+  <section id="included" className="mx-auto max-w-[1440px] px-5 py-16 lg:px-8"><div className="grid gap-5 lg:grid-cols-3"><Info title="What the public page can show" good items={['Controlled destination storytelling','Clear request process','Approved imagery and rights status','Published price and date states']}/><Info title="What remains unpublished" items={['Exact itinerary and timings','Accommodation and transport promises','Unapproved inclusions or exclusions','Capacity, dates and live availability']}/><div className="rounded-2xl bg-[#092d50] p-7 text-white"><CircleAlert className="text-[#e6bd67]"/><h3 className="mt-5 font-serif text-3xl font-semibold">Seasonality and practical guidance</h3><p className="mt-4 leading-7 text-white/70">Climate, packing, accessibility and suitability guidance will appear here only after wording and sources are approved for release.</p></div></div></section>
+  <section id="important" className="bg-[#eaf0f4] py-16"><div className="mx-auto grid max-w-[1200px] gap-8 px-5 lg:grid-cols-[.8fr_1.2fr] lg:px-8"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Important information</p><h2 className="mt-3 font-serif text-4xl font-semibold text-[#09233f]">Clear answers before release</h2><p className="mt-4 leading-7 text-[#5d7084]">ATA’s owner dashboard separates evidence, verification, business approval and publication.</p></div><div className="space-y-3">{['Are dates and spaces published?','Is the itinerary confirmed?','Does this form confirm my booking?','When is a request confirmed?'].map((q,i)=><details key={q} className="group rounded-xl border border-[#d3dde5] bg-white p-5"><summary className="flex cursor-pointer list-none items-center justify-between font-bold text-[#09233f]">{q}<ChevronDown size={18}/></summary><p className="mt-4 border-t border-[#e1e7ec] pt-4 text-sm leading-6 text-[#5d7084]">{i===0?'No. Dates and capacity are not yet published.':i===1?'No. This framework awaits ATA’s operational approval.':i===2?'No. It starts ATA’s review process.':'Only “Manually confirmed” represents confirmation.'}</p></details>)}</div></div></section>
+  <section id="request" className="mx-auto grid max-w-[1200px] gap-10 px-5 py-16 lg:grid-cols-[.72fr_1.28fr] lg:px-8 lg:py-20"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Start with ATA</p><h2 className="mt-3 font-serif text-5xl font-semibold leading-[.95] text-[#09233f]">Tell us what you are planning.</h2><p className="mt-5 leading-7 text-[#5d7084]">ATA will review the details and may prepare a quote. Nothing is booked until ATA confirms it manually.</p><div className="mt-8 rounded-2xl bg-[#092d50] p-6 text-white"><CalendarDays className="text-[#e6bd67]"/><p className="mt-4 font-bold">Dates not decided?</p><p className="mt-2 text-sm leading-6 text-white/65">Register your interest and explain your preferred travel period.</p></div></div><div className="rounded-2xl border border-[#d5dee6] bg-white p-6 shadow-[0_20px_60px_rgba(9,35,63,.12)] sm:p-8"><FlagshipRequestForm/></div></section>
+  <div className="fixed bottom-3 left-3 right-3 z-40 rounded-xl bg-[#071c32]/95 p-2 text-white shadow-2xl md:hidden"><a href="#request" className="block rounded-lg bg-[#c58d22] px-4 py-3 text-center text-sm font-bold">Plan with ATA</a></div>
+ </main>
 }
-
-export default function FlagshipPreviewPage() {
-  if (!getAtaFeatureFlags().flagshipPreview) notFound()
-
-  return (
-    <main className="min-h-screen bg-[#f3efe4] text-[#102f30]">
-      <section className="relative overflow-hidden border-b border-[#102f30]/15">
-        <div className="absolute inset-y-0 right-0 hidden w-[38%] bg-[#0b3b3c] lg:block" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 md:py-24 lg:grid-cols-[1.35fr_.65fr] lg:px-12">
-          <div>
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.24em] text-[#a43f2c]">
-              {FLAGSHIP_PREVIEW_COPY.eyebrow}
-            </p>
-            <h1 className="mt-8 max-w-4xl text-5xl font-black leading-[0.92] tracking-[-0.055em] sm:text-7xl lg:text-8xl">
-              {FLAGSHIP_PREVIEW_COPY.title}
-            </h1>
-            <p className="mt-8 max-w-2xl text-lg leading-8 text-[#315253]">
-              {FLAGSHIP_PREVIEW_COPY.summary}
-            </p>
-          </div>
-
-          <aside className="relative z-10 self-end rounded-[2rem] bg-[#f8f5ec] p-7 shadow-2xl shadow-black/10 lg:translate-y-16">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-[#a43f2c]">
-              Controlled preview
-            </p>
-            <h2 className="mt-4 text-3xl font-black leading-tight">
-              Flagship journey
-            </h2>
-            <dl className="mt-8 space-y-4 border-t border-[#102f30]/15 pt-5 text-sm">
-              <div className="flex justify-between gap-6">
-                <dt>Publication</dt><dd className="font-bold">Draft</dd>
-              </div>
-              <div className="flex justify-between gap-6">
-                <dt>Commercial facts</dt><dd className="font-bold">Hidden</dd>
-              </div>
-              <div className="flex justify-between gap-6">
-                <dt>Payments</dt><dd className="font-bold">Disabled</dd>
-              </div>
-              <div className="flex justify-between gap-6">
-                <dt>Request service</dt><dd className="font-bold">Test only</dd>
-              </div>
-            </dl>
-          </aside>
-        </div>
-      </section>
-
-      <section className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 lg:grid-cols-[.8fr_1.2fr] lg:px-12 lg:py-28">
-        <div>
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.22em] text-[#a43f2c]">
-            Verification ledger
-          </p>
-          <h2 className="mt-5 text-4xl font-black tracking-[-0.04em]">
-            Approved facts only.
-          </h2>
-          <p className="mt-5 max-w-lg leading-7 text-[#315253]">
-            {FLAGSHIP_PREVIEW_COPY.ledger}
-          </p>
-          <div className="mt-10 space-y-3">
-            {['Duration', 'Availability', 'Itinerary', 'Inclusions', 'Policies'].map((item) => (
-              <div key={item} className="flex items-center justify-between border-b border-[#102f30]/15 py-3">
-                <span className="font-semibold">{item}</span>
-                <span className="rounded-full bg-[#d8d0bd] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider">
-                  Awaiting approval
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            <article className="border-l-4 border-[#a43f2c] bg-white p-5">
-              <h3 className="font-black">{FLAGSHIP_PREVIEW_COPY.pricePlaceholder}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#315253]">{FLAGSHIP_PREVIEW_COPY.priceDetail}</p>
-            </article>
-            <article className="border-l-4 border-[#0b3b3c] bg-white p-5">
-              <h3 className="font-black">{FLAGSHIP_PREVIEW_COPY.datePlaceholder}</h3>
-              <p className="mt-2 text-sm leading-6 text-[#315253]">{FLAGSHIP_PREVIEW_COPY.dateDetail}</p>
-            </article>
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] bg-white p-6 shadow-xl shadow-[#102f30]/10 sm:p-10">
-          <p className="font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#a43f2c]">
-            Test-only workflow
-          </p>
-          <h2 className="mt-4 text-3xl font-black tracking-[-0.035em]">
-            Ask ATA to review a request
-          </h2>
-          <p className="mb-8 mt-3 text-sm leading-6 text-slate-600">
-            This preview stores nothing and sends no email, SMS, payment, or
-            production notification.
-          </p>
-          <FlagshipRequestForm />
-        </div>
-      </section>
-    </main>
-  )
-}
-
+function Info({title,items,good=false}:{title:string;items:string[];good?:boolean}){return <article className="rounded-2xl border border-[#dce4ea] bg-white p-7"><h3 className="font-serif text-3xl font-semibold text-[#09233f]">{title}</h3><ul className="mt-6 space-y-4">{items.map(x=><li key={x} className="flex gap-3 text-sm leading-6 text-[#5d7084]">{good?<Check size={18} className="mt-0.5 shrink-0 text-emerald-600"/>:<X size={18} className="mt-0.5 shrink-0 text-rose-500"/>}{x}</li>)}</ul></article>}
