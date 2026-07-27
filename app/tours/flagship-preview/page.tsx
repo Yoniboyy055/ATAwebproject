@@ -1,48 +1,392 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, CalendarDays, Check, ChevronDown, CircleAlert, Clock3, MapPin, ShieldCheck, Users, X } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import FlagshipRequestForm from '@/components/ata/FlagshipRequestForm'
 import PreviewBanner from '@/components/ata/PreviewBanner'
 import PublicNav from '@/components/ata/PublicNav'
+import SiteFooter from '@/components/ata/SiteFooter'
+import { FLAGSHIP_PREVIEW_COPY } from '@/lib/ata/content-contract'
 import { getAtaFeatureFlags } from '@/lib/ata/feature-flags'
 
-export const metadata={title:'Asmara to Massawa — ATA flagship preview',robots:{index:false,follow:false}}
-const chapters=[
- {n:'01',title:'Arrival and orientation in Asmara',place:'Asmara highlands',image:'/images/dest-asmara-800.webp',body:'ATA introduces the journey and reviews the practical plan with the traveller. Exact arrival services and timings await ATA approval.'},
- {n:'02',title:'Discovering Asmara',place:'Asmara',image:'/images/dest-asmara-1200.webp',body:'A structured destination chapter using verified public context. Specific visits and inclusions remain controlled until approved.'},
- {n:'03',title:'The journey toward the coast',place:'Highlands to coast',image:'/images/hero.jpg',body:'A changing landscape between highland and sea, presented without unapproved travel-time, route or stop promises.'},
- {n:'04',title:'A Massawa chapter',place:'Red Sea coast',image:'/images/dest-massawa.jpg',body:'A coastal experience framework shaped around place and atmosphere. Activities remain subject to ATA’s final operating plan.'},
+export const metadata = {
+  title: 'Asmara to Massawa — Amanuel Travel Agency',
+  robots: { index: false, follow: false },
+}
+
+/**
+ * `image: null` is deliberate, not missing work: ATA has no photography of the
+ * escarpment road, and no other destination shot honestly depicts it.
+ */
+const chapters: {
+  n: string
+  title: string
+  place: string
+  image: string | null
+  body: string
+}[] = [
+  {
+    n: '01',
+    title: 'Arriving in Asmara',
+    place: 'The highlands',
+    image: '/images/dest-asmara-800.webp',
+    body: 'You land a mile above the sea, where the air is thin and cool and the avenues are lined with palms. The first day is deliberately unhurried: settle in, walk, drink coffee, and let the altitude stop being a surprise.',
+  },
+  {
+    n: '02',
+    title: 'The city on foot',
+    place: 'Asmara',
+    image: '/images/hero.jpg',
+    body: 'Asmara is a walking city. Cinemas, cafés and facades from another century sit along streets that people actually use. We shape these days around what interests you rather than a fixed list of stops.',
+  },
+  {
+    n: '03',
+    title: 'Down the escarpment',
+    place: 'Highlands to coast',
+    image: null,
+    body: 'The road drops thousands of feet in a few hours. Cloud and terraced hillsides give way to scrub, then to heat and the first sight of the sea. It is the part of the journey people remember most.',
+  },
+  {
+    n: '04',
+    title: 'The coast at Massawa',
+    place: 'Red Sea',
+    image: '/images/dest-massawa.jpg',
+    body: 'Coral-stone buildings, working harbours and the particular light of the Red Sea. How long you stay, and what you do here, is something we settle with you rather than in advance.',
+  },
 ]
 
-export default function FlagshipPreviewPage(){
- if(!getAtaFeatureFlags().flagshipPreview) notFound()
- return <main className="min-h-screen bg-[#f5f7f9] text-[#102a43]">
-  <PreviewBanner/><PublicNav/>
-  <div className="border-b border-[#dce4ea] bg-white"><div className="mx-auto max-w-[1440px] px-5 py-4 lg:px-8"><Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#526a80]"><ArrowLeft size={16}/> Home</Link><span className="mx-3 text-[#a9b5c0]">/</span><span className="text-sm font-bold text-[#092d50]">Asmara to Massawa</span></div></div>
-  <section className="bg-white"><div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-9 lg:grid-cols-[.85fr_1.15fr] lg:px-8 lg:py-12">
-   <div className="flex flex-col justify-center">
-    <span className="w-fit rounded-md bg-[#f1dfb8] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.16em] text-[#79500b]">ATA flagship · Controlled preview</span>
-    <h1 className="mt-5 font-serif text-5xl font-semibold leading-[.92] tracking-[-.035em] text-[#09233f] sm:text-6xl lg:text-7xl">Asmara to<br/>Massawa</h1>
-    <p className="mt-4 font-serif text-2xl italic text-[#b27a1c]">From highland atmosphere toward the Red Sea.</p>
-    <p className="mt-6 max-w-xl leading-7 text-[#5d7084]">A proposed journey framework linking Asmara, the route toward the coast and Massawa—presented for ATA review without inventing operational details.</p>
-    <div className="mt-7 grid grid-cols-2 gap-3">{[[Clock3,'Duration','To be confirmed'],[Users,'Travel style','ATA-guided'],[MapPin,'Route','Asmara → Massawa'],[ShieldCheck,'Status','Request only']].map(([Icon,a,b])=><div key={String(a)} className="flex gap-3 rounded-xl border border-[#dce4ea] p-3"><Icon size={18} className="mt-0.5 text-[#b27a1c]"/><div><p className="text-[9px] font-bold uppercase tracking-wider text-[#718296]">{String(a)}</p><p className="mt-1 text-xs font-bold">{String(b)}</p></div></div>)}</div>
-   </div>
-   <div className="grid min-h-[500px] grid-cols-3 grid-rows-2 gap-3"><div className="relative col-span-2 row-span-2 overflow-hidden rounded-2xl"><Image src="/images/dest-asmara-1200.webp" alt="View across Asmara" fill priority className="object-cover" sizes="(max-width:1024px)66vw,40vw"/></div><div className="relative overflow-hidden rounded-2xl"><Image src="/images/dest-massawa-800.webp" alt="View of Massawa" fill className="object-cover" sizes="33vw"/></div><div className="relative overflow-hidden rounded-2xl"><Image src="/images/hero.jpg" alt="Landscape between the highlands and coast" fill className="object-cover" sizes="33vw"/><span className="absolute bottom-3 right-3 rounded-lg bg-[#071c32]/85 px-3 py-2 text-xs font-bold text-white">Journey gallery</span></div></div>
-  </div></section>
-  <div className="sticky top-0 z-30 hidden border-y border-[#dce4ea] bg-white/95 shadow-sm backdrop-blur lg:block"><div className="mx-auto flex max-w-[1440px] items-center gap-8 px-8 py-4 text-sm font-bold"><a href="#overview" className="text-[#b27a1c]">Overview</a><a href="#itinerary">Journey framework</a><a href="#included">What to expect</a><a href="#important">Important information</a><a href="#request">Request</a><a href="#request" className="ml-auto rounded-lg bg-[#c58d22] px-5 py-3 text-white">Plan with ATA</a></div></div>
+const arranged = [
+  ['Routing and pacing', 'How many days, in what order, and how hard you want to travel.'],
+  ['Where you stay', 'Chosen with you once we know your dates and your group.'],
+  ['Getting around', 'Vehicles and drivers arranged for your party specifically.'],
+  ['Guiding', 'Who accompanies you, and for which parts of the journey.'],
+]
 
-  <section id="overview" className="mx-auto grid max-w-[1440px] gap-9 px-5 py-14 lg:grid-cols-[1fr_360px] lg:px-8 lg:py-16">
-   <div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Journey overview</p><h2 className="mt-3 font-serif text-4xl font-semibold text-[#09233f]">A carefully governed flagship experience</h2><p className="mt-5 max-w-3xl text-lg leading-8 text-[#5d7084]">This preview demonstrates how ATA can present a rich travel experience while keeping factual verification, business approval and public release separate.</p><div className="mt-9 grid gap-4 sm:grid-cols-3">{[['Asmara','A highland opening chapter'],['The route','A changing journey toward the coast'],['Massawa','A Red Sea destination chapter']].map(([a,b],i)=><article key={a} className="rounded-2xl border border-[#dce4ea] bg-white p-5 shadow-sm"><span className="text-xs font-bold text-[#b27a1c]">0{i+1}</span><h3 className="mt-6 font-serif text-2xl font-semibold text-[#09233f]">{a}</h3><p className="mt-2 text-sm leading-6 text-[#617487]">{b}</p></article>)}</div></div>
-   <aside className="h-fit overflow-hidden rounded-2xl border border-[#d5dee6] bg-white shadow-[0_18px_50px_rgba(9,35,63,.12)] lg:sticky lg:top-24"><div className="bg-[#092d50] px-6 py-5 text-white"><p className="text-xs font-bold uppercase tracking-wider text-[#e6bd67]">Plan this journey</p><h2 className="mt-1 font-serif text-2xl font-semibold">Request ATA guidance</h2></div><div className="space-y-4 p-6"><div><p className="text-xs font-bold uppercase tracking-wider text-[#718296]">Current price</p><p className="mt-1 font-serif text-2xl font-semibold text-[#09233f]">Request current pricing</p></div><div className="border-t border-[#dce4ea] pt-4"><p className="text-xs font-bold uppercase tracking-wider text-[#718296]">Dates and availability</p><p className="mt-1 font-semibold">Dates to be confirmed</p><p className="mt-1 text-xs text-[#617487]">Registration of interest is open.</p></div><a href="#request" className="block rounded-xl bg-[#c58d22] px-5 py-4 text-center font-bold text-white">Request a conversation</a><p className="rounded-xl bg-[#f3f6f8] p-3 text-xs leading-5 text-[#5d7084]"><b>Important:</b> A request, quote, acceptance in principle or pending payment is not confirmation. Only “Manually confirmed” represents confirmation.</p></div></aside>
-  </section>
+const faqs = [
+  [
+    'Are dates and availability shown on this page?',
+    'No. Travel dates are confirmed personally by ATA once we know what you are planning. We would rather tell you what is genuinely possible than publish a calendar we cannot honour.',
+  ],
+  [
+    'Is the itinerary above fixed?',
+    'No. It describes the shape of the journey. The detail — timings, stops, how long in each place — is arranged with you.',
+  ],
+  [
+    'Does sending the form book my trip?',
+    'No. It starts a conversation with a person at ATA. Nothing is reserved and no payment is taken through this website.',
+  ],
+  [
+    'When is my journey actually confirmed?',
+    'Only when someone at ATA confirms it to you directly. A quote, or an agreement in principle, is not a confirmation.',
+  ],
+]
 
-  <section id="itinerary" className="bg-white py-16"><div className="mx-auto max-w-[1100px] px-5 lg:px-8"><div className="text-center"><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Journey framework</p><h2 className="mt-3 font-serif text-5xl font-semibold text-[#09233f]">Highlands to coast, chapter by chapter</h2><p className="mx-auto mt-4 max-w-2xl leading-7 text-[#5d7084]">This is a presentation framework, not a published operating itinerary.</p></div><div className="relative mt-12 space-y-5 before:absolute before:bottom-8 before:left-[27px] before:top-8 before:w-px before:bg-[#c6d2dc] sm:before:left-[38px]">{chapters.map(c=><article key={c.n} className="relative grid gap-5 rounded-2xl border border-[#dce4ea] bg-[#f8fafb] p-5 sm:grid-cols-[76px_1fr_260px] sm:p-6"><div className="relative z-10 grid h-14 w-14 place-items-center rounded-full border-4 border-white bg-[#092d50] font-serif text-lg font-bold text-white shadow">{c.n}</div><div><p className="text-xs font-bold uppercase tracking-wider text-[#b27a1c]">{c.place}</p><h3 className="mt-2 font-serif text-2xl font-semibold text-[#09233f]">{c.title}</h3><p className="mt-3 text-sm leading-6 text-[#5d7084]">{c.body}</p></div><div className="relative min-h-[180px] overflow-hidden rounded-xl"><Image src={c.image} alt={c.place} fill className="object-cover" sizes="260px"/></div></article>)}</div></div></section>
+export default function FlagshipPreviewPage() {
+  if (!getAtaFeatureFlags().flagshipPreview) notFound()
 
-  <section id="included" className="mx-auto max-w-[1440px] px-5 py-16 lg:px-8"><div className="grid gap-5 lg:grid-cols-3"><Info title="What the public page can show" good items={['Controlled destination storytelling','Clear request process','Approved imagery and rights status','Published price and date states']}/><Info title="What remains unpublished" items={['Exact itinerary and timings','Accommodation and transport promises','Unapproved inclusions or exclusions','Capacity, dates and live availability']}/><div className="rounded-2xl bg-[#092d50] p-7 text-white"><CircleAlert className="text-[#e6bd67]"/><h3 className="mt-5 font-serif text-3xl font-semibold">Seasonality and practical guidance</h3><p className="mt-4 leading-7 text-white/70">Climate, packing, accessibility and suitability guidance will appear here only after wording and sources are approved for release.</p></div></div></section>
-  <section id="important" className="bg-[#eaf0f4] py-16"><div className="mx-auto grid max-w-[1200px] gap-8 px-5 lg:grid-cols-[.8fr_1.2fr] lg:px-8"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Important information</p><h2 className="mt-3 font-serif text-4xl font-semibold text-[#09233f]">Clear answers before release</h2><p className="mt-4 leading-7 text-[#5d7084]">ATA’s owner dashboard separates evidence, verification, business approval and publication.</p></div><div className="space-y-3">{['Are dates and spaces published?','Is the itinerary confirmed?','Does this form confirm my booking?','When is a request confirmed?'].map((q,i)=><details key={q} className="group rounded-xl border border-[#d3dde5] bg-white p-5"><summary className="flex cursor-pointer list-none items-center justify-between font-bold text-[#09233f]">{q}<ChevronDown size={18}/></summary><p className="mt-4 border-t border-[#e1e7ec] pt-4 text-sm leading-6 text-[#5d7084]">{i===0?'No. Dates and capacity are not yet published.':i===1?'No. This framework awaits ATA’s operational approval.':i===2?'No. It starts ATA’s review process.':'Only “Manually confirmed” represents confirmation.'}</p></details>)}</div></div></section>
-  <section id="request" className="mx-auto grid max-w-[1200px] gap-10 px-5 py-16 lg:grid-cols-[.72fr_1.28fr] lg:px-8 lg:py-20"><div><p className="text-xs font-bold uppercase tracking-[.18em] text-[#a16e16]">Start with ATA</p><h2 className="mt-3 font-serif text-5xl font-semibold leading-[.95] text-[#09233f]">Tell us what you are planning.</h2><p className="mt-5 leading-7 text-[#5d7084]">ATA will review the details and may prepare a quote. Nothing is booked until ATA confirms it manually.</p><div className="mt-8 rounded-2xl bg-[#092d50] p-6 text-white"><CalendarDays className="text-[#e6bd67]"/><p className="mt-4 font-bold">Dates not decided?</p><p className="mt-2 text-sm leading-6 text-white/65">Register your interest and explain your preferred travel period.</p></div></div><div className="rounded-2xl border border-[#d5dee6] bg-white p-6 shadow-[0_20px_60px_rgba(9,35,63,.12)] sm:p-8"><FlagshipRequestForm/></div></section>
-  <div className="fixed bottom-3 left-3 right-3 z-40 rounded-xl bg-[#071c32]/95 p-2 text-white shadow-2xl md:hidden"><a href="#request" className="block rounded-lg bg-[#c58d22] px-4 py-3 text-center text-sm font-bold">Plan with ATA</a></div>
- </main>
+  return (
+    <main className="bg-white text-ata-ink">
+      <PreviewBanner />
+      <PublicNav />
+
+      {/* Hero */}
+      <section className="relative isolate min-h-[600px] overflow-hidden bg-ata-ink text-white lg:min-h-[78vh]">
+        <Image
+          src="/images/dest-asmara-1200.webp"
+          alt="Asmara seen across its rooftops"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-ata-ink/45" />
+        <div className="absolute inset-0 bg-[linear-gradient(102deg,rgba(11,22,31,.92)_0%,rgba(11,22,31,.78)_34%,rgba(11,22,31,.4)_66%,rgba(11,22,31,.26)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(180deg,transparent_0%,rgba(11,22,31,.75)_100%)]" />
+        <div className="relative mx-auto flex min-h-[600px] max-w-[1440px] flex-col justify-end px-6 pb-20 pt-32 lg:min-h-[78vh] lg:px-12 lg:pb-24">
+          <div className="flex items-center gap-5">
+            <span className="h-px w-14 bg-ata-brass-light" />
+            <span className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-brass-light">
+              The signature journey
+            </span>
+          </div>
+          <h1 className="mt-8 font-serif text-[64px] font-light leading-[0.92] tracking-display text-white drop-shadow-[0_2px_24px_rgba(8,16,24,.6)] sm:text-[88px] lg:text-[112px]">
+            Asmara to
+            <br />
+            <em className="font-normal italic text-ata-brass-light">Massawa</em>
+          </h1>
+          <p className="mt-8 max-w-lg text-[17px] font-light leading-8 text-white/70">
+            A mile-high capital, an escarpment road, and the Red Sea at the end
+            of it.
+          </p>
+        </div>
+      </section>
+
+      {/* Section nav */}
+      <div className="sticky top-0 z-30 hidden border-b border-ata-hairline bg-white/95 backdrop-blur lg:block">
+        <div className="mx-auto flex max-w-[1440px] items-center gap-10 px-12 py-5 text-[11px] font-medium uppercase tracking-eyebrow">
+          <a href="#overview" className="text-ata-brass">Overview</a>
+          <a href="#itinerary" className="transition-opacity hover:opacity-60">The journey</a>
+          <a href="#arranged" className="transition-opacity hover:opacity-60">What we arrange</a>
+          <a href="#questions" className="transition-opacity hover:opacity-60">Questions</a>
+          <a
+            href="#request"
+            className="ml-auto border border-ata-ink px-7 py-3 transition-colors hover:bg-ata-ink hover:text-white"
+          >
+            Start planning
+          </a>
+        </div>
+      </div>
+
+      {/* Overview + booking panel */}
+      <section id="overview" className="px-6 py-24 lg:px-12 lg:py-32">
+        <div className="mx-auto grid max-w-[1440px] gap-16 lg:grid-cols-[1.2fr_400px] lg:gap-24">
+          <div>
+            <h2 className="max-w-[20ch] font-serif text-[40px] font-light leading-[1.08] tracking-display text-ata-ink sm:text-[52px]">
+              One road, and most of Eritrea along it
+            </h2>
+            <p className="mt-8 max-w-2xl text-[18px] font-light leading-9 text-ata-ink-soft">
+              Few countries change this completely in a single day of travel.
+              You begin among modernist cafés at two thousand metres and end at
+              a coral-stone harbour on the Red Sea. We have made this journey
+              many times, and we plan it differently for every group.
+            </p>
+
+            <div className="mt-14 grid gap-10 border-t border-ata-hairline pt-12 sm:grid-cols-3">
+              {[
+                ['Asmara', 'Cool highland air, long walks, unhurried days.'],
+                ['The descent', 'Terraces, cloud, and the road down to the heat.'],
+                ['Massawa', 'Coral stone, working harbours, Red Sea light.'],
+              ].map(([title, body], i) => (
+                <div key={title}>
+                  <span className="font-serif text-[26px] font-light text-ata-brass-light">
+                    0{i + 1}
+                  </span>
+                  <h3 className="mt-5 font-serif text-[26px] font-normal text-ata-ink">
+                    {title}
+                  </h3>
+                  <p className="mt-3 text-[15px] font-light leading-7 text-ata-ink-soft">
+                    {body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <aside className="h-fit border border-ata-hairline bg-ata-canvas lg:sticky lg:top-28">
+            <div className="border-b border-ata-hairline px-8 py-7">
+              <p className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-brass">
+                Plan this journey
+              </p>
+              <h2 className="mt-3 font-serif text-[30px] font-light leading-tight text-ata-ink">
+                Speak with ATA
+              </h2>
+            </div>
+            <div className="space-y-7 px-8 py-8">
+              <div>
+                <p className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-ink-muted">
+                  Price
+                </p>
+                <p className="mt-2 font-serif text-[28px] font-light text-ata-ink">
+                  {FLAGSHIP_PREVIEW_COPY.pricePlaceholder}
+                </p>
+                <p className="mt-3 text-[14px] font-light leading-7 text-ata-ink-soft">
+                  {FLAGSHIP_PREVIEW_COPY.priceDetail}
+                </p>
+              </div>
+              <div className="border-t border-ata-hairline pt-7">
+                <p className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-ink-muted">
+                  Travel dates
+                </p>
+                <p className="mt-2 font-serif text-[22px] font-light leading-snug text-ata-ink">
+                  {FLAGSHIP_PREVIEW_COPY.datePlaceholder}
+                </p>
+                <p className="mt-3 text-[14px] font-light leading-7 text-ata-ink-soft">
+                  {FLAGSHIP_PREVIEW_COPY.dateDetail}
+                </p>
+              </div>
+              <a
+                href="#request"
+                className="block border border-ata-ink bg-ata-ink px-6 py-4 text-center text-[11px] font-medium uppercase tracking-eyebrow text-white transition-colors hover:bg-transparent hover:text-ata-ink"
+              >
+                Request a conversation
+              </a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      {/* Itinerary */}
+      <section id="itinerary" className="bg-ata-canvas px-6 py-24 lg:px-12 lg:py-36">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-5">
+              <span className="h-px w-14 bg-ata-brass" />
+              <span className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-brass">
+                The journey
+              </span>
+            </div>
+            <h2 className="mt-8 font-serif text-[44px] font-light leading-[1.04] tracking-display text-ata-ink sm:text-[56px]">
+              Highlands to coast, chapter by chapter
+            </h2>
+            <p className="mt-6 text-[16px] font-light leading-8 text-ata-ink-soft">
+              An outline of how the journey unfolds. The exact shape of each day
+              is arranged with you.
+            </p>
+          </div>
+
+          <div className="mt-16 border-t border-ata-hairline">
+            {chapters.map((c) => (
+              <article
+                key={c.n}
+                className="grid items-center gap-8 border-b border-ata-hairline py-12 lg:grid-cols-[64px_1fr_320px]"
+              >
+                <span className="font-serif text-[34px] font-light leading-none text-ata-brass-light">
+                  {c.n}
+                </span>
+                <div>
+                  <p className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-ink-muted">
+                    {c.place}
+                  </p>
+                  <h3 className="mt-4 font-serif text-[32px] font-normal leading-tight text-ata-ink">
+                    {c.title}
+                  </h3>
+                  <p className="mt-4 max-w-xl text-[16px] font-light leading-8 text-ata-ink-soft">
+                    {c.body}
+                  </p>
+                </div>
+                {c.image ? (
+                  <div className="relative min-h-[220px] overflow-hidden">
+                    <Image
+                      src={c.image}
+                      alt={c.place}
+                      fill
+                      sizes="320px"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="hidden lg:block" aria-hidden />
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What we arrange */}
+      <section id="arranged" className="px-6 py-24 lg:px-12 lg:py-36">
+        <div className="mx-auto grid max-w-[1440px] gap-16 lg:grid-cols-[0.85fr_1.15fr] lg:gap-24">
+          <div>
+            <div className="flex items-center gap-5">
+              <span className="h-px w-14 bg-ata-brass" />
+              <span className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-brass">
+                What we arrange
+              </span>
+            </div>
+            <h2 className="mt-8 font-serif text-[44px] font-light leading-[1.04] tracking-display text-ata-ink sm:text-[52px]">
+              Settled with you, not decided for you
+            </h2>
+            <p className="mt-7 max-w-sm text-[16px] font-light leading-8 text-ata-ink-soft">
+              We do not publish a fixed package. These are the parts of the
+              journey we put together once we understand your trip.
+            </p>
+          </div>
+
+          <div className="border-t border-ata-hairline">
+            {arranged.map(([title, body]) => (
+              <div key={title} className="border-b border-ata-hairline py-8">
+                <h3 className="font-serif text-[26px] font-normal text-ata-ink">
+                  {title}
+                </h3>
+                <p className="mt-3 max-w-xl text-[16px] font-light leading-8 text-ata-ink-soft">
+                  {body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Questions */}
+      <section id="questions" className="bg-ata-canvas px-6 py-24 lg:px-12 lg:py-36">
+        <div className="mx-auto grid max-w-[1200px] gap-16 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24">
+          <div>
+            <div className="flex items-center gap-5">
+              <span className="h-px w-14 bg-ata-brass" />
+              <span className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-brass">
+                Good to know
+              </span>
+            </div>
+            <h2 className="mt-8 font-serif text-[44px] font-light leading-[1.04] tracking-display text-ata-ink sm:text-[52px]">
+              Straight answers
+            </h2>
+          </div>
+
+          <div className="border-t border-ata-hairline">
+            {faqs.map(([q, a]) => (
+              <details key={q} className="group border-b border-ata-hairline py-7">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 font-serif text-[24px] font-normal text-ata-ink">
+                  {q}
+                  <ChevronDown
+                    size={20}
+                    className="shrink-0 text-ata-ink-muted transition-transform group-open:rotate-180"
+                  />
+                </summary>
+                <p className="mt-5 max-w-2xl text-[16px] font-light leading-8 text-ata-ink-soft">
+                  {a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Request */}
+      <section id="request" className="px-6 py-24 lg:px-12 lg:py-36">
+        <div className="mx-auto grid max-w-[1200px] gap-16 lg:grid-cols-[0.75fr_1.25fr] lg:gap-24">
+          <div className="lg:sticky lg:top-28 lg:h-fit">
+            <div className="flex items-center gap-5">
+              <span className="h-px w-14 bg-ata-brass" />
+              <span className="text-[10px] font-medium uppercase tracking-eyebrow text-ata-brass">
+                Start here
+              </span>
+            </div>
+            <h2 className="mt-8 font-serif text-[44px] font-light leading-[1.02] tracking-display text-ata-ink sm:text-[54px]">
+              Tell us what you are planning
+            </h2>
+            <p className="mt-7 max-w-sm text-[16px] font-light leading-8 text-ata-ink-soft">
+              Even rough plans are enough to begin. A person at ATA will read
+              this and reply to you directly.
+            </p>
+            <div className="mt-10 border-l-2 border-ata-brass-light bg-ata-canvas px-7 py-6">
+              <p className="font-serif text-[20px] font-normal text-ata-ink">
+                Not sure of your dates yet?
+              </p>
+              <p className="mt-3 text-[15px] font-light leading-7 text-ata-ink-soft">
+                Tell us roughly when you would like to travel and we will work
+                from there.
+              </p>
+            </div>
+          </div>
+
+          <div className="border border-ata-hairline bg-white p-8 sm:p-12">
+            <FlagshipRequestForm />
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile sticky CTA */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ata-hairline bg-white/95 p-3 backdrop-blur lg:hidden">
+        <a
+          href="#request"
+          className="block bg-ata-ink px-6 py-4 text-center text-[11px] font-medium uppercase tracking-eyebrow text-white"
+        >
+          Start planning
+        </a>
+      </div>
+
+      <div className="pb-20 lg:pb-0">
+        <SiteFooter />
+      </div>
+    </main>
+  )
 }
-function Info({title,items,good=false}:{title:string;items:string[];good?:boolean}){return <article className="rounded-2xl border border-[#dce4ea] bg-white p-7"><h3 className="font-serif text-3xl font-semibold text-[#09233f]">{title}</h3><ul className="mt-6 space-y-4">{items.map(x=><li key={x} className="flex gap-3 text-sm leading-6 text-[#5d7084]">{good?<Check size={18} className="mt-0.5 shrink-0 text-emerald-600"/>:<X size={18} className="mt-0.5 shrink-0 text-rose-500"/>}{x}</li>)}</ul></article>}

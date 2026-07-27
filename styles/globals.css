@@ -13,7 +13,14 @@
 
   body{
     @apply bg-white text-slate-900 antialiased;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-family: var(--font-body), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Cormorant Garamond is a high-contrast display face: it only reads as
+     intended above ~28px, so optical sizing is set at the call site. */
+  .font-serif {
+    font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
   }
 
   h1, h2, h3, h4 {

@@ -4,6 +4,24 @@ import GoogleAnalytics from '../components/GoogleAnalytics'
 import { LangProvider } from '../components/LangProvider'
 import { AuthProvider } from '../components/AuthProvider'
 import { Metadata, Viewport } from 'next'
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+
+// Self-hosted at build time: no render-blocking CDN request, and the display
+// face cannot silently fall back to Times on a slow or blocked network.
+const displaySerif = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
+const bodySans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
+  variable: '--font-body',
+  display: 'swap',
+})
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://amanueltravel.com'
 
@@ -94,13 +112,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({children}:{children:React.ReactNode}){
   return (
-    <html lang="en">
+    <html lang="en" className={`${displaySerif.variable} ${bodySans.variable}`}>
       <head>
         <link rel="icon" href="/favicon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet" />
       </head>
       <body>
         <AuthProvider>
