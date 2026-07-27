@@ -2,25 +2,27 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { ChevronDown, Menu, Plane, X } from 'lucide-react'
 
 export default function PublicNav() {
   const [open, setOpen] = useState(false)
   return (
-    <nav className="relative z-40 border-b border-white/15 bg-[#0c3032] text-white" aria-label="Main navigation">
-      <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between px-5 lg:px-10">
+    <nav className="relative z-40 border-b border-[#d9e1e8] bg-white text-[#09233f]" aria-label="Main navigation">
+      <div className="mx-auto flex min-h-[76px] max-w-[1440px] items-center justify-between px-5 lg:px-8">
         <Link href="/" className="flex items-center gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f0b44b]">
-          <span className="grid h-10 w-10 place-items-center rounded-full border border-[#f0b44b] font-serif text-lg text-[#f0b44b]">A</span>
-          <span><b className="block font-serif text-lg leading-none">Amanuel Travel Agency</b><small className="mt-1 block text-[9px] uppercase tracking-[.24em] text-white/65">Travel with human guidance</small></span>
+          <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#092d50] text-[#d8a63f] shadow-sm"><Plane size={20}/></span>
+          <span><b className="block font-serif text-xl leading-none">Amanuel Travel</b><small className="mt-1 block text-[9px] font-bold uppercase tracking-[.22em] text-[#607286]">Agency · Canada</small></span>
         </Link>
-        <button className="rounded-full border border-white/25 px-4 py-2 text-sm lg:hidden" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mobile-nav">Menu</button>
-        <div id="mobile-nav" className={`${open ? 'flex' : 'hidden'} absolute left-0 right-0 top-20 flex-col gap-4 border-b border-white/15 bg-[#0c3032] p-6 lg:static lg:flex lg:flex-row lg:items-center lg:border-0 lg:p-0`}>
-          <Link href="/tours/flagship-preview">Flagship tour</Link>
-          <Link href="/#how-it-works">How it works</Link>
-          <Link href="/ata-review">ATA review</Link>
-          <Link href="/tours/flagship-preview#request" className="rounded-full bg-[#f0b44b] px-5 py-3 font-bold text-[#102c2d]">Request a conversation</Link>
+        <button className="grid h-11 w-11 place-items-center rounded-xl border border-[#ced8e1] lg:hidden" onClick={() => setOpen(!open)} aria-label={open?'Close navigation':'Open navigation'} aria-expanded={open} aria-controls="mobile-nav">{open?<X/>:<Menu/>}</button>
+        <div id="mobile-nav" className={`${open ? 'flex' : 'hidden'} absolute left-0 right-0 top-[76px] flex-col gap-1 border-b border-[#d9e1e8] bg-white p-5 shadow-xl lg:static lg:flex lg:flex-row lg:items-center lg:gap-7 lg:border-0 lg:p-0 lg:shadow-none`}>
+          <Link href="/" className="py-3 text-sm font-semibold">Home</Link>
+          <Link href="/tours/flagship-preview" className="flex items-center gap-1 py-3 text-sm font-semibold">Flagship journey <ChevronDown size={14}/></Link>
+          <Link href="/#destinations" className="py-3 text-sm font-semibold">Destinations</Link>
+          <Link href="/#how-it-works" className="py-3 text-sm font-semibold">How ATA works</Link>
+          <Link href="/ata-review" className="py-3 text-sm font-semibold">Review preview</Link>
+          <Link href="/tours/flagship-preview#request" className="mt-2 rounded-lg bg-[#c58d22] px-5 py-3 text-center text-sm font-bold text-white shadow-sm hover:bg-[#a87418] lg:mt-0">Plan with ATA</Link>
         </div>
       </div>
     </nav>
   )
 }
-
