@@ -41,6 +41,7 @@ describe('opening obligation', () => {
         amountCents: CAD(500),
         reason: 'early',
         evidenceId: 'ev-1',
+        evidenceSha256: 'a'.repeat(64),
       })
     ).toThrow(LedgerRuleError)
   })
@@ -198,8 +199,6 @@ describe('withdrawal repayment', () => {
       type: 'WITHDRAWAL_REPAYMENT',
       amountCents: CAD(120),
       linkedTransactionCode: withdrawal.transactionCode,
-      // Even if a caller tries to force a base effect, the engine pins it to 0.
-      baseEffectCents: -CAD(120),
     })
 
     expect(repayment.baseEffectCents).toBe(0)

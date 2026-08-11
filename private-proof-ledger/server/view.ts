@@ -13,8 +13,9 @@ import {
   computeSummary,
   computeWithdrawalViews,
 } from '../ledger/engine'
-import { IntegrityResult, verifyChain } from '../ledger/hash-chain'
+import { IntegrityResult, verifyLedgerIntegrity } from '../ledger/hash-chain'
 import {
+  AdjustmentScope,
   DEFAULT_ORIGINAL_OBLIGATION_CENTS,
   LedgerNoteRecord,
   LedgerRole,
@@ -39,6 +40,9 @@ export interface TransactionRow {
   withdrawalPrincipalCents: number | null
   extraRepaymentCents: number | null
   requiredRepaymentCents: number | null
+  adjustmentScope: AdjustmentScope | null
+  adjustmentEffectCents: number | null
+  correctsTransactionCode: string | null
   status: WithdrawalStatus | null
   evidenceId: string | null
   createdAt: string
@@ -85,6 +89,11 @@ function toRows(
       withdrawalPrincipalCents: tx.withdrawalPrincipalCents,
       extraRepaymentCents: tx.extraRepaymentCents,
       requiredRepaymentCents: tx.requiredRepaymentCents,
+      adjustmentScope: tx.adjustmentScope,
+      adjustmentEffectCents: tx.adjustmentEffectCents,
+      correctsTransactionCode: tx.correctsTransactionId
+        ? codeById.get(tx.correctsTransactionId) ?? null
+        : null,
       status:
         tx.type === 'WITHDRAWAL'
           ? statusById.get(tx.id) ?? null
@@ -129,7 +138,7 @@ export async function loadLedgerView(
     withdrawals,
     notes,
     reconciliation: computeReconciliation(transactions, notes),
-    integrity: verifyChain(transactions),
+    integrity: await verifyLedgerIntegrity(transactions, (id) => repository.getEvidence(id)),
     generatedAt,
   }
 }

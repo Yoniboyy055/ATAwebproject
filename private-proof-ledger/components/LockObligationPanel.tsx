@@ -3,40 +3,36 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { formatMoney, parseAmountToCents } from '../ledger/money'
+import { formatMoney } from '../ledger/money'
+import { DEFAULT_ORIGINAL_OBLIGATION_CENTS } from '../ledger/types'
 import { Panel } from './primitives'
 
 /**
- * First-run setup. The owner confirms the opening obligation and locks it.
- * After locking, the figure can only be changed by an auditable ADJUSTMENT.
+ * First-run setup.
+ *
+ * The opening obligation for this ledger is fixed at CAD $36,000.00. It is
+ * displayed, not editable — there is no money field to change, and the server
+ * accepts only that one value regardless of what is posted.
  */
-export default function LockObligationPanel({
-  proposedObligationCents,
-}: {
-  proposedObligationCents: number
-}) {
+export default function LockObligationPanel() {
   const router = useRouter()
-  const [amount, setAmount] = useState(
-    (proposedObligationCents / 100).toFixed(2)
-  )
+  const [confirmed, setConfirmed] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
-  const cents = parseAmountToCents(amount)
-
   async function submit(event: React.FormEvent) {
     event.preventDefault()
-    if (cents === null || cents <= 0) {
-      setError('Enter a valid amount.')
-      return
-    }
+    if (!confirmed) return
     setBusy(true)
     setError(null)
     try {
       const response = await fetch('/api/proof-ledger/obligation/lock', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ originalObligationCents: cents, confirm: true }),
+        body: JSON.stringify({
+          originalObligationCents: DEFAULT_ORIGINAL_OBLIGATION_CENTS,
+          confirm: true,
+        }),
       })
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) {
@@ -55,37 +51,50 @@ export default function LockObligationPanel({
       title="Confirm Original Obligation"
       subtitle="This must be locked before any transaction can be recorded."
     >
-      <form onSubmit={submit} className="space-y-3">
-        <label htmlFor="obligation" className="block text-xs text-slate-400">
-          Original Obligation (CAD)
-        </label>
-        <input
-          id="obligation"
-          inputMode="decimal"
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-lg tabular-nums text-slate-100"
-        />
-        <p className="text-sm text-slate-400">
-          Will be locked as{' '}
-          <strong className="text-slate-100">
-            {cents === null ? '—' : formatMoney(cents)}
-          </strong>
-        </p>
+      <form onSubmit={submit} className="space-y-4">
+        <div className="rounded-lg border border-slate-700 bg-slate-950/70 p-4">
+          <p className="text-xs uppercase tracking-wide text-slate-500">Original Obligation</p>
+          <p
+            data-testid="fixed-obligation"
+            className="mt-1 text-3xl font-semibold tabular-nums text-slate-50"
+          >
+            {formatMoney(DEFAULT_ORIGINAL_OBLIGATION_CENTS)}
+          </p>
+          <p className="mt-2 text-sm text-slate-400">
+            This is the agreed opening obligation for this ledger.
+          </p>
+        </div>
 
-        {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+        <label className="flex items-start gap-3 text-sm text-slate-200">
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={(event) => setConfirmed(event.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-500"
+          />
+          <span>
+            I confirm that {formatMoney(DEFAULT_ORIGINAL_OBLIGATION_CENTS)} is the correct
+            opening obligation.
+          </span>
+        </label>
+
+        {error ? (
+          <p role="alert" className="text-sm text-rose-300">
+            {error}
+          </p>
+        ) : null}
 
         <button
           type="submit"
-          disabled={busy || cents === null || cents <= 0}
+          disabled={busy || !confirmed}
           className="rounded-lg bg-emerald-500 px-4 py-3 text-sm font-semibold text-slate-950 disabled:opacity-40"
         >
           {busy ? 'Locking…' : 'Lock Original Obligation'}
         </button>
 
         <p className="text-[11px] text-slate-600">
-          Once locked, this figure cannot be casually edited. A later correction must be recorded as
-          an adjustment so the change stays auditable.
+          Once locked, this figure cannot be edited. A later correction must be recorded as an
+          adjustment so the change stays auditable.
         </p>
       </form>
     </Panel>

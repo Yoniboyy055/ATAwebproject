@@ -15,10 +15,12 @@ export default function NotesPanel({
   notes,
   transactions,
   role,
+  showResolved = true,
 }: {
   notes: LedgerNoteRecord[]
   transactions: TransactionRow[]
   role: LedgerRole
+  showResolved?: boolean
 }) {
   const router = useRouter()
   const [body, setBody] = useState('')
@@ -27,6 +29,8 @@ export default function NotesPanel({
   const [busy, setBusy] = useState(false)
 
   const codeById = new Map(transactions.map((tx) => [tx.id, tx.transactionCode]))
+  // A display preference only — hiding resolved notes never deletes anything.
+  const visibleNotes = showResolved ? notes : notes.filter((note) => !note.resolvedAt)
 
   async function submit(event: React.FormEvent) {
     event.preventDefault()
@@ -110,11 +114,13 @@ export default function NotesPanel({
         </button>
       </form>
 
-      {notes.length === 0 ? (
-        <p className="text-sm text-slate-500">No notes yet.</p>
+      {visibleNotes.length === 0 ? (
+        <p className="text-sm text-slate-500">
+          {notes.length === 0 ? 'No notes yet.' : 'No unresolved notes.'}
+        </p>
       ) : (
         <ul className="space-y-3">
-          {notes.map((note) => (
+          {visibleNotes.map((note) => (
             <li
               key={note.id}
               className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 print:border-slate-300 print:bg-white"

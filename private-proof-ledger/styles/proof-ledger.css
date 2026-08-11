@@ -1,6 +1,97 @@
-/* Proof Ledger — print and small-screen refinements.
+/* Proof Ledger — appearance, density, print.
    Scoped to the ledger routes; nothing here affects ATA pages. */
 
+/* Keep money columns aligned even in the mobile card layout. */
+.proof-ledger-root .tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Light appearance ---------------------------------------------------
+   The interface is designed dark. Choosing "Light" remaps the slate surface
+   and text scale rather than restyling every component individually. */
+.proof-ledger-root[data-appearance='light'] {
+  color-scheme: light;
+}
+
+.proof-ledger-root[data-appearance='light'] .bg-slate-950,
+.proof-ledger-root[data-appearance='light'] .bg-slate-950\/95 {
+  background-color: #f8fafc !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .bg-slate-950\/70,
+.proof-ledger-root[data-appearance='light'] .bg-slate-950\/60,
+.proof-ledger-root[data-appearance='light'] .bg-slate-950\/50,
+.proof-ledger-root[data-appearance='light'] .bg-slate-950\/40,
+.proof-ledger-root[data-appearance='light'] .bg-slate-950\/30,
+.proof-ledger-root[data-appearance='light'] .bg-slate-900\/60,
+.proof-ledger-root[data-appearance='light'] .bg-slate-900\/40 {
+  background-color: #ffffff !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .border-slate-800,
+.proof-ledger-root[data-appearance='light'] .border-slate-800\/70,
+.proof-ledger-root[data-appearance='light'] .border-slate-700 {
+  border-color: #cbd5e1 !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .divide-slate-800 > * + *,
+.proof-ledger-root[data-appearance='light'] .divide-slate-800\/80 > * + *,
+.proof-ledger-root[data-appearance='light'] .divide-slate-800\/70 > * + * {
+  border-color: #e2e8f0 !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .text-slate-50,
+.proof-ledger-root[data-appearance='light'] .text-slate-100,
+.proof-ledger-root[data-appearance='light'] .text-slate-200 {
+  color: #0f172a !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .text-slate-300,
+.proof-ledger-root[data-appearance='light'] .text-slate-400 {
+  color: #475569 !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .text-slate-500,
+.proof-ledger-root[data-appearance='light'] .text-slate-600 {
+  color: #64748b !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .bg-slate-800,
+.proof-ledger-root[data-appearance='light'] .file\:bg-slate-800::file-selector-button {
+  background-color: #e2e8f0 !important;
+}
+
+.proof-ledger-root[data-appearance='light'] .bg-slate-100 {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+.proof-ledger-root[data-appearance='light'] input,
+.proof-ledger-root[data-appearance='light'] textarea,
+.proof-ledger-root[data-appearance='light'] select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* --- Compact density ---------------------------------------------------- */
+.proof-ledger-root[data-density='compact'] main {
+  gap: 0.75rem;
+}
+
+.proof-ledger-root[data-density='compact'] section > .space-y-3 > * + * {
+  margin-top: 0.5rem;
+}
+
+.proof-ledger-root[data-density='compact'] article {
+  padding: 0.75rem;
+}
+
+.proof-ledger-root[data-density='compact'] .py-1\.5 {
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+
+/* --- Print -------------------------------------------------------------- */
 @media print {
   @page {
     margin: 14mm;
@@ -25,9 +116,4 @@
   tr {
     break-inside: avoid;
   }
-}
-
-/* Keep money columns aligned even in the mobile card layout. */
-.proof-ledger-root .tabular-nums {
-  font-variant-numeric: tabular-nums;
 }

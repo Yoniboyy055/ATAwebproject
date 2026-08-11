@@ -1,9 +1,11 @@
 /**
  * Proof Ledger — lightweight tamper-evident hash chain.
  *
- * Each applied record hashes its own canonical financial payload together with
- * the hash of the record before it. Rewriting or removing any historical
- * record breaks every hash from that point forward.
+ * Each applied record hashes its own canonical financial payload — including
+ * the SHA-256 of its screenshot and of the owner's original instruction —
+ * together with the hash of the record before it. Rewriting or removing any
+ * historical record, swapping the screenshot bytes, or rewording the stored
+ * instruction all break every hash from that point forward.
  *
  * This is deliberately not a blockchain: there is no consensus, no proof of
  * work and no distribution. It exists so that a silent edit to the database is
@@ -13,9 +15,13 @@
 import { createHash } from 'crypto'
 
 import { canonicalJson } from '../utils/canonical-json'
-import { LedgerTransactionRecord } from './types'
+import { AdjustmentScope, LedgerTransactionRecord } from './types'
 
 export const GENESIS_HASH = 'GENESIS'
+
+export function sha256Hex(value: string | Buffer): string {
+  return createHash('sha256').update(value).digest('hex')
+}
 
 /**
  * The subset of a record that is covered by the hash.
@@ -36,7 +42,12 @@ export interface HashableRecord {
   withdrawalPrincipalCents: number | null
   extraRepaymentCents: number | null
   requiredRepaymentCents: number | null
+  adjustmentScope: AdjustmentScope | null
+  adjustmentEffectCents: number | null
+  correctsTransactionId: string | null
   evidenceId: string | null
+  evidenceSha256: string | null
+  instructionSha256: string | null
 }
 
 export function canonicalRecordPayload(record: HashableRecord): string {
@@ -52,7 +63,12 @@ export function canonicalRecordPayload(record: HashableRecord): string {
     withdrawalPrincipalCents: record.withdrawalPrincipalCents,
     extraRepaymentCents: record.extraRepaymentCents,
     requiredRepaymentCents: record.requiredRepaymentCents,
+    adjustmentScope: record.adjustmentScope,
+    adjustmentEffectCents: record.adjustmentEffectCents,
+    correctsTransactionId: record.correctsTransactionId,
     evidenceId: record.evidenceId,
+    evidenceSha256: record.evidenceSha256,
+    instructionSha256: record.instructionSha256,
   })
 }
 
@@ -61,27 +77,40 @@ export function computeRecordHash(
   previousRecordHash: string | null
 ): string {
   const previous = previousRecordHash ?? GENESIS_HASH
-  return createHash('sha256')
-    .update(`${previous}\n${canonicalRecordPayload(record)}`)
-    .digest('hex')
+  return sha256Hex(`${previous}\n${canonicalRecordPayload(record)}`)
 }
+
+export type IntegrityFailureReason =
+  | 'BROKEN_LINK'
+  | 'HASH_MISMATCH'
+  | 'SEQUENCE_GAP'
+  | 'EXTRA_MISMATCH'
+  | 'EVIDENCE_HASH_MISMATCH'
+  | 'EVIDENCE_MISSING'
+  | 'INSTRUCTION_HASH_MISMATCH'
 
 export interface IntegrityFailure {
   sequence: number
   transactionCode: string
-  reason: 'BROKEN_LINK' | 'HASH_MISMATCH' | 'SEQUENCE_GAP' | 'EXTRA_MISMATCH'
+  reason: IntegrityFailureReason
+  /** Deliberately generic — never echoes amounts, evidence or instructions. */
   detail: string
 }
 
 export interface IntegrityResult {
   ok: boolean
   checkedRecords: number
+  /** How many records had their screenshot bytes re-hashed and compared. */
+  evidenceChecked: number
   failures: IntegrityFailure[]
 }
 
 /**
- * Verify the whole chain plus the internal consistency of the separately
- * stored extra-repayment column.
+ * Verify the chain itself, plus the internal consistency of the separately
+ * stored extra-repayment column and the stored instruction hash.
+ *
+ * Screenshot bytes are not available here — use `verifyLedgerIntegrity` for a
+ * check that also re-hashes evidence.
  */
 export function verifyChain(
   transactions: readonly LedgerTransactionRecord[]
@@ -136,10 +165,75 @@ export function verifyChain(
       }
     }
 
+    // The stored instruction must still hash to the value bound into the
+    // record. Rewording it after the fact is detectable.
+    if (record.instructionSha256 && record.originalInstruction !== null) {
+      if (sha256Hex(record.originalInstruction) !== record.instructionSha256) {
+        failures.push({
+          sequence: record.sequence,
+          transactionCode: record.transactionCode,
+          reason: 'INSTRUCTION_HASH_MISMATCH',
+          detail: 'the stored instruction does not match the hash recorded with it',
+        })
+      }
+    }
+
     previousHash = record.recordHash
   }
 
-  return { ok: failures.length === 0, checkedRecords: ordered.length, failures }
+  return {
+    ok: failures.length === 0,
+    checkedRecords: ordered.length,
+    evidenceChecked: 0,
+    failures,
+  }
+}
+
+export interface EvidenceBytesLoader {
+  (evidenceId: string): Promise<{ data: Buffer } | null>
+}
+
+/**
+ * Full integrity check: the chain, plus re-hashing the actual screenshot bytes
+ * of every record that carries evidence.
+ */
+export async function verifyLedgerIntegrity(
+  transactions: readonly LedgerTransactionRecord[],
+  loadEvidence: EvidenceBytesLoader
+): Promise<IntegrityResult> {
+  const base = verifyChain(transactions)
+  const failures = [...base.failures]
+  let evidenceChecked = 0
+
+  for (const record of transactions) {
+    if (!record.evidenceId || !record.evidenceSha256) continue
+    const evidence = await loadEvidence(record.evidenceId)
+    if (!evidence) {
+      failures.push({
+        sequence: record.sequence,
+        transactionCode: record.transactionCode,
+        reason: 'EVIDENCE_MISSING',
+        detail: 'the screenshot recorded with this transaction is no longer stored',
+      })
+      continue
+    }
+    evidenceChecked += 1
+    if (sha256Hex(evidence.data) !== record.evidenceSha256) {
+      failures.push({
+        sequence: record.sequence,
+        transactionCode: record.transactionCode,
+        reason: 'EVIDENCE_HASH_MISMATCH',
+        detail: 'the stored screenshot does not match the hash recorded with it',
+      })
+    }
+  }
+
+  return {
+    ok: failures.length === 0,
+    checkedRecords: base.checkedRecords,
+    evidenceChecked,
+    failures,
+  }
 }
 
 export function headHash(transactions: readonly LedgerTransactionRecord[]): string | null {

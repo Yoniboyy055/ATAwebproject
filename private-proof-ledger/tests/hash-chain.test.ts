@@ -120,10 +120,20 @@ describe('hash chain', () => {
       withdrawalPrincipalCents: 10000,
       extraRepaymentCents: 2000,
       requiredRepaymentCents: 12000,
+      adjustmentScope: null,
+      adjustmentEffectCents: null,
+      correctsTransactionId: null,
       evidenceId: 'ev-1',
+      evidenceSha256: 'b'.repeat(64),
+      instructionSha256: null,
     }
     const reordered = {
+      instructionSha256: null,
+      evidenceSha256: 'b'.repeat(64),
       evidenceId: 'ev-1',
+      correctsTransactionId: null,
+      adjustmentEffectCents: null,
+      adjustmentScope: null,
       requiredRepaymentCents: 12000,
       extraRepaymentCents: 2000,
       withdrawalPrincipalCents: 10000,
@@ -158,7 +168,8 @@ describe('adjustments', () => {
     const adjustment = await applyRecord(ledger, {
       type: 'ADJUSTMENT',
       amountCents: 0,
-      baseEffectCents: CAD(4500),
+      adjustmentScope: 'BASE',
+      adjustmentEffectCents: CAD(4500),
       correctsTransactionCode: original.transactionCode,
       reason: 'Deposit was CAD $500, not CAD $5,000',
     })
@@ -184,7 +195,8 @@ describe('adjustments', () => {
       applyRecord(ledger, {
         type: 'ADJUSTMENT',
         amountCents: 0,
-        baseEffectCents: CAD(100),
+        adjustmentScope: 'BASE',
+        adjustmentEffectCents: CAD(100),
         reason: 'no target',
       })
     ).rejects.toThrow(/must reference/i)

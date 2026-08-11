@@ -9,6 +9,7 @@
 
 import { assertCents } from './money'
 import {
+  AdjustmentScope,
   LEDGER_CURRENCY,
   LedgerConfigRecord,
   LedgerNoteRecord,
@@ -60,29 +61,70 @@ function repaymentsByWithdrawal(
 }
 
 /**
+ * Sum of adjustments applied to each withdrawal, by scope.
+ *
+ * An ADJUSTMENT never edits the record it corrects; it is a separate record
+ * whose effect the engine folds in here.
+ */
+function adjustmentsByWithdrawal(
+  transactions: readonly LedgerTransactionRecord[],
+  scope: AdjustmentScope
+): Map<string, number> {
+  const totals = new Map<string, number>()
+  for (const tx of transactions) {
+    if (tx.type !== 'ADJUSTMENT') continue
+    if (tx.adjustmentScope !== scope) continue
+    if (!tx.correctsTransactionId) continue
+    const current = totals.get(tx.correctsTransactionId) ?? 0
+    totals.set(tx.correctsTransactionId, current + (tx.adjustmentEffectCents ?? 0))
+  }
+  return totals
+}
+
+/**
  * Derive the complete position of every withdrawal.
  *
- * Withdrawal principal and extra repayment added are kept as separate values
- * throughout — they are never collapsed into a single required-repayment
- * figure.
+ * Principal and extra repayment added are kept as separate values throughout —
+ * they are never collapsed into a single required-repayment figure — and each
+ * is reported as original, adjustment and effective.
  */
 export function computeWithdrawalViews(
   transactions: readonly LedgerTransactionRecord[]
 ): WithdrawalView[] {
   const ordered = orderTransactions(transactions)
   const paidByWithdrawal = repaymentsByWithdrawal(ordered)
+  const principalAdjustments = adjustmentsByWithdrawal(ordered, 'WITHDRAWAL_PRINCIPAL')
+  const extraAdjustments = adjustmentsByWithdrawal(ordered, 'WITHDRAWAL_EXTRA')
 
   return ordered
     .filter((tx) => tx.type === 'WITHDRAWAL')
     .map((tx) => {
-      const principalCents = assertCents(tx.withdrawalPrincipalCents ?? tx.amountCents, 'principal')
-      const requiredRepaymentCents = assertCents(
-        tx.requiredRepaymentCents ?? principalCents,
+      const originalPrincipalCents = assertCents(
+        tx.withdrawalPrincipalCents ?? tx.amountCents,
+        'principal'
+      )
+      const originalRequiredRepaymentCents = assertCents(
+        tx.requiredRepaymentCents ?? originalPrincipalCents,
         'required repayment'
       )
       // Extra is stored explicitly, but is always reconcilable as
       // required - principal so a tampered column cannot go unnoticed.
-      const extraRepaymentCents = Math.max(0, requiredRepaymentCents - principalCents)
+      const originalExtraRepaymentCents = Math.max(
+        0,
+        originalRequiredRepaymentCents - originalPrincipalCents
+      )
+
+      const principalAdjustmentCents = principalAdjustments.get(tx.id) ?? 0
+      const extraAdjustmentCents = extraAdjustments.get(tx.id) ?? 0
+
+      // Effective financial truth. Neither layer can be driven below zero.
+      const principalCents = Math.max(0, originalPrincipalCents + principalAdjustmentCents)
+      const extraRepaymentCents = Math.max(
+        0,
+        originalExtraRepaymentCents + extraAdjustmentCents
+      )
+      const requiredRepaymentCents = principalCents + extraRepaymentCents
+
       const repaymentPaidCents = paidByWithdrawal.get(tx.id) ?? 0
       const repaymentAppliedCents = Math.min(repaymentPaidCents, requiredRepaymentCents)
       const repaymentRemainingCents = Math.max(0, requiredRepaymentCents - repaymentPaidCents)
@@ -94,6 +136,12 @@ export function computeWithdrawalViews(
         date: tx.date,
         reason: tx.reason,
         evidenceId: tx.evidenceId,
+        originalPrincipalCents,
+        originalExtraRepaymentCents,
+        originalRequiredRepaymentCents,
+        principalAdjustmentCents,
+        extraAdjustmentCents,
+        hasAdjustments: principalAdjustmentCents !== 0 || extraAdjustmentCents !== 0,
         principalCents,
         extraRepaymentCents,
         requiredRepaymentCents,
@@ -158,7 +206,7 @@ export function computeBaseAdjustmentCents(
   transactions: readonly LedgerTransactionRecord[]
 ): number {
   return transactions
-    .filter((tx) => tx.type === 'ADJUSTMENT')
+    .filter((tx) => tx.type === 'ADJUSTMENT' && tx.adjustmentScope === 'BASE')
     .reduce((sum, tx) => sum + tx.baseEffectCents, 0)
 }
 

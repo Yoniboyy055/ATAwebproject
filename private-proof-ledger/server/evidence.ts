@@ -19,6 +19,12 @@ export const ALLOWED_EVIDENCE_MIME_TYPES = [
 
 export const MAX_EVIDENCE_BYTES = 8 * 1024 * 1024
 
+/**
+ * How long an analysed-but-unapplied screenshot is kept before it becomes
+ * eligible for cleanup. Applied evidence never expires.
+ */
+export const EVIDENCE_PENDING_TTL_MS = 24 * 60 * 60 * 1000
+
 export type EvidenceRejection =
   | { ok: false; code: 'MISSING'; message: string }
   | { ok: false; code: 'UNSUPPORTED_TYPE'; message: string }

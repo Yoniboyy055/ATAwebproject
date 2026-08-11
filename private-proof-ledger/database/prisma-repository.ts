@@ -8,7 +8,10 @@
 import { PreparedRecord } from '../ledger/apply'
 import { deriveWithdrawalStatus } from '../ledger/engine'
 import {
+  AdjustmentScope,
+  EvidenceStatus,
   LedgerConfigRecord,
+  LedgerCredentialRecord,
   LedgerEvidenceRecord,
   LedgerNoteRecord,
   LedgerRole,
@@ -59,6 +62,11 @@ function mapTransaction(row: any): LedgerTransactionRecord {
     withdrawalPrincipalCents: row.withdrawalPrincipalCents ?? null,
     extraRepaymentCents: row.extraRepaymentCents ?? null,
     requiredRepaymentCents: row.requiredRepaymentCents ?? null,
+    adjustmentScope: (row.adjustmentScope as AdjustmentScope | null) ?? null,
+    adjustmentEffectCents: row.adjustmentEffectCents ?? null,
+    correctsTransactionId: row.correctsTransactionId ?? null,
+    evidenceSha256: row.evidenceSha256 ?? null,
+    instructionSha256: row.instructionSha256 ?? null,
     repaymentPaidCentsCache: row.repaymentPaidCents ?? null,
     statusCache: (row.status as WithdrawalStatus | null) ?? null,
     previousRecordHash: row.previousRecordHash ?? null,
@@ -85,7 +93,18 @@ function mapEvidence(row: any): LedgerEvidenceRecord {
     mimeType: row.mimeType,
     byteSize: row.byteSize,
     sha256: row.sha256,
+    status: (row.status as EvidenceStatus) ?? 'PENDING',
+    expiresAt: row.expiresAt ? row.expiresAt.toISOString() : null,
     createdAt: row.createdAt.toISOString(),
+  }
+}
+
+function mapCredential(row: any): LedgerCredentialRecord {
+  return {
+    role: row.role as LedgerRole,
+    passwordHash: row.passwordHash,
+    credentialVersion: row.credentialVersion,
+    updatedAt: row.updatedAt.toISOString(),
   }
 }
 
@@ -155,6 +174,11 @@ export class PrismaLedgerRepository implements LedgerRepository {
           withdrawalPrincipalCents: record.withdrawalPrincipalCents,
           extraRepaymentCents: record.extraRepaymentCents,
           requiredRepaymentCents: record.requiredRepaymentCents,
+          adjustmentScope: record.adjustmentScope,
+          adjustmentEffectCents: record.adjustmentEffectCents,
+          correctsTransactionId: record.correctsTransactionId,
+          evidenceSha256: record.evidenceSha256,
+          instructionSha256: record.instructionSha256,
           repaymentPaidCents: record.type === 'WITHDRAWAL' ? 0 : null,
           status: record.type === 'WITHDRAWAL' ? 'OPEN' : null,
           previousRecordHash: record.previousRecordHash,
@@ -163,24 +187,49 @@ export class PrismaLedgerRepository implements LedgerRepository {
         },
       })
 
-      // Refresh the denormalised cache on the linked withdrawal. These columns
-      // are display conveniences only and are never part of the hash.
-      if (record.linkedWithdrawalId) {
+      // The screenshot behind an applied record is permanent proof and is
+      // never eligible for pending cleanup again.
+      await tx.ledgerEvidence.updateMany({
+        where: { id: record.evidenceId },
+        data: { status: 'APPLIED', expiresAt: null },
+      })
+
+      // Refresh the denormalised cache on the affected withdrawal. These
+      // columns are display conveniences only and are never part of the hash.
+      const affectedWithdrawalId =
+        record.linkedWithdrawalId ??
+        (record.adjustmentScope && record.adjustmentScope !== 'BASE'
+          ? record.correctsTransactionId
+          : null)
+
+      if (affectedWithdrawalId) {
         const withdrawal = await tx.ledgerTransaction.findUnique({
-          where: { id: record.linkedWithdrawalId },
+          where: { id: affectedWithdrawalId },
         })
-        if (withdrawal) {
+        if (withdrawal && withdrawal.type === 'WITHDRAWAL') {
           const paidAggregate = await tx.ledgerTransaction.aggregate({
             where: {
               type: 'WITHDRAWAL_REPAYMENT',
-              linkedWithdrawalId: record.linkedWithdrawalId,
+              linkedWithdrawalId: affectedWithdrawalId,
             },
             _sum: { amountCents: true },
           })
+          const adjustmentAggregate = await tx.ledgerTransaction.aggregate({
+            where: {
+              type: 'ADJUSTMENT',
+              correctsTransactionId: affectedWithdrawalId,
+              adjustmentScope: { in: ['WITHDRAWAL_PRINCIPAL', 'WITHDRAWAL_EXTRA'] },
+            },
+            _sum: { adjustmentEffectCents: true },
+          })
           const paid = paidAggregate._sum.amountCents ?? 0
-          const required = withdrawal.requiredRepaymentCents ?? withdrawal.amountCents
+          const required = Math.max(
+            0,
+            (withdrawal.requiredRepaymentCents ?? withdrawal.amountCents) +
+              (adjustmentAggregate._sum.adjustmentEffectCents ?? 0)
+          )
           await tx.ledgerTransaction.update({
-            where: { id: record.linkedWithdrawalId },
+            where: { id: affectedWithdrawalId },
             data: {
               repaymentPaidCents: paid,
               status: deriveWithdrawalStatus(required, paid),
@@ -231,6 +280,8 @@ export class PrismaLedgerRepository implements LedgerRepository {
         mimeType: upload.mimeType,
         byteSize: upload.byteSize,
         sha256: upload.sha256,
+        status: 'PENDING',
+        expiresAt: upload.expiresAt,
       },
     })
     return mapEvidence(row)
@@ -245,9 +296,72 @@ export class PrismaLedgerRepository implements LedgerRepository {
   async getEvidenceMeta(evidenceId: string): Promise<LedgerEvidenceRecord | null> {
     const row = await this.db.ledgerEvidence.findUnique({
       where: { id: evidenceId },
-      select: { id: true, mimeType: true, byteSize: true, sha256: true, createdAt: true },
+      select: {
+        id: true,
+        mimeType: true,
+        byteSize: true,
+        sha256: true,
+        status: true,
+        expiresAt: true,
+        createdAt: true,
+      },
     })
     return row ? mapEvidence(row) : null
+  }
+
+  async purgeExpiredPendingEvidence(now: Date = new Date()): Promise<number> {
+    const result = await this.db.ledgerEvidence.deleteMany({
+      where: { status: 'PENDING', expiresAt: { lt: now } },
+    })
+    return result.count
+  }
+
+  async getCredential(role: LedgerRole): Promise<LedgerCredentialRecord | null> {
+    const row = await this.db.ledgerCredential.findUnique({ where: { role } })
+    return row ? mapCredential(row) : null
+  }
+
+  async seedCredential(role: LedgerRole, passwordHash: string): Promise<LedgerCredentialRecord> {
+    // `create`-only semantics: an existing row is never overwritten, which is
+    // what makes an in-app password change survive redeployment.
+    const row = await this.db.ledgerCredential.upsert({
+      where: { role },
+      update: {},
+      create: { role, passwordHash, credentialVersion: 1 },
+    })
+    return mapCredential(row)
+  }
+
+  async setCredential(role: LedgerRole, passwordHash: string): Promise<LedgerCredentialRecord> {
+    const row = await this.db.ledgerCredential.upsert({
+      where: { role },
+      update: { passwordHash, credentialVersion: { increment: 1 } },
+      create: { role, passwordHash, credentialVersion: 1 },
+    })
+    return mapCredential(row)
+  }
+
+  async bumpCredentialVersion(role: LedgerRole): Promise<LedgerCredentialRecord | null> {
+    const existing = await this.db.ledgerCredential.findUnique({ where: { role } })
+    if (!existing) return null
+    const row = await this.db.ledgerCredential.update({
+      where: { role },
+      data: { credentialVersion: { increment: 1 } },
+    })
+    return mapCredential(row)
+  }
+
+  async getSetting(key: string): Promise<string | null> {
+    const row = await this.db.ledgerSetting.findUnique({ where: { key } })
+    return row?.value ?? null
+  }
+
+  async setSetting(key: string, value: string): Promise<void> {
+    await this.db.ledgerSetting.upsert({
+      where: { key },
+      update: { value },
+      create: { key, value },
+    })
   }
 }
 

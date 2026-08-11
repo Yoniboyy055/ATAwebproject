@@ -78,11 +78,12 @@ async function renderLedger(
   const missing = missingConfiguration()
   if (missing.length > 0) return <NotConfiguredScreen missing={missing} />
 
-  const session = getLedgerSession()
-  if (!session) return <LoginScreen configured={isLedgerConfigured()} />
+  const repository = getLedgerRepository()
 
   try {
-    return render(await loadLedgerView(getLedgerRepository(), session.role))
+    const session = await getLedgerSession(repository)
+    if (!session) return <LoginScreen configured={isLedgerConfigured()} />
+    return render(await loadLedgerView(repository, session.role))
   } catch (error) {
     if (isDatabaseUnavailable(error)) return <DatabaseUnavailableScreen />
     throw error

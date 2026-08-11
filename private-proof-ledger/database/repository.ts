@@ -8,6 +8,7 @@
 import { PreparedRecord } from '../ledger/apply'
 import {
   LedgerConfigRecord,
+  LedgerCredentialRecord,
   LedgerEvidenceRecord,
   LedgerNoteRecord,
   LedgerRole,
@@ -19,6 +20,8 @@ export interface EvidenceUpload {
   mimeType: string
   byteSize: number
   sha256: string
+  /** When an unapplied upload becomes eligible for cleanup. */
+  expiresAt: Date
 }
 
 export interface EvidencePayload extends LedgerEvidenceRecord {
@@ -43,9 +46,22 @@ export interface LedgerRepository {
   }): Promise<LedgerNoteRecord>
   resolveNote(noteId: string): Promise<LedgerNoteRecord | null>
 
+  /** Stored PENDING until the record that uses it is applied. */
   createEvidence(upload: EvidenceUpload): Promise<LedgerEvidenceRecord>
   getEvidence(evidenceId: string): Promise<EvidencePayload | null>
   getEvidenceMeta(evidenceId: string): Promise<LedgerEvidenceRecord | null>
+  /** Delete expired PENDING evidence. Never touches APPLIED evidence. */
+  purgeExpiredPendingEvidence(now?: Date): Promise<number>
+
+  getCredential(role: LedgerRole): Promise<LedgerCredentialRecord | null>
+  /** First-run seed from the bootstrap hash. Never overwrites an existing row. */
+  seedCredential(role: LedgerRole, passwordHash: string): Promise<LedgerCredentialRecord>
+  /** Rotate a password and bump its credential version. */
+  setCredential(role: LedgerRole, passwordHash: string): Promise<LedgerCredentialRecord>
+  bumpCredentialVersion(role: LedgerRole): Promise<LedgerCredentialRecord | null>
+
+  getSetting(key: string): Promise<string | null>
+  setSetting(key: string, value: string): Promise<void>
 }
 
 export class LedgerConflictError extends Error {

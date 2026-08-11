@@ -63,7 +63,7 @@ Permanent record         (private-proof-ledger/database)     hash chained
 |---|---|
 | `ledger/` | Pure deterministic domain: money, engine, hash chain, record preparation. No framework, database or network imports. |
 | `schemas/` | Zod schemas — the only way untrusted input enters the domain. |
-| `auth/` | scrypt password hashing, signed session tokens, login throttling. |
+| `auth/` | scrypt password hashing, credential authority, signed session tokens, signed proposal tokens, login throttling. |
 | `ai/` | Anthropic call and the strict classification of its reply. |
 | `database/` | Prisma schema, client, repository contract, Prisma and in-memory implementations. |
 | `server/` | HTTP handlers, evidence rules, read model, page implementations. |
@@ -76,12 +76,17 @@ Permanent record         (private-proof-ledger/database)     hash chained
 
 ## 3. Opening obligation
 
-The production opening obligation is **CAD $36,000.00** (`3600000` cents).
+The opening obligation for this ledger is **fixed at CAD $36,000.00**
+(`3600000` cents).
 
-On first run the owner sees the figure, confirms it, and presses **Lock
-Original Obligation**. After locking it cannot be casually edited — a later
-correction must be recorded as an auditable `ADJUSTMENT`. No transaction can be
-applied before the obligation is locked.
+On first run the owner sees the figure — displayed, never editable, with no
+money input field anywhere on the screen — ticks a confirmation box, and presses
+**Lock Original Obligation**. The server accepts exactly `3600000` and rejects
+every other value with `400`, so the browser cannot propose a different amount.
+
+After locking it cannot be edited at all. A later correction must be recorded as
+an auditable `ADJUSTMENT`. No transaction can be applied before the obligation
+is locked.
 
 ---
 
@@ -169,37 +174,184 @@ is never added again. This is asserted directly in the test suite.
 | Create adjustments | ✅ | ❌ |
 | Change any amount, date or withdrawal status | ✅ (via new records only) | ❌ |
 | Resolve a discussion | ✅ | ❌ |
+| Change appearance, density, resolved-note display | ✅ | ✅ |
+| See own role, session expiry, sign out | ✅ | ✅ |
+| Change the owner password | ✅ | ❌ |
+| Change the viewer password | ✅ | ❌ |
+| Enable / disable viewer access | ✅ | ❌ |
 
 Every restriction is enforced **server side** in
 `private-proof-ledger/server/handlers.ts`. The browser never decides its own
 role, and applied records are never edited or deleted — corrections are new
 `ADJUSTMENT` records that reference the original.
 
+### Credentials, sessions and rotation
+
+Passwords live in the **private ledger database**, not the environment.
+`LEDGER_OWNER_PASSWORD_HASH` / `LEDGER_VIEWER_PASSWORD_HASH` seed the
+`LedgerCredential` rows on first run and are ignored from then on, so a password
+changed in Settings survives every redeploy.
+
+- Hashing is scrypt; only the hash is stored.
+- Each credential carries a `credentialVersion`. Session tokens embed the
+  version they were issued against, and every request re-checks it against the
+  database — so rotating a password signs other devices out immediately.
+- The owner's current password authorises both changes: their own, and the
+  viewer's. The owner never needs to know the old viewer password.
+- Rotating the owner password re-issues the acting device's cookie against the
+  new version, so the person making the change stays signed in while every other
+  owner device is signed out.
+
+| Role | Session lifetime | Why |
+|---|---|---|
+| OWNER | 12 hours | Performs consequential financial writes. |
+| VIEWER | 30 days | Only reads and comments; keep re-entry low friction. |
+
+### Viewer access switch
+
+The owner can disable viewer access entirely. Disabling bumps the viewer
+credential version, so existing viewer sessions become invalid at once and
+viewer login is refused with a clear message. The owner is unaffected. The
+viewer sees the current state in Settings but cannot change it, and the
+endpoint refuses a viewer with `403`.
+
 ---
 
-## 7. The AI boundary
+## 6a. Settings
+
+Deliberately small. Both roles get:
+
+- **Appearance** — System / Dark / Light
+- **Transaction density** — Comfortable / Compact
+- **Resolved notes** — Show / Hide
+- **Session** — role, expiry, Sign Out
+- **Ledger status** — integrity result
+
+These three preferences are per-device and stored in `localStorage`. They never
+touch a financial value and are never sent to the server.
+
+The owner additionally gets Change Owner Password, Change Viewer Password and
+the Viewer Access switch. The viewer sees "Password changes are controlled by
+the ledger owner" instead — and the server enforces that independently of what
+the interface shows.
+
+Settings never expose a password hash, a secret, a database URL or an API key.
+
+---
+
+## 7. The AI boundary and signed proposals
 
 AI is an **interpreter**, never the accounting engine.
 
 It may identify: transaction type, date, amount, reason, withdrawal principal,
-an explicitly stated required repayment, a linked withdrawal, and any
-disagreement between the screenshot and the instruction.
+an explicitly stated required repayment, a linked withdrawal, an adjustment
+scope and target, and any disagreement between the screenshot and the
+instruction.
 
 It may **not** compute balances, totals, outstanding amounts or status. The
 proposal schema has no field for them, and anything extra is stripped by Zod.
 
-The flow stops with **zero mutation** — no transaction and no stored evidence —
-when:
+### Apply is bound to the exact analysed proposal
+
+```
+screenshot + instruction
+        ↓
+AI interpretation
+        ↓
+Zod validation → deterministic ledger rules (dry run against real history)
+        ↓
+server signs the proposal it approved
+        ↓
+owner reviews that proposal
+        ↓
+owner presses Apply Record  →  browser sends ONLY the signed token
+        ↓
+server re-verifies and rebuilds the record from the token alone
+        ↓
+immutable financial record
+```
+
+The HMAC signature covers the transaction type, date, amount, reason, required
+repayment, linked transaction, adjustment scope and effect, correction target,
+evidence id, **evidence SHA-256**, the owner's original instruction and its
+**SHA-256**, the ledger head hash at issue time, an issue time, an expiry
+(20 minutes) and a random nonce.
+
+`POST /api/proof-ledger/transactions` accepts only `{ proposalToken, confirm }`.
+There are no transaction facts in the request for a modified browser to alter.
+Before writing, the server re-checks that:
+
+1. the session is an owner session;
+2. the signature verifies and the token has not expired;
+3. the ledger head still matches the token — which also makes a replayed token
+   fail after the first successful apply;
+4. the screenshot still exists and its **bytes re-hash** to the signed value;
+5. the instruction hash of the rebuilt record matches the signed one.
+
+The signing key is either `LEDGER_PROPOSAL_SECRET`, or an HMAC-derived key
+separate from the session secret so proposal tokens and session cookies can
+never be confused.
+
+### Zero-mutation outcomes
+
+The flow stops with **no transaction and no stored evidence** when:
 
 - the screenshot and the instruction materially disagree (`Evidence Conflict
   Detected` is shown with both values);
 - confidence is `LOW`;
 - the reply does not match the schema;
-- the proposal violates a ledger rule (unknown linked withdrawal, repayment
-  larger than outstanding, required repayment below principal, and so on).
+- the proposal violates a ledger rule.
 
-Evidence is only persisted once a proposal has passed every check, and no
-record exists until the owner presses **Apply Record**.
+Evidence is only persisted once a proposal has passed every check, and no record
+exists until the owner presses **Apply Record**.
+
+## 7a. Adjustments
+
+An `ADJUSTMENT` never rewrites the record it references. It is a separate,
+hash-chained record carrying a scope, a signed effect and a correction target:
+
+| Scope | Corrects |
+|---|---|
+| `BASE` | Base Remaining. |
+| `WITHDRAWAL_PRINCIPAL` | The principal of a specific withdrawal. |
+| `WITHDRAWAL_EXTRA` | The extra repayment added to a specific withdrawal. |
+
+The engine derives effective truth:
+
+```
+Effective Principal = Original Principal + Σ principal adjustments
+Effective Extra     = Original Extra     + Σ extra adjustments
+Effective Required  = Effective Principal + Effective Extra
+```
+
+Repayments stay linked to the original withdrawal, and status is recalculated
+against the **effective** required repayment — so a correction can move a
+withdrawal from PARTIAL to CLOSED without any repayment being recorded.
+
+Withdrawal totals and Total Currently Outstanding report effective truth. The
+withdrawal card shows the original, the adjustment and the effective figure side
+by side, but only when an adjustment exists; an uncorrected withdrawal keeps the
+simple three-row breakdown.
+
+A correction that would push a withdrawal below zero is refused, as is a
+withdrawal-scoped correction pointed at a base deposit.
+
+Example:
+
+```
+TX-014 Withdrawal
+Original Principal        CAD $100
+Principal Adjustments       CAD $0
+Effective Principal       CAD $100
+
+Original Extra             CAD $20
+Extra Adjustments          -CAD $10
+Effective Extra             CAD $10
+
+Effective Required        CAD $110
+Paid                       CAD $50
+Remaining                  CAD $60
+```
 
 ---
 
@@ -216,6 +368,8 @@ anything it cannot represent exactly (`12.345` is refused).
 | Model | Purpose |
 |---|---|
 | `LedgerConfig` | Currency, original obligation, locked timestamp. |
+| `LedgerCredential` | Per-role password hash and credential version — the runtime authority. |
+| `LedgerSetting` | Owner-controlled switches, currently viewer access. |
 | `LedgerTransaction` | The permanent record, including `withdrawalPrincipalCents`, `extraRepaymentCents`, `requiredRepaymentCents`, `baseEffectCents`, `previousRecordHash`, `recordHash`. |
 | `LedgerEvidence` | Screenshot bytes, MIME type, byte size, SHA-256, timestamp. |
 | `LedgerNote` | Append-only discussion, optionally attached to a transaction. |
@@ -231,8 +385,9 @@ separate primary key.
 
 ## 10. Tamper evidence
 
-Every applied record hashes its canonical financial payload together with the
-previous record's hash:
+Every applied record hashes its canonical financial payload — including
+`evidenceSha256` and `instructionSha256` — together with the previous record's
+hash:
 
 ```
 TX-001                → HASH-A
@@ -240,15 +395,25 @@ TX-002 + HASH-A       → HASH-B
 TX-003 + HASH-B       → HASH-C
 ```
 
-`verifyChain()` re-derives every hash and also checks that
-`required − principal === extra` on each withdrawal. Editing an applied amount,
-removing a record from the middle, or rewriting the extra-repayment column all
-fail verification. The result is shown in the reconciliation bar and on the
-statement, and is available at `GET /api/proof-ledger/integrity`.
+`verifyLedgerIntegrity()` re-derives every hash, checks that
+`required − principal === extra` on each withdrawal, re-hashes the **stored
+instruction text**, and loads and re-hashes the **actual screenshot bytes**.
+Failures are reported as:
+
+| Reason | Meaning |
+|---|---|
+| `HASH_MISMATCH` | The record no longer matches its stored hash. |
+| `BROKEN_LINK` / `SEQUENCE_GAP` | A record was removed or reordered. |
+| `EXTRA_MISMATCH` | The extra-repayment column was edited away from principal and required. |
+| `EVIDENCE_HASH_MISMATCH` | The stored screenshot bytes were replaced. |
+| `EVIDENCE_MISSING` | The screenshot behind a record is gone. |
+| `INSTRUCTION_HASH_MISMATCH` | The stored instruction was reworded. |
+
+Failure details never echo amounts, evidence or instruction contents. The result
+is shown in the reconciliation bar and in Settings, and is available at
+`GET /api/proof-ledger/integrity`.
 
 This is not a blockchain — no consensus, no proof of work, no distribution.
-
----
 
 ## 11. Evidence storage
 
@@ -261,6 +426,14 @@ Screenshot bytes are stored in the **private ledger database** (`LedgerEvidence.
   `image/heif`), maximum 8 MB, SHA-256 recorded on upload.
 - Screenshots are **never** committed to git.
 
+### Pending lifecycle
+
+A screenshot is stored `PENDING` with a 24-hour expiry the moment a proposal
+passes validation. Applying its record marks it `APPLIED` and clears the expiry,
+after which it is permanent. Expired `PENDING` rows — analyses the owner never
+confirmed — are deleted opportunistically at the start of the next analysis.
+`APPLIED` evidence is never cleaned up.
+
 ---
 
 ## 12. Environment variables
@@ -271,8 +444,13 @@ Screenshot bytes are stored in the **private ledger database** (`LedgerEvidence.
 | `LEDGER_OWNER_PASSWORD_HASH` | scrypt hash of the owner password. |
 | `LEDGER_VIEWER_PASSWORD_HASH` | scrypt hash of the viewer password. |
 | `LEDGER_SESSION_SECRET` | 32+ characters, used to sign session cookies. |
+| `LEDGER_PROPOSAL_SECRET` | Optional. 32+ characters for signing proposal tokens. When absent, a distinct key is derived from the session secret. |
 | `ANTHROPIC_API_KEY` | Server-side key for screenshot interpretation. |
 | `LEDGER_ANTHROPIC_MODEL` | Model identifier for the interpreter. Required — there is no default. |
+| `LEDGER_ANTHROPIC_BASE_URL` | Optional. Overrides the API host for a proxy or an integration test. |
+
+`LEDGER_OWNER_PASSWORD_HASH` and `LEDGER_VIEWER_PASSWORD_HASH` are **bootstrap
+only**: they seed the credential rows on first run and are ignored afterwards.
 
 Never commit real values. `.env.example` documents the names only.
 
@@ -312,40 +490,97 @@ npm run lint
 npm run build
 ```
 
-Browser tests:
+Browser tests need a running server with the ledger environment configured:
 
 ```bash
-# Server must already be running with the ledger environment configured.
 PROOF_LEDGER_BASE_URL=http://127.0.0.1:3111 npx playwright test
 ```
 
-Specs that need a provisioned ledger database skip themselves unless
-`PROOF_LEDGER_E2E_DB=1`, `PROOF_LEDGER_OWNER_PASSWORD` and
-`PROOF_LEDGER_VIEWER_PASSWORD` are set. Use fictional data only.
+The signed-in specs additionally need a provisioned ledger database and skip
+themselves unless `PROOF_LEDGER_E2E_DB=1`, `PROOF_LEDGER_OWNER_PASSWORD` and
+`PROOF_LEDGER_VIEWER_PASSWORD` are set. Use fictional data only, and never point
+them at a ledger holding real records.
 
-The Jest suite covers the opening obligation, base deposits, withdrawal
-principal versus extra repayment, partial and full repayment, multiple
-withdrawals, historical versus current totals, the explicit no-double-counting
-assertion, the rule that repayments never touch the base, AI ambiguity and
-conflict producing zero mutation, viewer restrictions, notes never affecting
-money, adjustments preserving the original record, and hash-chain integrity
-passing clean history while failing tampered history.
+### What the Jest suite proves
 
----
+- the fixed CAD $36,000.00 opening obligation — only `3600000` is accepted;
+- base deposits, withdrawal principal versus extra repayment, partial and full
+  repayment, multiple withdrawals, historical versus current totals, and an
+  explicit no-double-counting assertion;
+- repayments never touch the base;
+- **proposal binding** — altered amount, date, type, required repayment or
+  evidence id are all rejected; extra fields posted alongside the token are
+  ignored; expired tokens and replays after a successful apply are rejected; a
+  token issued against a different chain head is rejected; swapped evidence
+  bytes and a mismatched instruction hash are rejected;
+- **integrity** — clean history passes; edited amounts, removed records, an
+  edited extra column, replaced screenshot bytes, missing evidence and a
+  reworded instruction all fail with a specific reason;
+- **adjustments** — base, principal and extra scopes; effective totals; status
+  recalculation; the original record untouched; the adjustment visible in
+  history; corrections below zero refused;
+- **credentials** — bootstrap seeding happens once; a redeploy cannot overwrite
+  a changed password; owner and viewer rotation; a viewer cannot rotate any
+  password; the owner rotates the viewer's without the old one;
+- **sessions** — credential versions embedded; stale owner and viewer sessions
+  rejected; 12-hour owner and 30-day viewer lifetimes;
+- **viewer access** — owner can disable and re-enable; disabled viewers cannot
+  log in and existing sessions die; the owner is unaffected;
+- **pending evidence** — created PENDING, promoted to APPLIED, expired pending
+  rows purged, applied evidence never purged;
+- notes never change a financial value.
+
+### Live verification performed on this branch
+
+The full stack was exercised against a real PostgreSQL database and a running
+production build, with a local stand-in for the Anthropic API (via
+`LEDGER_ANTHROPIC_BASE_URL`) so the owner flow could run end to end:
+
+- owner and viewer login, credential rows seeded into the database;
+- the fixed obligation — `CAD $10,000` refused, `CAD $36,000.00` locked;
+- the full financial scenario: deposit CAD $500 → withdrawal CAD $100 with
+  CAD $20 extra → partial CAD $50 → final CAD $70, ending at Base Remaining
+  CAD $35,500.00, outstanding CAD $35,500.00, historical extra still CAD $20.00;
+- the attack path — re-sending the signed token with `amountCents: 100000`,
+  a different type, date and required repayment applied the signed CAD $100
+  withdrawal unchanged; replaying the token afterwards failed with `CHAIN_MOVED`;
+- a `WITHDRAWAL_EXTRA` adjustment of −CAD $10 producing effective totals while
+  the original row kept principal CAD $100 / extra CAD $20 / required CAD $120;
+- direct database tampering with screenshot bytes and with the stored
+  instruction, each detected with the matching integrity reason;
+- viewer password rotation by the owner, owner password rotation, and the viewer
+  access switch — each invalidating the right sessions and leaving the owner
+  working;
+- 34 Playwright tests across desktop and mobile viewports.
 
 ## 15. Deployment
 
-1. Provision a PostgreSQL database dedicated to the ledger.
-2. Set the six environment variables in the hosting environment (production and
-   preview separately).
-3. Deploy. `postinstall` and `build` both run `prisma generate` for the ATA
+1. Provision a PostgreSQL database dedicated to the ledger. It must not be the
+   ATA business database, and must not be Supabase.
+2. Generate the bootstrap hashes and secrets:
+   ```bash
+   npm run ledger:hash-password -- "a long owner password"
+   npm run ledger:hash-password -- "a long viewer password"
+   openssl rand -base64 48   # LEDGER_SESSION_SECRET
+   openssl rand -base64 48   # LEDGER_PROPOSAL_SECRET (optional)
+   ```
+3. Set the environment variables on the canonical Vercel project — for the
+   Preview environment if that is where the owner will test, and for Production
+   when it goes live. Never commit any value.
+4. Deploy. `postinstall` and `build` both run `prisma generate` for the ATA
    schema and `ledger:generate` for the ledger schema.
-4. Run `npm run ledger:db:push` against the ledger database once.
-5. Open `/proof-ledger`, sign in as owner, lock `CAD $36,000.00`.
-6. Confirm `/robots.txt` disallows `/proof-ledger` and that the page is not
+5. Create the tables once against the ledger database:
+   ```bash
+   LEDGER_DATABASE_URL="…" npm run ledger:db:push
+   ```
+6. Open `/proof-ledger`, sign in as owner, tick the confirmation and press
+   **Lock Original Obligation**.
+7. Confirm `/robots.txt` disallows `/proof-ledger` and that the page is not
    linked anywhere in ATA.
 
----
+If the Vercel project has Deployment Protection enabled, preview URLs require a
+Vercel login. Either share the protection bypass, or deploy to an environment
+the owner can reach directly from a phone.
 
 ## 16. Security
 
@@ -361,6 +596,13 @@ passing clean history while failing tampered history.
   echoing request content into logs.
 - A ledger database outage returns a clear `503` stating that nothing has been
   changed, rather than an opaque error.
+- Apply is bound to a server-signed proposal, so the browser cannot substitute
+  transaction facts between review and approval.
+- Screenshot bytes are re-hashed at apply time and at every integrity check —
+  the stored hash column is never trusted on its own.
+- Passwords are database-owned with versioned credentials, so rotation actually
+  invalidates other devices.
+- Settings responses contain no hash, secret, connection string or API key.
 - Access does not rely on the URL being secret.
 
 ---
@@ -371,8 +613,14 @@ passing clean history while failing tampered history.
   alone. Back up the ledger database with `pg_dump` before any migration.
 - **A wrong record**: never edit or delete it. Record an `ADJUSTMENT`
   referencing it, with a reason.
-- **A suspected tamper**: open `/api/proof-ledger/integrity`. Failures name the
-  exact transaction codes and the kind of break.
+- **A suspected tamper**: open `/api/proof-ledger/integrity`, or read the
+  Integrity line in Settings. Failures name the exact transaction codes and the
+  kind of break, without echoing any content.
+- **A forgotten owner password**: set a fresh `LEDGER_OWNER_PASSWORD_HASH`, then
+  delete the `OWNER` row from `ledger_credentials` so the next start re-seeds
+  from it. This is the one operation that needs direct database access.
+- **A lost viewer password**: the owner rotates it from Settings; no database
+  access needed.
 - **Disabling the feature**: remove `LEDGER_SESSION_SECRET` (or the password
   hashes) and the ledger renders a configuration screen and accepts no logins.
   Deleting `app/proof-ledger` and `app/api/proof-ledger` removes the routes
@@ -392,13 +640,17 @@ passing clean history while failing tampered history.
 - **Overpayment is refused rather than absorbed.** A repayment larger than the
   outstanding amount is rejected with a message; correcting it needs an
   adjustment. The engine still clamps defensively if such data ever appears.
-- **Adjustments affect the base only.** There is no adjustment that rewrites a
-  withdrawal's principal or extra repayment; the original record stands and the
-  correction is recorded alongside it.
+- **Adjustments are additive, not retroactive re-statements.** History shows the
+  original figure and the correction beside it; there is no single "as if it had
+  always been" record.
+- **Light appearance is a token remap**, not a separately designed theme. It is
+  legible and consistent, but the interface was designed dark first.
 - **No note attachments** in v1.
 - **The AI interpreter needs network access.** With no key configured, or the
   service unreachable, analysis returns a clear error and the owner cannot add a
   record until it recovers.
+- **A forgotten owner password needs database access** to reset, by design —
+  there is no email recovery and no second owner.
 - **Browser specs that need a database are skipped by default**, so a clean
   checkout proves the login, exposure and access-control paths but not the
   signed-in dashboard.

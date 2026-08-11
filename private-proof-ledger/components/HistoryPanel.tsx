@@ -39,6 +39,16 @@ function HistoryCard({ row }: { row: TransactionRow }) {
           <Row label="Amount" cents={signedAmount} signed emphasis />
         )}
 
+        {row.correctsTransactionCode ? (
+          <div className="flex items-baseline justify-between gap-4 py-1.5 text-sm">
+            <span className="text-slate-400 print:text-slate-700">Corrects</span>
+            <span className="text-slate-200 print:text-black">
+              {row.correctsTransactionCode}
+              {row.adjustmentScope ? ` • ${row.adjustmentScope}` : ''}
+            </span>
+          </div>
+        ) : null}
+
         {row.linkedWithdrawalCode ? (
           <div className="flex items-baseline justify-between gap-4 py-1.5 text-sm">
             <span className="text-slate-400 print:text-slate-700">Linked</span>

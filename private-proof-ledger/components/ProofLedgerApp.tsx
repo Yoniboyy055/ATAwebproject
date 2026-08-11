@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { LedgerView } from '../server/view'
 import HistoryPanel from './HistoryPanel'
@@ -9,20 +9,32 @@ import LockObligationPanel from './LockObligationPanel'
 import NewTransactionPanel from './NewTransactionPanel'
 import NotesPanel from './NotesPanel'
 import ReconciliationBar from './ReconciliationBar'
+import SettingsPanel from './SettingsPanel'
 import SummaryPanel from './SummaryPanel'
 import WithdrawalsPanel from './WithdrawalsPanel'
+import { resolveAppearance, usePreferences } from './preferences'
 
 const SECTIONS = [
-  { id: 'summary', label: 'Summary' },
+  { id: 'summary', label: 'Dashboard' },
   { id: 'withdrawals', label: 'Withdrawals' },
-  { id: 'history', label: 'History' },
+  { id: 'history', label: 'Transactions' },
   { id: 'notes', label: 'Notes' },
+  { id: 'settings', label: 'Settings' },
 ] as const
 
 export default function ProofLedgerApp({ view }: { view: LedgerView }) {
   const router = useRouter()
+  const [preferences] = usePreferences()
   const [signingOut, setSigningOut] = useState(false)
   const isOwner = view.role === 'OWNER'
+
+  // Local display preferences are applied on the ledger root only.
+  useEffect(() => {
+    const root = document.querySelector('.proof-ledger-root')
+    if (!(root instanceof HTMLElement)) return
+    root.dataset.appearance = resolveAppearance(preferences.appearance)
+    root.dataset.density = preferences.density
+  }, [preferences.appearance, preferences.density])
 
   async function signOut() {
     setSigningOut(true)
@@ -66,27 +78,26 @@ export default function ProofLedgerApp({ view }: { view: LedgerView }) {
       {/* Desktop navigation rail; collapses to a scrolling chip row on mobile. */}
       <nav className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/95 px-4 py-2 backdrop-blur sm:px-6 print:hidden">
         <ul className="mx-auto flex max-w-5xl gap-2 overflow-x-auto">
-          {(isOwner ? [{ id: 'new', label: 'New Transaction' }, ...SECTIONS] : SECTIONS).map(
-            (section) => (
-              <li key={section.id}>
-                <a
-                  href={`#${section.id}`}
-                  className="inline-block whitespace-nowrap rounded-full border border-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300"
-                >
-                  {section.label}
-                </a>
-              </li>
-            )
-          )}
+          {(isOwner
+            ? [{ id: 'new', label: 'New Transaction' } as const, ...SECTIONS]
+            : SECTIONS
+          ).map((section) => (
+            <li key={section.id}>
+              <a
+                href={`#${section.id}`}
+                className="inline-block whitespace-nowrap rounded-full border border-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300"
+              >
+                {section.label}
+              </a>
+            </li>
+          ))}
         </ul>
       </nav>
 
-      <main className="mx-auto max-w-5xl space-y-4 px-4 py-5 sm:px-6">
+      <main className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-5 sm:px-6">
         <ReconciliationBar reconciliation={view.reconciliation} integrity={view.integrity} />
 
-        {isOwner && !view.obligationLocked ? (
-          <LockObligationPanel proposedObligationCents={view.proposedObligationCents} />
-        ) : null}
+        {isOwner && !view.obligationLocked ? <LockObligationPanel /> : null}
 
         {!isOwner && !view.obligationLocked ? (
           <p className="rounded-xl border border-amber-800 bg-amber-950/40 px-4 py-3 text-sm text-amber-200">
@@ -98,14 +109,18 @@ export default function ProofLedgerApp({ view }: { view: LedgerView }) {
 
         {isOwner && view.obligationLocked ? <NewTransactionPanel /> : null}
 
-        <WithdrawalsPanel
-          withdrawals={view.withdrawals}
-          totals={view.summary.withdrawalTotals}
-        />
+        <WithdrawalsPanel withdrawals={view.withdrawals} totals={view.summary.withdrawalTotals} />
 
         <HistoryPanel transactions={view.transactions} />
 
-        <NotesPanel notes={view.notes} transactions={view.transactions} role={view.role} />
+        <NotesPanel
+          notes={view.notes}
+          transactions={view.transactions}
+          role={view.role}
+          showResolved={preferences.resolvedNotes === 'show'}
+        />
+
+        <SettingsPanel role={view.role} />
 
         {!isOwner ? (
           <p className="rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-3 text-xs text-slate-500">

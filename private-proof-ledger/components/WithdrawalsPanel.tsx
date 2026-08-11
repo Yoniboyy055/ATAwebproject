@@ -24,9 +24,29 @@ function WithdrawalCard({ view }: { view: WithdrawalView }) {
       </header>
 
       <div className="mt-3 divide-y divide-slate-800/80 print:divide-slate-300">
-        <Row label="Amount Withdrawn" cents={view.principalCents} />
-        <Row label="Extra Repayment Added" cents={view.extraRepaymentCents} />
-        <Row label="Required Repayment" cents={view.requiredRepaymentCents} emphasis />
+        {view.hasAdjustments ? (
+          <>
+            {/* Corrections never rewrite the original record, so both the
+                original and the effective figures stay visible. */}
+            <Row label="Original Principal" cents={view.originalPrincipalCents} />
+            <Row
+              label="Principal Adjustments"
+              cents={view.principalAdjustmentCents}
+              signed
+            />
+            <Row label="Effective Principal" cents={view.principalCents} emphasis />
+            <Row label="Original Extra" cents={view.originalExtraRepaymentCents} />
+            <Row label="Extra Adjustments" cents={view.extraAdjustmentCents} signed />
+            <Row label="Effective Extra" cents={view.extraRepaymentCents} emphasis />
+            <Row label="Effective Required" cents={view.requiredRepaymentCents} emphasis />
+          </>
+        ) : (
+          <>
+            <Row label="Amount Withdrawn" cents={view.principalCents} />
+            <Row label="Extra Repayment Added" cents={view.extraRepaymentCents} />
+            <Row label="Required Repayment" cents={view.requiredRepaymentCents} emphasis />
+          </>
+        )}
         <Row label="Repayment Paid" cents={view.repaymentAppliedCents} />
         <Row label="Repayment Remaining" cents={view.repaymentRemainingCents} emphasis />
         <Row label="Effect on Base" cents={view.baseEffectCents} />

@@ -41,6 +41,17 @@ model LedgerTransaction {
   extraRepaymentCents      Int?
   requiredRepaymentCents   Int?
 
+  // Adjustments correct an earlier record without ever rewriting it.
+  // Scope is BASE, WITHDRAWAL_PRINCIPAL or WITHDRAWAL_EXTRA.
+  adjustmentScope       String?
+  adjustmentEffectCents Int?
+  correctsTransactionId String?
+
+  // Integrity bindings — both are part of the hashed payload, so replacing
+  // the screenshot bytes or the owner's original wording breaks the chain.
+  evidenceSha256    String?
+  instructionSha256 String?
+
   // Denormalised caches. Never hashed; the engine derives the authoritative
   // values from transaction history.
   repaymentPaidCents Int?
@@ -54,6 +65,7 @@ model LedgerTransaction {
 
   @@index([type])
   @@index([linkedWithdrawalId])
+  @@index([correctsTransactionId])
   @@map("ledger_transactions")
 }
 
@@ -65,10 +77,37 @@ model LedgerEvidence {
   mimeType  String
   byteSize  Int
   sha256    String
-  createdAt DateTime @default(now())
+  // PENDING until the owner applies the record it belongs to. Expired
+  // PENDING rows are cleaned up opportunistically; APPLIED rows never are.
+  status    String    @default("PENDING")
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
 
   @@index([sha256])
+  @@index([status, expiresAt])
   @@map("ledger_evidence")
+}
+
+// Runtime credential authority. Seeded once from the bootstrap environment
+// hashes, then owned by the database so a password change survives redeploys.
+model LedgerCredential {
+  id                String   @id @default(cuid())
+  role              String   @unique
+  passwordHash      String
+  credentialVersion Int      @default(1)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("ledger_credentials")
+}
+
+// Small key/value store for owner-controlled switches such as viewer access.
+model LedgerSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("ledger_settings")
 }
 
 model LedgerNote {

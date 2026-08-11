@@ -11,11 +11,6 @@ interface Proposal {
   date: string
   amountCents: number
   reason: string
-  requiredRepaymentCents: number | null
-  linkedTransactionCode: string | null
-  baseEffectCents: number | null
-  correctsTransactionCode: string | null
-  originalInstruction: string
 }
 
 interface Preview {
@@ -24,7 +19,10 @@ interface Preview {
   extraRepaymentCents: number | null
   requiredRepaymentCents: number | null
   baseEffectCents: number
+  adjustmentScope: string | null
+  adjustmentEffectCents: number | null
   linkedWithdrawalCode: string | null
+  correctsTransactionCode: string | null
   summaryBefore: LedgerSummary
   summaryAfter: LedgerSummary
   affectedWithdrawalBefore: WithdrawalView | null
@@ -33,7 +31,13 @@ interface Preview {
 
 type AnalysisState =
   | { kind: 'IDLE' }
-  | { kind: 'PROPOSAL'; proposal: Proposal; preview: Preview; evidenceId: string; observations: string }
+  | {
+      kind: 'PROPOSAL'
+      proposal: Proposal
+      preview: Preview
+      proposalToken: string
+      observations: string
+    }
   | {
       kind: 'CONFLICT'
       message: string
@@ -104,7 +108,8 @@ export default function NewTransactionPanel() {
         kind: 'PROPOSAL',
         proposal: payload.proposal,
         preview: payload.preview,
-        evidenceId: payload.evidence.id,
+        // The server signed this exact proposal. It is the only thing sent back.
+        proposalToken: payload.proposalToken,
         observations: payload.observations ?? '',
       })
     } catch {
@@ -122,7 +127,9 @@ export default function NewTransactionPanel() {
       const response = await fetch('/api/proof-ledger/transactions', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ ...state.proposal, evidenceId: state.evidenceId }),
+        // Only the signed token and an explicit confirmation. No transaction
+        // facts travel back through the browser, so none can be substituted.
+        body: JSON.stringify({ proposalToken: state.proposalToken, confirm: true }),
       })
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) {
@@ -260,6 +267,27 @@ export default function NewTransactionPanel() {
                 <span className="text-slate-400">Linked withdrawal</span>
                 <span className="text-slate-100">{state.preview.linkedWithdrawalCode}</span>
               </div>
+            ) : null}
+
+            {state.preview.correctsTransactionCode ? (
+              <>
+                <div className="flex justify-between gap-4 py-1.5 text-sm">
+                  <span className="text-slate-400">Corrects</span>
+                  <span className="text-slate-100">
+                    {state.preview.correctsTransactionCode}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-4 py-1.5 text-sm">
+                  <span className="text-slate-400">Correction scope</span>
+                  <span className="text-slate-100">{state.preview.adjustmentScope}</span>
+                </div>
+                <Row
+                  label="Correction"
+                  cents={state.preview.adjustmentEffectCents ?? 0}
+                  signed
+                  emphasis
+                />
+              </>
             ) : null}
 
             <Row label="Effect on Base" cents={state.preview.baseEffectCents} signed />

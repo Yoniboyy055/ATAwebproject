@@ -10,30 +10,52 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { analyzeEvidence, readAnthropicSettings } from '../ai/analyze'
 import { AnalysisContext } from '../ai/prompt'
+import { readAuthConfig } from '../auth/config'
 import {
+  authenticatePassword,
+  canChangePasswords,
+  canControlViewerAccess,
   canResolveNotes,
   canViewEvidence,
   canWriteFinancialRecords,
   canWriteNotes,
-} from '../auth/authenticate'
-import { authenticatePassword } from '../auth/authenticate'
-import { readAuthConfig } from '../auth/config'
+  changePassword,
+  ensureCredentialsSeeded,
+  isViewerAccessEnabled,
+  MIN_PASSWORD_LENGTH,
+  setViewerAccessEnabled,
+} from '../auth/credentials'
+import {
+  PROPOSAL_TTL_MS,
+  resolveProposalSecret,
+  signProposal,
+  verifyProposal,
+} from '../auth/proposal-token'
 import { clearLoginAttempts, registerLoginAttempt } from '../auth/rate-limit'
-import { createSessionToken, LEDGER_SESSION_COOKIE, sessionCookieOptions } from '../auth/session'
+import {
+  createSessionToken,
+  LEDGER_SESSION_COOKIE,
+  sessionCookieOptions,
+} from '../auth/session'
 import { LedgerDatabaseNotConfiguredError } from '../database/client'
 import { LedgerConflictError, LedgerRepository } from '../database/repository'
 import { LedgerRuleError, prepareRecord } from '../ledger/apply'
 import { computeWithdrawalViews } from '../ledger/engine'
-import { verifyChain } from '../ledger/hash-chain'
-import { DEFAULT_ORIGINAL_OBLIGATION_CENTS, LedgerRole } from '../ledger/types'
+import { headHash, sha256Hex, verifyLedgerIntegrity } from '../ledger/hash-chain'
+import {
+  DEFAULT_ORIGINAL_OBLIGATION_CENTS,
+  LedgerRole,
+} from '../ledger/types'
 import {
   applyRecordSchema,
+  changePasswordSchema,
   lockObligationSchema,
   loginSchema,
   noteSchema,
   resolveNoteSchema,
+  viewerAccessSchema,
 } from '../schemas/proposal'
-import { isAiReadableMimeType, validateEvidence } from './evidence'
+import { EVIDENCE_PENDING_TTL_MS, isAiReadableMimeType, validateEvidence } from './evidence'
 import { getLedgerSessionFromRequest } from './session'
 
 const NO_STORE = { 'cache-control': 'no-store', 'x-robots-tag': 'noindex, nofollow' }
@@ -62,7 +84,8 @@ function isDatabaseUnavailable(error: unknown): boolean {
   if (name === 'PrismaClientInitializationError' || name === 'PrismaClientRustPanicError') {
     return true
   }
-  const code = (error as { errorCode?: string; code?: string }).errorCode ?? (error as { code?: string }).code
+  const code =
+    (error as { errorCode?: string }).errorCode ?? (error as { code?: string }).code
   return typeof code === 'string' && /^P1\d{3}$/.test(code)
 }
 
@@ -80,8 +103,12 @@ async function guardDatabase(run: () => Promise<NextResponse>): Promise<NextResp
   }
 }
 
-function requireRole(request: NextRequest): LedgerRole | null {
-  return getLedgerSessionFromRequest(request)?.role ?? null
+async function requireRole(
+  request: NextRequest,
+  repository: LedgerRepository
+): Promise<LedgerRole | null> {
+  const session = await getLedgerSessionFromRequest(request, repository)
+  return session?.role ?? null
 }
 
 function clientIdentifier(request: NextRequest): string {
@@ -90,15 +117,22 @@ function clientIdentifier(request: NextRequest): string {
   return request.headers.get('x-real-ip') ?? 'unknown'
 }
 
+async function readJson(request: NextRequest): Promise<unknown | undefined> {
+  try {
+    return await request.json()
+  } catch {
+    return undefined
+  }
+}
+
 /* -------------------------------------------------------------- session -- */
 
-export async function handleLogin(request: NextRequest): Promise<NextResponse> {
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return json({ error: 'Invalid request.' }, 400)
-  }
+async function handleLoginImpl(
+  request: NextRequest,
+  repository: LedgerRepository
+): Promise<NextResponse> {
+  const body = await readJson(request)
+  if (body === undefined) return json({ error: 'Invalid request.' }, 400)
 
   const parsed = loginSchema.safeParse(body)
   if (!parsed.success) return json({ error: 'A password is required.' }, 400)
@@ -113,25 +147,36 @@ export async function handleLogin(request: NextRequest): Promise<NextResponse> {
   }
 
   const config = readAuthConfig()
-  const result = await authenticatePassword(parsed.data.password, config)
+  const result = await authenticatePassword(parsed.data.password, repository, config)
 
   if (!result.ok) {
-    // The same message for both cases: never reveal which role a password
-    // nearly matched, or whether the server is configured.
+    if (result.reason === 'VIEWER_ACCESS_DISABLED') {
+      return json({ error: 'Viewer access is currently disabled by the owner.' }, 403)
+    }
+    // The same message for both remaining cases: never reveal which role a
+    // password nearly matched, or whether the server is configured.
     return json({ error: 'That password was not recognised.' }, 401)
   }
 
   clearLoginAttempts(identifier)
-  const token = createSessionToken(result.role, config.sessionSecret as string)
+  const token = createSessionToken(
+    result.role,
+    result.credentialVersion,
+    config.sessionSecret as string
+  )
   const response = json({ role: result.role })
-  response.cookies.set(LEDGER_SESSION_COOKIE, token, sessionCookieOptions(config.isProduction))
+  response.cookies.set(
+    LEDGER_SESSION_COOKIE,
+    token,
+    sessionCookieOptions(config.isProduction, result.role)
+  )
   return response
 }
 
 export async function handleLogout(): Promise<NextResponse> {
   const response = json({ ok: true })
   response.cookies.set(LEDGER_SESSION_COOKIE, '', {
-    ...sessionCookieOptions(readAuthConfig().isProduction),
+    ...sessionCookieOptions(readAuthConfig().isProduction, 'OWNER'),
     maxAge: 0,
   })
   return response
@@ -143,27 +188,29 @@ async function handleLockObligationImpl(
   request: NextRequest,
   repository: LedgerRepository
 ): Promise<NextResponse> {
-  const role = requireRole(request)
+  const role = await requireRole(request, repository)
   if (!role) return unauthorized()
   if (!canWriteFinancialRecords(role)) return forbidden()
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return json({ error: 'Invalid request.' }, 400)
-  }
+  const body = await readJson(request)
+  if (body === undefined) return json({ error: 'Invalid request.' }, 400)
 
+  // The opening obligation for this ledger is fixed at CAD $36,000.00. The
+  // schema accepts that single value and nothing else — the browser cannot
+  // propose a different one.
   const parsed = lockObligationSchema.safeParse(body)
   if (!parsed.success) {
-    return json({ error: 'Confirm the original obligation before locking it.' }, 400)
-  }
-  if (parsed.data.originalObligationCents <= 0) {
-    return json({ error: 'The original obligation must be greater than zero.' }, 400)
+    return json(
+      {
+        error: 'The opening obligation for this ledger is fixed at CAD $36,000.00.',
+        expectedCents: DEFAULT_ORIGINAL_OBLIGATION_CENTS,
+      },
+      400
+    )
   }
 
   try {
-    const config = await repository.lockConfig(parsed.data.originalObligationCents)
+    const config = await repository.lockConfig(DEFAULT_ORIGINAL_OBLIGATION_CENTS)
     return json({ config })
   } catch (error) {
     if (error instanceof LedgerConflictError) return json({ error: error.message }, 409)
@@ -191,14 +238,16 @@ async function buildAnalysisContext(repository: LedgerRepository): Promise<Analy
 
 /**
  * Analyse a screenshot plus an instruction and return the record that WOULD be
- * applied. Nothing is written unless the analysis produces a confident,
- * conflict-free proposal that also survives the deterministic ledger rules.
+ * applied, together with a server-signed token binding that exact proposal.
+ *
+ * Nothing is written unless the analysis produces a confident, conflict-free
+ * proposal that also survives the deterministic ledger rules.
  */
 async function handleAnalyzeImpl(
   request: NextRequest,
   repository: LedgerRepository
 ): Promise<NextResponse> {
-  const role = requireRole(request)
+  const role = await requireRole(request, repository)
   if (!role) return unauthorized()
   if (!canWriteFinancialRecords(role)) return forbidden()
 
@@ -233,6 +282,11 @@ async function handleAnalyzeImpl(
     )
   }
 
+  const proposalSecret = resolveProposalSecret()
+  if (!proposalSecret) {
+    return json({ error: 'The ledger signing secret is not configured on the server.' }, 503)
+  }
+
   const settings = readAnthropicSettings()
   if ('error' in settings) return json({ error: settings.error }, 503)
 
@@ -240,6 +294,10 @@ async function handleAnalyzeImpl(
   if (!config?.lockedAt) {
     return json({ error: 'Lock the original obligation before recording transactions.' }, 409)
   }
+
+  // Opportunistic cleanup of screenshots from analyses that were never
+  // applied. Applied evidence is never touched.
+  await repository.purgeExpiredPendingEvidence()
 
   const outcome = await analyzeEvidence(
     {
@@ -255,70 +313,93 @@ async function handleAnalyzeImpl(
   // transaction, no change of any kind.
   if (outcome.status === 'ERROR') return json({ status: 'ERROR', error: outcome.message }, 502)
   if (outcome.status === 'CONFLICT') {
-    return json(
-      {
-        status: 'CONFLICT',
-        message: outcome.message,
-        conflict: outcome.conflict,
-        observations: outcome.observations,
-      },
-      200
-    )
+    return json({
+      status: 'CONFLICT',
+      message: outcome.message,
+      conflict: outcome.conflict,
+      observations: outcome.observations,
+    })
   }
   if (outcome.status === 'AMBIGUOUS') {
-    return json(
-      { status: 'AMBIGUOUS', message: outcome.message, observations: outcome.observations },
-      200
-    )
+    return json({
+      status: 'AMBIGUOUS',
+      message: outcome.message,
+      observations: outcome.observations,
+    })
   }
 
   const transactions = await repository.listTransactions()
+  const proposal = outcome.proposal
+
+  // Dry run against the real history before anything is stored.
   let preview
   try {
     preview = prepareRecord(config, transactions, {
-      type: outcome.proposal.type,
-      date: outcome.proposal.date,
-      amountCents: outcome.proposal.amountCents,
-      reason: outcome.proposal.reason,
+      type: proposal.type,
+      date: proposal.date,
+      amountCents: proposal.amountCents,
+      reason: proposal.reason,
       originalInstruction: instruction,
-      requiredRepaymentCents: outcome.proposal.requiredRepaymentCents ?? null,
-      linkedTransactionCode: outcome.proposal.linkedTransactionCode ?? null,
-      baseEffectCents: outcome.proposal.baseEffectCents ?? null,
-      correctsTransactionCode: outcome.proposal.correctsTransactionCode ?? null,
-      // Placeholder: the real evidence id is attached below, after the
-      // proposal has proven itself valid.
+      requiredRepaymentCents: proposal.requiredRepaymentCents ?? null,
+      linkedTransactionCode: proposal.linkedTransactionCode ?? null,
+      adjustmentScope: proposal.adjustmentScope ?? null,
+      adjustmentEffectCents: proposal.adjustmentEffectCents ?? null,
+      correctsTransactionCode: proposal.correctsTransactionCode ?? null,
       evidenceId: 'pending',
+      evidenceSha256: validation.sha256,
     })
   } catch (error) {
     if (error instanceof LedgerRuleError) {
-      return json({ status: 'REJECTED', error: error.message, code: error.code }, 200)
+      return json({ status: 'REJECTED', error: error.message, code: error.code })
     }
     throw error
   }
 
   // Only now — with a valid, confident, rule-passing proposal — is the
-  // screenshot persisted so the owner can confirm it.
+  // screenshot persisted, as PENDING, so the owner can confirm it.
   const evidence = await repository.createEvidence({
     data: validation.data,
     mimeType: validation.mimeType,
     byteSize: validation.byteSize,
     sha256: validation.sha256,
+    expiresAt: new Date(Date.now() + EVIDENCE_PENDING_TTL_MS),
   })
+
+  // The signature covers every transaction fact plus the evidence hash, the
+  // instruction hash and the current chain head. "Apply Record" sends only
+  // this token, so nothing can be substituted afterwards.
+  const proposalToken = signProposal(
+    {
+      type: proposal.type,
+      date: proposal.date,
+      amountCents: proposal.amountCents,
+      reason: proposal.reason,
+      requiredRepaymentCents: proposal.requiredRepaymentCents ?? null,
+      linkedTransactionCode: proposal.linkedTransactionCode ?? null,
+      adjustmentScope: proposal.adjustmentScope ?? null,
+      adjustmentEffectCents: proposal.adjustmentEffectCents ?? null,
+      correctsTransactionCode: proposal.correctsTransactionCode ?? null,
+      evidenceId: evidence.id,
+      evidenceSha256: validation.sha256,
+      originalInstruction: instruction,
+      instructionSha256: preview.record.instructionSha256 as string,
+      ledgerHeadHash: headHash(transactions),
+    },
+    proposalSecret
+  )
 
   return json({
     status: 'PROPOSAL',
+    proposalToken,
+    expiresInSeconds: Math.floor(PROPOSAL_TTL_MS / 1000),
     evidence: { id: evidence.id, mimeType: evidence.mimeType, byteSize: evidence.byteSize },
-    observations: outcome.proposal.observations,
+    observations: proposal.observations,
+    // Display only. None of this is trusted on the way back in.
     proposal: {
-      type: outcome.proposal.type,
-      date: outcome.proposal.date,
-      amountCents: outcome.proposal.amountCents,
-      reason: outcome.proposal.reason,
-      requiredRepaymentCents: outcome.proposal.requiredRepaymentCents ?? null,
-      linkedTransactionCode: outcome.proposal.linkedTransactionCode ?? null,
-      baseEffectCents: outcome.proposal.baseEffectCents ?? null,
-      correctsTransactionCode: outcome.proposal.correctsTransactionCode ?? null,
-      originalInstruction: instruction,
+      type: proposal.type,
+      date: proposal.date,
+      amountCents: proposal.amountCents,
+      reason: preview.record.reason,
     },
     preview: {
       transactionCode: preview.record.transactionCode,
@@ -326,7 +407,10 @@ async function handleAnalyzeImpl(
       extraRepaymentCents: preview.record.extraRepaymentCents,
       requiredRepaymentCents: preview.record.requiredRepaymentCents,
       baseEffectCents: preview.record.baseEffectCents,
+      adjustmentScope: preview.record.adjustmentScope,
+      adjustmentEffectCents: preview.record.adjustmentEffectCents,
       linkedWithdrawalCode: preview.linkedWithdrawalCode,
+      correctsTransactionCode: preview.correctsTransactionCode,
       summaryBefore: preview.summaryBefore,
       summaryAfter: preview.summaryAfter,
       affectedWithdrawalBefore: preview.affectedWithdrawalBefore,
@@ -337,59 +421,108 @@ async function handleAnalyzeImpl(
 
 /* --------------------------------------------------------- apply record -- */
 
+/**
+ * Apply the exact proposal the server signed.
+ *
+ * The request carries no transaction facts of its own — only the token and an
+ * explicit confirmation — so there is nothing for a modified browser request
+ * to alter.
+ */
 async function handleApplyRecordImpl(
   request: NextRequest,
   repository: LedgerRepository
 ): Promise<NextResponse> {
-  const role = requireRole(request)
+  const role = await requireRole(request, repository)
   if (!role) return unauthorized()
   if (!canWriteFinancialRecords(role)) return forbidden()
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return json({ error: 'Invalid request.' }, 400)
-  }
+  const body = await readJson(request)
+  if (body === undefined) return json({ error: 'Invalid request.' }, 400)
 
   const parsed = applyRecordSchema.safeParse(body)
   if (!parsed.success) {
-    return json({ error: parsed.error.issues[0]?.message ?? 'Invalid record.' }, 400)
+    return json({ error: 'Confirm the analysed proposal before applying it.' }, 400)
   }
+
+  const proposalSecret = resolveProposalSecret()
+  if (!proposalSecret) {
+    return json({ error: 'The ledger signing secret is not configured on the server.' }, 503)
+  }
+
+  const verification = verifyProposal(parsed.data.proposalToken, proposalSecret)
+  if (!verification.ok) {
+    const message =
+      verification.reason === 'EXPIRED'
+        ? 'That proposal has expired. Re-run the analysis.'
+        : 'That proposal could not be verified. Re-run the analysis.'
+    return json({ error: message, code: verification.reason }, 400)
+  }
+  const signed = verification.payload
 
   const config = await repository.getConfig()
   if (!config?.lockedAt) {
     return json({ error: 'Lock the original obligation before recording transactions.' }, 409)
   }
 
-  const evidence = await repository.getEvidenceMeta(parsed.data.evidenceId)
+  const transactions = await repository.listTransactions()
+
+  // The chain must not have moved since the proposal was issued. This also
+  // makes a replayed token fail after the first successful apply.
+  if ((signed.ledgerHeadHash ?? null) !== headHash(transactions)) {
+    return json(
+      {
+        error: 'The ledger changed after this proposal was analysed. Re-run the analysis.',
+        code: 'CHAIN_MOVED',
+      },
+      409
+    )
+  }
+
+  // The screenshot must still exist and still be the same bytes. The stored
+  // hash column is not trusted here — the bytes themselves are re-hashed, so
+  // a direct database swap of the image is caught before anything is written.
+  const evidence = await repository.getEvidence(signed.evidenceId)
   if (!evidence) {
     return json({ error: 'The attached evidence could not be found. Re-run the analysis.' }, 400)
   }
+  if (sha256Hex(evidence.data) !== signed.evidenceSha256) {
+    return json(
+      { error: 'The attached evidence changed after analysis.', code: 'EVIDENCE_HASH_MISMATCH' },
+      400
+    )
+  }
 
-  const transactions = await repository.listTransactions()
-
-  // Recomputed server side from the stored history — the values the browser
-  // posted are inputs, never results.
+  // Rebuild the record deterministically from the signed proposal alone.
   let preview
   try {
     preview = prepareRecord(config, transactions, {
-      type: parsed.data.type,
-      date: parsed.data.date,
-      amountCents: parsed.data.amountCents,
-      reason: parsed.data.reason,
-      originalInstruction: parsed.data.originalInstruction ?? null,
-      requiredRepaymentCents: parsed.data.requiredRepaymentCents ?? null,
-      linkedTransactionCode: parsed.data.linkedTransactionCode ?? null,
-      baseEffectCents: parsed.data.baseEffectCents ?? null,
-      correctsTransactionCode: parsed.data.correctsTransactionCode ?? null,
+      type: signed.type,
+      date: signed.date,
+      amountCents: signed.amountCents,
+      reason: signed.reason,
+      originalInstruction: signed.originalInstruction,
+      requiredRepaymentCents: signed.requiredRepaymentCents,
+      linkedTransactionCode: signed.linkedTransactionCode,
+      adjustmentScope: signed.adjustmentScope,
+      adjustmentEffectCents: signed.adjustmentEffectCents,
+      correctsTransactionCode: signed.correctsTransactionCode,
       evidenceId: evidence.id,
+      evidenceSha256: signed.evidenceSha256,
     })
   } catch (error) {
     if (error instanceof LedgerRuleError) {
       return json({ error: error.message, code: error.code }, 400)
     }
     throw error
+  }
+
+  // Defence in depth: the instruction that was hashed at analysis time must be
+  // the one now being written, and the record hash must already cover it.
+  if (preview.record.instructionSha256 !== signed.instructionSha256) {
+    return json(
+      { error: 'The instruction changed after analysis.', code: 'INSTRUCTION_HASH_MISMATCH' },
+      400
+    )
   }
 
   try {
@@ -407,16 +540,12 @@ async function handleCreateNoteImpl(
   request: NextRequest,
   repository: LedgerRepository
 ): Promise<NextResponse> {
-  const role = requireRole(request)
+  const role = await requireRole(request, repository)
   if (!role) return unauthorized()
   if (!canWriteNotes(role)) return forbidden('You cannot write notes.')
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return json({ error: 'Invalid request.' }, 400)
-  }
+  const body = await readJson(request)
+  if (body === undefined) return json({ error: 'Invalid request.' }, 400)
 
   const parsed = noteSchema.safeParse(body)
   if (!parsed.success) {
@@ -443,16 +572,12 @@ async function handleResolveNoteImpl(
   request: NextRequest,
   repository: LedgerRepository
 ): Promise<NextResponse> {
-  const role = requireRole(request)
+  const role = await requireRole(request, repository)
   if (!role) return unauthorized()
   if (!canResolveNotes(role)) return forbidden('Only the owner can resolve a discussion.')
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return json({ error: 'Invalid request.' }, 400)
-  }
+  const body = await readJson(request)
+  if (body === undefined) return json({ error: 'Invalid request.' }, 400)
 
   const parsed = resolveNoteSchema.safeParse(body)
   if (!parsed.success) return json({ error: 'A note id is required.' }, 400)
@@ -469,7 +594,7 @@ async function handleGetEvidenceImpl(
   repository: LedgerRepository,
   evidenceId: string
 ): Promise<NextResponse> {
-  const role = requireRole(request)
+  const role = await requireRole(request, repository)
   if (!role) return unauthorized()
   if (!canViewEvidence(role)) return forbidden('You cannot view evidence.')
 
@@ -494,15 +619,140 @@ async function handleIntegrityCheckImpl(
   request: NextRequest,
   repository: LedgerRepository
 ): Promise<NextResponse> {
-  const role = requireRole(request)
+  const role = await requireRole(request, repository)
   if (!role) return unauthorized()
 
   const transactions = await repository.listTransactions()
-  return json(verifyChain(transactions))
+  const result = await verifyLedgerIntegrity(transactions, (id) => repository.getEvidence(id))
+  return json(result)
 }
 
+/* ------------------------------------------------------------- settings -- */
+
+async function handleChangePasswordImpl(
+  request: NextRequest,
+  repository: LedgerRepository
+): Promise<NextResponse> {
+  const role = await requireRole(request, repository)
+  if (!role) return unauthorized()
+  // Enforced on the server, not merely hidden in the viewer's interface.
+  if (!canChangePasswords(role)) {
+    return forbidden('Password changes are controlled by the ledger owner.')
+  }
+
+  const body = await readJson(request)
+  if (body === undefined) return json({ error: 'Invalid request.' }, 400)
+
+  const parsed = changePasswordSchema.safeParse(body)
+  if (!parsed.success) return json({ error: 'Invalid password change request.' }, 400)
+
+  const identifier = clientIdentifier(request)
+  const throttle = registerLoginAttempt(identifier)
+  if (throttle.limited) {
+    return json({ error: 'Too many attempts. Try again later.' }, 429)
+  }
+
+  const result = await changePassword(repository, parsed.data)
+  if (!result.ok) {
+    if (result.reason === 'TOO_SHORT') {
+      return json(
+        { error: `A password must be at least ${MIN_PASSWORD_LENGTH} characters.` },
+        400
+      )
+    }
+    if (result.reason === 'SAME_PASSWORD') {
+      return json({ error: 'That is already the current password.' }, 400)
+    }
+    if (result.reason === 'NOT_CONFIGURED') {
+      return json({ error: 'No owner credential is configured yet.' }, 503)
+    }
+    return json({ error: 'The current owner password is not correct.' }, 403)
+  }
+
+  clearLoginAttempts(identifier)
+  const response = json({ ok: true, role: result.role })
+
+  if (result.role === 'OWNER') {
+    // Every other owner device is now signed out. Re-issue this one against
+    // the new credential version so the person changing it stays logged in.
+    const config = readAuthConfig()
+    const token = createSessionToken(
+      'OWNER',
+      result.credentialVersion,
+      config.sessionSecret as string
+    )
+    response.cookies.set(
+      LEDGER_SESSION_COOKIE,
+      token,
+      sessionCookieOptions(config.isProduction, 'OWNER')
+    )
+  }
+
+  return response
+}
+
+async function handleViewerAccessImpl(
+  request: NextRequest,
+  repository: LedgerRepository
+): Promise<NextResponse> {
+  const role = await requireRole(request, repository)
+  if (!role) return unauthorized()
+  if (!canControlViewerAccess(role)) {
+    return forbidden('Viewer access is managed by the ledger owner.')
+  }
+
+  const body = await readJson(request)
+  if (body === undefined) return json({ error: 'Invalid request.' }, 400)
+
+  const parsed = viewerAccessSchema.safeParse(body)
+  if (!parsed.success) return json({ error: 'Invalid request.' }, 400)
+
+  await setViewerAccessEnabled(repository, parsed.data.enabled)
+  return json({ viewerAccessEnabled: parsed.data.enabled })
+}
+
+/** Non-sensitive status for the Settings screen. Never returns a secret. */
+async function handleSettingsStatusImpl(
+  request: NextRequest,
+  repository: LedgerRepository
+): Promise<NextResponse> {
+  const session = await getLedgerSessionFromRequest(request, repository)
+  if (!session) return unauthorized()
+
+  const authConfig = readAuthConfig()
+  await ensureCredentialsSeeded(repository, authConfig)
+
+  const [owner, viewer, viewerAccessEnabled, transactions] = await Promise.all([
+    repository.getCredential('OWNER'),
+    repository.getCredential('VIEWER'),
+    isViewerAccessEnabled(repository),
+    repository.listTransactions(),
+  ])
+
+  const integrity = await verifyLedgerIntegrity(transactions, (id) =>
+    repository.getEvidence(id)
+  )
+
+  return json({
+    role: session.role,
+    sessionExpiresAt: new Date(session.expiresAt).toISOString(),
+    viewerAccessEnabled,
+    ownerPasswordUpdatedAt: owner?.updatedAt ?? null,
+    viewerPasswordUpdatedAt: session.role === 'OWNER' ? viewer?.updatedAt ?? null : null,
+    databaseConnected: true,
+    aiConfigured: !('error' in readAnthropicSettings()),
+    integrityOk: integrity.ok,
+    integrityCheckedRecords: integrity.checkedRecords,
+    integrityEvidenceChecked: integrity.evidenceChecked,
+    minPasswordLength: MIN_PASSWORD_LENGTH,
+  })
+}
 
 /* ---------------------------------------------------- guarded exports -- */
+
+export function handleLogin(request: NextRequest, repository: LedgerRepository) {
+  return guardDatabase(() => handleLoginImpl(request, repository))
+}
 
 export function handleLockObligation(request: NextRequest, repository: LedgerRepository) {
   return guardDatabase(() => handleLockObligationImpl(request, repository))
@@ -536,6 +786,14 @@ export function handleIntegrityCheck(request: NextRequest, repository: LedgerRep
   return guardDatabase(() => handleIntegrityCheckImpl(request, repository))
 }
 
-/* -------------------------------------------------------------- helpers -- */
+export function handleChangePassword(request: NextRequest, repository: LedgerRepository) {
+  return guardDatabase(() => handleChangePasswordImpl(request, repository))
+}
 
-export const DEFAULT_OBLIGATION_CENTS = DEFAULT_ORIGINAL_OBLIGATION_CENTS
+export function handleViewerAccess(request: NextRequest, repository: LedgerRepository) {
+  return guardDatabase(() => handleViewerAccessImpl(request, repository))
+}
+
+export function handleSettingsStatus(request: NextRequest, repository: LedgerRepository) {
+  return guardDatabase(() => handleSettingsStatusImpl(request, repository))
+}

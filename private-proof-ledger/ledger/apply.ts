@@ -8,8 +8,9 @@
 
 import { formatTransactionCode, parseTransactionCode } from './codes'
 import { computeSummary, computeWithdrawalViews, requiredBaseEffectCents } from './engine'
-import { computeRecordHash, HashableRecord } from './hash-chain'
+import { computeRecordHash, HashableRecord, sha256Hex } from './hash-chain'
 import {
+  AdjustmentScope,
   LedgerConfigRecord,
   LedgerSummary,
   LedgerTransactionRecord,
@@ -34,9 +35,11 @@ export interface PrepareRecordInput {
   originalInstruction?: string | null
   requiredRepaymentCents?: number | null
   linkedTransactionCode?: string | null
-  baseEffectCents?: number | null
+  adjustmentScope?: AdjustmentScope | null
+  adjustmentEffectCents?: number | null
   correctsTransactionCode?: string | null
   evidenceId: string
+  evidenceSha256: string
 }
 
 /** Everything needed to persist a record, minus the database identity. */
@@ -53,21 +56,27 @@ export interface PreparedRecord {
   withdrawalPrincipalCents: number | null
   extraRepaymentCents: number | null
   requiredRepaymentCents: number | null
+  adjustmentScope: AdjustmentScope | null
+  adjustmentEffectCents: number | null
+  correctsTransactionId: string | null
+  evidenceId: string
+  evidenceSha256: string
+  instructionSha256: string | null
   previousRecordHash: string | null
   recordHash: string
-  evidenceId: string
 }
 
 export interface RecordPreview {
   record: PreparedRecord
   linkedWithdrawalCode: string | null
+  correctsTransactionCode: string | null
   summaryBefore: LedgerSummary
   summaryAfter: LedgerSummary
   affectedWithdrawalBefore: WithdrawalView | null
   affectedWithdrawalAfter: WithdrawalView | null
 }
 
-function findWithdrawalByCode(
+function findByCode(
   transactions: readonly LedgerTransactionRecord[],
   code: string
 ): LedgerTransactionRecord {
@@ -99,7 +108,7 @@ export function prepareRecord(
       'The original obligation must be confirmed and locked before any record is applied'
     )
   }
-  if (!input.evidenceId) {
+  if (!input.evidenceId || !input.evidenceSha256) {
     throw new LedgerRuleError('EVIDENCE_REQUIRED', 'Every financial record requires screenshot proof')
   }
   if (!input.reason.trim()) {
@@ -117,6 +126,10 @@ export function prepareRecord(
   let withdrawalPrincipalCents: number | null = null
   let extraRepaymentCents: number | null = null
   let requiredRepaymentCents: number | null = null
+  let adjustmentScope: AdjustmentScope | null = null
+  let adjustmentEffectCents: number | null = null
+  let correctsTransactionId: string | null = null
+  let correctsTransactionCode: string | null = null
   let reason = input.reason.trim()
 
   switch (input.type) {
@@ -158,7 +171,7 @@ export function prepareRecord(
           'A withdrawal repayment must be linked to the withdrawal it repays'
         )
       }
-      const withdrawal = findWithdrawalByCode(ordered, input.linkedTransactionCode)
+      const withdrawal = findByCode(ordered, input.linkedTransactionCode)
       if (withdrawal.type !== 'WITHDRAWAL') {
         throw new LedgerRuleError(
           'LINK_NOT_WITHDRAWAL',
@@ -195,13 +208,62 @@ export function prepareRecord(
           'An adjustment must reference the record it corrects'
         )
       }
-      const target = findWithdrawalByCode(ordered, input.correctsTransactionCode)
-      baseEffectCents = input.baseEffectCents ?? 0
-      amountCents = Math.abs(baseEffectCents)
+      if (!input.adjustmentScope) {
+        throw new LedgerRuleError(
+          'ADJUSTMENT_SCOPE_REQUIRED',
+          'An adjustment must state whether it corrects the base, a withdrawal principal or an extra repayment'
+        )
+      }
+      const effect = input.adjustmentEffectCents ?? 0
+      if (effect === 0) {
+        throw new LedgerRuleError(
+          'ADJUSTMENT_EFFECT_REQUIRED',
+          'An adjustment must change something'
+        )
+      }
+
+      const target = findByCode(ordered, input.correctsTransactionCode)
+      adjustmentScope = input.adjustmentScope
+      adjustmentEffectCents = effect
+      correctsTransactionId = target.id
+      correctsTransactionCode = target.transactionCode
+      amountCents = Math.abs(effect)
+
+      if (adjustmentScope === 'BASE') {
+        // Only a base-scoped adjustment moves Base Remaining.
+        baseEffectCents = effect
+      } else {
+        if (target.type !== 'WITHDRAWAL') {
+          throw new LedgerRuleError(
+            'ADJUSTMENT_TARGET_NOT_WITHDRAWAL',
+            `${target.transactionCode} is not a withdrawal, so it has no principal or extra repayment to correct`
+          )
+        }
+        baseEffectCents = 0
+
+        const view = computeWithdrawalViews(ordered).find((item) => item.id === target.id)
+        if (!view) {
+          throw new LedgerRuleError('LINK_NOT_FOUND', 'Target withdrawal could not be derived')
+        }
+        const current =
+          adjustmentScope === 'WITHDRAWAL_PRINCIPAL'
+            ? view.principalCents
+            : view.extraRepaymentCents
+        if (current + effect < 0) {
+          throw new LedgerRuleError(
+            'ADJUSTMENT_BELOW_ZERO',
+            'That correction would push the withdrawal below zero'
+          )
+        }
+      }
+
       reason = `Corrects ${target.transactionCode} — ${reason}`
       break
     }
   }
+
+  const originalInstruction = input.originalInstruction?.trim() || null
+  const instructionSha256 = originalInstruction ? sha256Hex(originalInstruction) : null
 
   const hashable: HashableRecord = {
     sequence,
@@ -215,16 +277,22 @@ export function prepareRecord(
     withdrawalPrincipalCents,
     extraRepaymentCents,
     requiredRepaymentCents,
+    adjustmentScope,
+    adjustmentEffectCents,
+    correctsTransactionId,
     evidenceId: input.evidenceId,
+    evidenceSha256: input.evidenceSha256,
+    instructionSha256,
   }
 
   const previousRecordHash = previous?.recordHash ?? null
   const record: PreparedRecord = {
     ...hashable,
-    originalInstruction: input.originalInstruction?.trim() || null,
+    evidenceId: input.evidenceId,
+    evidenceSha256: input.evidenceSha256,
+    originalInstruction,
     previousRecordHash,
     recordHash: computeRecordHash(hashable, previousRecordHash),
-    evidenceId: input.evidenceId,
   }
 
   const projected: LedgerTransactionRecord = {
@@ -238,7 +306,11 @@ export function prepareRecord(
   const summaryBefore = computeSummary(config, ordered)
   const summaryAfter = computeSummary(config, [...ordered, projected])
 
-  const affectedId = linkedWithdrawalId ?? (input.type === 'WITHDRAWAL' ? projected.id : null)
+  const affectedId =
+    linkedWithdrawalId ??
+    (adjustmentScope && adjustmentScope !== 'BASE' ? correctsTransactionId : null) ??
+    (input.type === 'WITHDRAWAL' ? projected.id : null)
+
   const affectedWithdrawalBefore = affectedId
     ? computeWithdrawalViews(ordered).find((view) => view.id === affectedId) ?? null
     : null
@@ -249,6 +321,7 @@ export function prepareRecord(
   return {
     record,
     linkedWithdrawalCode,
+    correctsTransactionCode,
     summaryBefore,
     summaryAfter,
     affectedWithdrawalBefore,

@@ -35,6 +35,7 @@ export interface AnalyzeInput {
 export interface AnthropicSettings {
   apiKey: string
   model: string
+  /** Override the API host. Used for self-hosted proxies and integration tests. */
   baseUrl?: string
   fetchImpl?: typeof fetch
 }
@@ -46,7 +47,8 @@ export function readAnthropicSettings(
   const model = env.LEDGER_ANTHROPIC_MODEL
   if (!apiKey) return { error: 'ANTHROPIC_API_KEY is not configured on the server' }
   if (!model) return { error: 'LEDGER_ANTHROPIC_MODEL is not configured on the server' }
-  return { apiKey, model }
+  const baseUrl = env.LEDGER_ANTHROPIC_BASE_URL
+  return baseUrl ? { apiKey, model, baseUrl } : { apiKey, model }
 }
 
 /**

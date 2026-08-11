@@ -20,6 +20,18 @@ export const TRANSACTION_TYPES = [
 
 export type TransactionType = (typeof TRANSACTION_TYPES)[number]
 
+export const ADJUSTMENT_SCOPES = [
+  'BASE',
+  'WITHDRAWAL_PRINCIPAL',
+  'WITHDRAWAL_EXTRA',
+] as const
+
+/**
+ * What an ADJUSTMENT corrects. An adjustment never rewrites the record it
+ * references — it sits beside it and the engine derives the effective figures.
+ */
+export type AdjustmentScope = (typeof ADJUSTMENT_SCOPES)[number]
+
 export const WITHDRAWAL_STATUSES = ['OPEN', 'PARTIAL', 'CLOSED'] as const
 
 export type WithdrawalStatus = (typeof WITHDRAWAL_STATUSES)[number]
@@ -58,6 +70,13 @@ export interface LedgerTransactionRecord {
   withdrawalPrincipalCents: number | null
   extraRepaymentCents: number | null
   requiredRepaymentCents: number | null
+  adjustmentScope: AdjustmentScope | null
+  adjustmentEffectCents: number | null
+  correctsTransactionId: string | null
+  /** SHA-256 of the screenshot bytes, covered by the record hash. */
+  evidenceSha256: string | null
+  /** SHA-256 of the owner's original instruction, covered by the record hash. */
+  instructionSha256: string | null
   repaymentPaidCentsCache: number | null
   statusCache: WithdrawalStatus | null
   previousRecordHash: string | null
@@ -66,12 +85,23 @@ export interface LedgerTransactionRecord {
   createdAt: string
 }
 
+export type EvidenceStatus = 'PENDING' | 'APPLIED'
+
 export interface LedgerEvidenceRecord {
   id: string
   mimeType: string
   byteSize: number
   sha256: string
+  status: EvidenceStatus
+  expiresAt: string | null
   createdAt: string
+}
+
+export interface LedgerCredentialRecord {
+  role: LedgerRole
+  passwordHash: string
+  credentialVersion: number
+  updatedAt: string
 }
 
 export interface LedgerNoteRecord {
@@ -90,6 +120,15 @@ export interface WithdrawalView {
   date: string
   reason: string
   evidenceId: string | null
+  /** As originally recorded. Never changes. */
+  originalPrincipalCents: number
+  originalExtraRepaymentCents: number
+  originalRequiredRepaymentCents: number
+  /** Sum of WITHDRAWAL_PRINCIPAL / WITHDRAWAL_EXTRA adjustments. */
+  principalAdjustmentCents: number
+  extraAdjustmentCents: number
+  hasAdjustments: boolean
+  /** Effective financial truth = original + adjustments. */
   principalCents: number
   extraRepaymentCents: number
   requiredRepaymentCents: number

@@ -9,7 +9,11 @@
 import { z } from 'zod'
 
 import { MAX_CENTS } from '../ledger/money'
-import { TRANSACTION_TYPES } from '../ledger/types'
+import {
+  ADJUSTMENT_SCOPES,
+  DEFAULT_ORIGINAL_OBLIGATION_CENTS,
+  TRANSACTION_TYPES,
+} from '../ledger/types'
 
 const centsSchema = z
   .number()
@@ -59,8 +63,10 @@ export const aiProposalSchema = z.object({
   requiredRepaymentCents: nonNegativeCentsSchema.nullish(),
   /** Only meaningful for WITHDRAWAL_REPAYMENT. */
   linkedTransactionCode: transactionCodeSchema.nullish(),
-  /** Only meaningful for ADJUSTMENT — signed effect on Base Remaining. */
-  baseEffectCents: centsSchema.nullish(),
+  /** Only meaningful for ADJUSTMENT — what the correction applies to. */
+  adjustmentScope: z.enum(ADJUSTMENT_SCOPES).nullish(),
+  /** Only meaningful for ADJUSTMENT — signed correction in cents. */
+  adjustmentEffectCents: centsSchema.nullish(),
   /** Only meaningful for ADJUSTMENT — the record being corrected. */
   correctsTransactionCode: transactionCodeSchema.nullish(),
   confidence: z.enum(['HIGH', 'MEDIUM', 'LOW']),
@@ -75,24 +81,36 @@ export type AiProposal = z.infer<typeof aiProposalSchema>
  * What the owner finally confirms. Re-validated server side; the client is
  * never trusted to have preserved the analysed values.
  */
+/**
+ * What "Apply Record" sends.
+ *
+ * Deliberately minimal: the signed proposal token carries every transaction
+ * fact, so the browser has nothing left to substitute.
+ */
 export const applyRecordSchema = z.object({
-  type: z.enum(TRANSACTION_TYPES),
-  date: isoDateSchema,
-  amountCents: nonNegativeCentsSchema,
-  reason: z.string().min(1).max(500),
-  originalInstruction: z.string().max(4000).nullish(),
-  requiredRepaymentCents: nonNegativeCentsSchema.nullish(),
-  linkedTransactionCode: transactionCodeSchema.nullish(),
-  baseEffectCents: centsSchema.nullish(),
-  correctsTransactionCode: transactionCodeSchema.nullish(),
-  evidenceId: z.string().min(1).max(64),
+  proposalToken: z.string().min(1).max(16000),
+  confirm: z.literal(true),
 })
 
 export type ApplyRecordInput = z.infer<typeof applyRecordSchema>
 
+/**
+ * The opening obligation for this ledger is fixed. The server accepts exactly
+ * one value and nothing else, whatever the browser sends.
+ */
 export const lockObligationSchema = z.object({
-  originalObligationCents: nonNegativeCentsSchema,
+  originalObligationCents: z.literal(DEFAULT_ORIGINAL_OBLIGATION_CENTS),
   confirm: z.literal(true),
+})
+
+export const changePasswordSchema = z.object({
+  targetRole: z.enum(['OWNER', 'VIEWER']),
+  currentOwnerPassword: z.string().min(1).max(512),
+  newPassword: z.string().min(1).max(512),
+})
+
+export const viewerAccessSchema = z.object({
+  enabled: z.boolean(),
 })
 
 export const noteSchema = z.object({

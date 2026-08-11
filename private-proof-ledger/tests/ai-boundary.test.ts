@@ -13,7 +13,17 @@ import { analyzeEvidence, classifyProposal } from '../ai/analyze'
 import { LEDGER_SESSION_COOKIE, createSessionToken } from '../auth/session'
 import { handleAnalyze } from '../server/handlers'
 import { validateEvidence } from '../server/evidence'
+import { hashLedgerPassword } from '../auth/passwords'
+import { MemoryLedgerRepository } from '../database/memory-repository'
 import { CAD, makeLedger } from './helpers'
+
+/** A ledger with seeded credentials so session resolution succeeds. */
+async function seededLedger(): Promise<MemoryLedgerRepository> {
+  const ledger = await makeLedger()
+  await ledger.seedCredential('OWNER', process.env.LEDGER_OWNER_PASSWORD_HASH as string)
+  await ledger.seedCredential('VIEWER', process.env.LEDGER_VIEWER_PASSWORD_HASH as string)
+  return ledger
+}
 
 const SESSION_SECRET = 'test-session-secret-value-that-is-long-enough'
 
@@ -32,7 +42,7 @@ function analyzeRequest(instruction: string, role: 'OWNER' | 'VIEWER' = 'OWNER')
     method: 'POST',
     body: form,
   })
-  request.cookies.set(LEDGER_SESSION_COOKIE, createSessionToken(role, SESSION_SECRET))
+  request.cookies.set(LEDGER_SESSION_COOKIE, createSessionToken(role, 1, SESSION_SECRET))
   return request
 }
 
@@ -46,10 +56,12 @@ function toolReply(input: unknown) {
   } as unknown as Response
 }
 
-beforeAll(() => {
+beforeAll(async () => {
   process.env.LEDGER_SESSION_SECRET = SESSION_SECRET
   process.env.ANTHROPIC_API_KEY = 'test-key'
   process.env.LEDGER_ANTHROPIC_MODEL = 'test-model'
+  process.env.LEDGER_OWNER_PASSWORD_HASH = await hashLedgerPassword('owner-password-2026')
+  process.env.LEDGER_VIEWER_PASSWORD_HASH = await hashLedgerPassword('viewer-password-2026')
 })
 
 describe('proposal classification', () => {
@@ -161,7 +173,7 @@ describe('analysis never mutates on an unusable result', () => {
 
   // Test 11
   it('stores no evidence row and no transaction when a conflict is detected', async () => {
-    const ledger = await makeLedger()
+    const ledger = await seededLedger()
     global.fetch = jest.fn(async () =>
       toolReply({
         type: 'BASE_DEPOSIT',
@@ -193,7 +205,7 @@ describe('analysis never mutates on an unusable result', () => {
   })
 
   it('rejects an analysis request from a viewer', async () => {
-    const ledger = await makeLedger()
+    const ledger = await seededLedger()
     const response = await handleAnalyze(
       analyzeRequest('I deposited CAD $500.', 'VIEWER'),
       ledger
@@ -203,7 +215,7 @@ describe('analysis never mutates on an unusable result', () => {
   })
 
   it('stops when a proposal breaks a ledger rule, before storing evidence', async () => {
-    const ledger = await makeLedger()
+    const ledger = await seededLedger()
     global.fetch = jest.fn(async () =>
       toolReply({
         type: 'WITHDRAWAL_REPAYMENT',
