@@ -9,7 +9,9 @@ const config = {
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
   roots: ['<rootDir>'],
-  testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
+  testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(test).ts?(x)'],
+  // Playwright specs (*.spec.ts) are run by `npm run test:e2e`, not Jest.
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/private-proof-ledger/tests/e2e/'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },

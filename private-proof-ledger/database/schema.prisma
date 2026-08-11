@@ -1,0 +1,84 @@
+// Proof Ledger — private persistence.
+//
+// This schema is completely separate from the ATA business schema. It has its
+// own datasource (LEDGER_DATABASE_URL), its own generated client, and no
+// relation, foreign key or join of any kind to ATA customers, bookings,
+// packages, requests, payments or admin records.
+
+generator ledgerClient {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/.prisma/proof-ledger-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("LEDGER_DATABASE_URL")
+}
+
+model LedgerConfig {
+  id                      String    @id @default(cuid())
+  currency                String    @default("CAD")
+  originalObligationCents Int
+  lockedAt                DateTime?
+  createdAt               DateTime  @default(now())
+
+  @@map("ledger_config")
+}
+
+model LedgerTransaction {
+  id                  String   @id @default(cuid())
+  sequence            Int      @unique
+  transactionCode     String   @unique
+  date                DateTime @db.Date
+  type                String
+  amountCents         Int
+  reason              String
+  originalInstruction String?
+  baseEffectCents     Int      @default(0)
+
+  linkedWithdrawalId       String?
+  withdrawalPrincipalCents Int?
+  extraRepaymentCents      Int?
+  requiredRepaymentCents   Int?
+
+  // Denormalised caches. Never hashed; the engine derives the authoritative
+  // values from transaction history.
+  repaymentPaidCents Int?
+  status             String?
+
+  previousRecordHash String?
+  recordHash         String  @unique
+  evidenceId         String?
+
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([linkedWithdrawalId])
+  @@map("ledger_transactions")
+}
+
+model LedgerEvidence {
+  id        String   @id @default(cuid())
+  // Evidence bytes live in the private ledger database. There is no public
+  // object URL and no copy of any screenshot in git.
+  data      Bytes
+  mimeType  String
+  byteSize  Int
+  sha256    String
+  createdAt DateTime @default(now())
+
+  @@index([sha256])
+  @@map("ledger_evidence")
+}
+
+model LedgerNote {
+  id            String    @id @default(cuid())
+  transactionId String?
+  authorRole    String
+  body          String
+  createdAt     DateTime  @default(now())
+  resolvedAt    DateTime?
+
+  @@index([transactionId])
+  @@map("ledger_notes")
+}

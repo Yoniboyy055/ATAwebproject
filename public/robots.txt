@@ -14,6 +14,8 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /_next/
 Disallow: /.next/
+Disallow: /proof-ledger/
+Disallow: /proof-ledger
 
 # Disallow duplicate content
 Disallow: *?sort=

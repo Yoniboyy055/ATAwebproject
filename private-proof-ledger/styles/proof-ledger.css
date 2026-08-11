@@ -1,0 +1,33 @@
+/* Proof Ledger — print and small-screen refinements.
+   Scoped to the ledger routes; nothing here affects ATA pages. */
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  a[href]::after {
+    content: '';
+  }
+
+  section,
+  article,
+  tr {
+    break-inside: avoid;
+  }
+}
+
+/* Keep money columns aligned even in the mobile card layout. */
+.proof-ledger-root .tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

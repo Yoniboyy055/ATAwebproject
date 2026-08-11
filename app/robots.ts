@@ -7,7 +7,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin', '/api', '/.well-known'],
+      // /proof-ledger is a private ledger and is never indexed.
+      disallow: ['/admin', '/api', '/.well-known', '/proof-ledger'],
       crawlDelay: 0,
     },
     sitemap: `${baseUrl}/sitemap.xml`,
