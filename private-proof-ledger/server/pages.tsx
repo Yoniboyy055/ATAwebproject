@@ -62,6 +62,19 @@ function DatabaseUnavailableScreen() {
   )
 }
 
+/**
+ * Record why the ledger could not be read.
+ *
+ * Only the error class and Prisma error code are logged. Prisma initialization
+ * messages can embed the datasource URL, so the message itself is never
+ * written to the log.
+ */
+function reportDatabaseUnavailable(error: unknown): void {
+  const name = (error as { name?: string })?.name ?? 'UnknownError'
+  const code = (error as { errorCode?: string })?.errorCode ?? 'none'
+  console.error(`[proof-ledger] database unavailable: ${name} code=${code}`)
+}
+
 function isDatabaseUnavailable(error: unknown): boolean {
   if (!error || typeof error !== 'object') return false
   const name = (error as { name?: string }).name ?? ''
@@ -85,7 +98,10 @@ async function renderLedger(
     if (!session) return <LoginScreen configured={isLedgerConfigured()} />
     return render(await loadLedgerView(repository, session.role))
   } catch (error) {
-    if (isDatabaseUnavailable(error)) return <DatabaseUnavailableScreen />
+    if (isDatabaseUnavailable(error)) {
+      reportDatabaseUnavailable(error)
+      return <DatabaseUnavailableScreen />
+    }
     throw error
   }
 }

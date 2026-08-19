@@ -94,6 +94,11 @@ async function guardDatabase(run: () => Promise<NextResponse>): Promise<NextResp
     return await run()
   } catch (error) {
     if (isDatabaseUnavailable(error)) {
+      // Class and Prisma code only: initialization messages can embed the
+      // datasource URL, so the message itself is never logged.
+      const name = (error as { name?: string })?.name ?? 'UnknownError'
+      const code = (error as { errorCode?: string })?.errorCode ?? 'none'
+      console.error(`[proof-ledger] database unavailable: ${name} code=${code}`)
       return json(
         { error: 'The ledger database is not reachable. No change has been made.' },
         503
