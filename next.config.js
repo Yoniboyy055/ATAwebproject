@@ -26,6 +26,13 @@ const nextConfig = {
     maxInactiveAge: 25 * 1000 * 60,
     pagesBufferLength: 5,
   },
+  experimental: {
+    outputFileTracingIncludes: {
+      '/proof-ledger': ['./node_modules/.prisma/proof-ledger-client/**/*'],
+      '/proof-ledger/statement': ['./node_modules/.prisma/proof-ledger-client/**/*'],
+      '/api/proof-ledger/**': ['./node_modules/.prisma/proof-ledger-client/**/*'],
+    },
+  },
 }
 
 module.exports = nextConfig
