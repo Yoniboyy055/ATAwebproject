@@ -582,6 +582,51 @@ If the Vercel project has Deployment Protection enabled, preview URLs require a
 Vercel login. Either share the protection bypass, or deploy to an environment
 the owner can reach directly from a phone.
 
+### Builds that are cancelled before they start
+
+`at-awebproject` has Vercel's **Only build verified commits** setting enabled.
+A commit without a verified GitHub signature is cancelled rather than built, so
+there is no build log and the pull request simply turns red with
+"Canceled from the Vercel Dashboard". The deployment record names the cause:
+
+```
+"githubCommitVerification": "unverified"
+"errorLink": ".../git-settings#verified-commits"
+```
+
+Commits pushed through the GitHub API are signed automatically and build.
+Commits pushed from a local git without a signing key do not. To push from a
+workstation, either configure signing:
+
+```bash
+git config gpg.format ssh
+git config user.signingkey ~/.ssh/id_ed25519.pub
+git config commit.gpgsign true
+```
+
+(then add that key to GitHub as a **signing** key, not just an authentication
+key), or turn the setting off under Settings → Git on the project.
+
+### The ledger Prisma client must be traced into the bundle
+
+The ledger client is generated to `node_modules/.prisma/proof-ledger-client`
+rather than the default location, so Next.js does not trace it into the
+serverless bundles on its own. `next.config.js` lists it under
+`experimental.outputFileTracingIncludes` for the ledger page, the statement page
+and the ledger API routes.
+
+Without that, the query engine binary is missing at runtime and every ledger
+request fails with `PrismaClientInitializationError`, which the application
+reports as "Ledger database unavailable" — indistinguishable from a genuine
+connection problem. Verify after a build with:
+
+```bash
+grep -c proof-ledger-client .next/server/app/proof-ledger/page.js.nft.json
+```
+
+A zero there means the bundle is broken regardless of what `LEDGER_DATABASE_URL`
+contains.
+
 ## 16. Security
 
 - Passwords are stored only as scrypt hashes; verification is constant time and
