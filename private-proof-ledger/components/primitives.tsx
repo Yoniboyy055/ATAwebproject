@@ -27,13 +27,13 @@ export function Panel({
   return (
     <section
       id={id}
-      className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 sm:p-6 print:border-slate-300 print:bg-white"
+      className="rounded-2xl border border-stone-200/10 bg-zinc-950/70 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)] ring-1 ring-white/[0.03] sm:p-6 print:border-slate-300 print:bg-white print:shadow-none"
     >
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-base font-semibold text-slate-100 print:text-black">{title}</h2>
+          <h2 className="text-base font-semibold text-stone-50 print:text-black">{title}</h2>
           {subtitle ? (
-            <p className="mt-0.5 text-xs text-slate-400 print:text-slate-700">{subtitle}</p>
+            <p className="mt-0.5 text-xs text-stone-400 print:text-slate-700">{subtitle}</p>
           ) : null}
         </div>
         {action}
@@ -60,17 +60,17 @@ export function Row({
   return (
     <div className="flex items-baseline justify-between gap-4 py-1.5">
       <span
-        className={`text-sm ${emphasis ? 'font-semibold text-slate-100 print:text-black' : 'text-slate-400 print:text-slate-700'}`}
+        className={`text-sm ${emphasis ? 'font-semibold text-stone-100 print:text-black' : 'text-stone-400 print:text-slate-700'}`}
       >
         {label}
         {hint ? (
-          <span className="ml-1 block text-[11px] font-normal text-slate-500 sm:inline">
+          <span className="ml-1 block text-[11px] font-normal text-stone-500 sm:inline">
             {hint}
           </span>
         ) : null}
       </span>
       <span
-        className={`shrink-0 text-sm ${emphasis ? 'font-semibold text-slate-50 print:text-black' : 'text-slate-200 print:text-black'}`}
+        className={`shrink-0 text-sm ${emphasis ? 'font-semibold text-stone-50 print:text-black' : 'text-stone-200 print:text-black'}`}
       >
         <Money cents={cents} signed={signed} />
       </span>
@@ -79,9 +79,9 @@ export function Row({
 }
 
 const STATUS_STYLES: Record<WithdrawalStatus, string> = {
-  OPEN: 'bg-amber-950/60 text-amber-200 ring-amber-800/60',
-  PARTIAL: 'bg-sky-950/60 text-sky-200 ring-sky-800/60',
-  CLOSED: 'bg-emerald-950/60 text-emerald-200 ring-emerald-800/60',
+  OPEN: 'bg-amber-500/12 text-amber-200 ring-amber-300/25',
+  PARTIAL: 'bg-cyan-500/12 text-cyan-200 ring-cyan-300/25',
+  CLOSED: 'bg-emerald-500/12 text-emerald-200 ring-emerald-300/25',
 }
 
 export function StatusBadge({ status }: { status: WithdrawalStatus }) {
@@ -95,13 +95,13 @@ export function StatusBadge({ status }: { status: WithdrawalStatus }) {
 }
 
 export function EvidenceLink({ evidenceId }: { evidenceId: string | null }) {
-  if (!evidenceId) return <span className="text-xs text-slate-500">No proof attached</span>
+  if (!evidenceId) return <span className="text-xs text-stone-500">No proof attached</span>
   return (
     <a
       href={`/api/proof-ledger/evidence/${evidenceId}`}
       target="_blank"
       rel="noreferrer noopener"
-      className="text-xs font-medium text-emerald-400 underline underline-offset-2 print:hidden"
+      className="text-xs font-medium text-cyan-300 underline underline-offset-2 print:hidden"
     >
       View Proof
     </a>

@@ -47,19 +47,29 @@ export default function ProofLedgerApp({ view }: { view: LedgerView }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 print:bg-white print:text-black">
-      <header className="border-b border-slate-800 px-4 py-4 sm:px-6 print:border-slate-300">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight">Proof Ledger</h1>
-            <p className="text-xs text-slate-500">
-              Private Financial Record • signed in as {view.role}
+    <div className="min-h-screen bg-[#08090b] text-stone-100 print:bg-white print:text-black">
+      <header className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(20,184,166,0.18),transparent_34%),linear-gradient(135deg,#11100d_0%,#090b10_48%,#101312_100%)] px-4 py-5 sm:px-6 print:border-slate-300 print:bg-white">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+          <div className="min-w-0">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-cyan-100">
+                Private Ledger
+              </span>
+              <span className="rounded-full border border-amber-300/25 bg-amber-300/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-100">
+                {view.role}
+              </span>
+            </div>
+            <h1 className="text-2xl font-semibold tracking-tight text-stone-50 sm:text-3xl">
+              Proof Ledger Dashboard
+            </h1>
+            <p className="mt-1 max-w-2xl text-sm text-stone-400">
+              Financial evidence, signed history and obligation tracking in one private record.
             </p>
           </div>
           <div className="flex items-center gap-2 print:hidden">
             <a
               href="/proof-ledger/statement"
-              className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-200"
+              className="rounded-lg border border-white/15 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-stone-100 shadow-sm"
             >
               Print / Save Statement
             </a>
@@ -67,17 +77,21 @@ export default function ProofLedgerApp({ view }: { view: LedgerView }) {
               type="button"
               onClick={signOut}
               disabled={signingOut}
-              className="rounded-lg border border-slate-800 px-3 py-2 text-xs text-slate-400"
+              className="rounded-lg border border-white/10 px-3 py-2 text-xs text-stone-400"
             >
               Sign out
             </button>
           </div>
         </div>
+        <div className="mx-auto mt-5 flex max-w-6xl items-center justify-between border-t border-white/10 pt-3 text-[11px] uppercase tracking-wide text-stone-500">
+          <span>Integrity-first record</span>
+          <span className="text-stone-300">Built with YK Systems</span>
+        </div>
       </header>
 
       {/* Desktop navigation rail; collapses to a scrolling chip row on mobile. */}
-      <nav className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/95 px-4 py-2 backdrop-blur sm:px-6 print:hidden">
-        <ul className="mx-auto flex max-w-5xl gap-2 overflow-x-auto">
+      <nav className="sticky top-0 z-10 border-b border-white/10 bg-[#08090b]/90 px-4 py-2 backdrop-blur sm:px-6 print:hidden">
+        <ul className="mx-auto flex max-w-6xl gap-2 overflow-x-auto">
           {(isOwner
             ? [{ id: 'new', label: 'New Transaction' } as const, ...SECTIONS]
             : SECTIONS
@@ -85,7 +99,7 @@ export default function ProofLedgerApp({ view }: { view: LedgerView }) {
             <li key={section.id}>
               <a
                 href={`#${section.id}`}
-                className="inline-block whitespace-nowrap rounded-full border border-slate-800 px-3 py-1.5 text-xs font-medium text-slate-300"
+                className="inline-block whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs font-medium text-stone-300"
               >
                 {section.label}
               </a>
@@ -94,7 +108,7 @@ export default function ProofLedgerApp({ view }: { view: LedgerView }) {
         </ul>
       </nav>
 
-      <main className="mx-auto flex max-w-5xl flex-col gap-4 px-4 py-5 sm:px-6">
+      <main className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-5 sm:px-6">
         <ReconciliationBar reconciliation={view.reconciliation} integrity={view.integrity} />
 
         {isOwner && !view.obligationLocked ? <LockObligationPanel /> : null}
@@ -129,7 +143,7 @@ export default function ProofLedgerApp({ view }: { view: LedgerView }) {
           </p>
         ) : null}
 
-        <footer className="pb-10 pt-4 text-center text-[11px] text-slate-600">
+        <footer className="pb-10 pt-4 text-center text-[11px] uppercase tracking-wide text-stone-600">
           Built with YK Systems
         </footer>
       </main>

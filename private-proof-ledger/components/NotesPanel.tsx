@@ -76,14 +76,14 @@ export default function NotesPanel({
       subtitle={`${notes.filter((note) => !note.resolvedAt).length} unresolved`}
     >
       <form onSubmit={submit} className="mb-5 space-y-2 print:hidden">
-        <label htmlFor="note-transaction" className="block text-xs text-slate-400">
+        <label htmlFor="note-transaction" className="block text-xs text-stone-400">
           Attach to transaction (optional)
         </label>
         <select
           id="note-transaction"
           value={transactionId}
           onChange={(event) => setTransactionId(event.target.value)}
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+          className="w-full rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-stone-100"
         >
           <option value="">General ledger note</option>
           {[...transactions].reverse().map((tx) => (
@@ -100,7 +100,7 @@ export default function NotesPanel({
           rows={3}
           maxLength={4000}
           placeholder="Ask a question or record an agreement…"
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+          className="w-full rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-stone-100"
         />
 
         {error ? <p className="text-sm text-rose-300">{error}</p> : null}
@@ -108,14 +108,14 @@ export default function NotesPanel({
         <button
           type="submit"
           disabled={busy || !body.trim()}
-          className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-900 disabled:opacity-40"
+          className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-zinc-950 disabled:opacity-40"
         >
           Add Note
         </button>
       </form>
 
       {visibleNotes.length === 0 ? (
-        <p className="text-sm text-slate-500">
+        <p className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-stone-500">
           {notes.length === 0 ? 'No notes yet.' : 'No unresolved notes.'}
         </p>
       ) : (
@@ -123,16 +123,16 @@ export default function NotesPanel({
           {visibleNotes.map((note) => (
             <li
               key={note.id}
-              className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 print:border-slate-300 print:bg-white"
+              className="rounded-2xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"
             >
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-                <span className="font-semibold text-slate-300 print:text-black">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-stone-500">
+                <span className="font-semibold text-stone-300 print:text-black">
                   {note.authorRole}
                   {note.transactionId ? ` • ${codeById.get(note.transactionId) ?? 'TX'}` : ''}
                 </span>
                 <span>{formatDisplayDateTime(note.createdAt)}</span>
               </div>
-              <p className="mt-1.5 whitespace-pre-wrap text-sm text-slate-200 print:text-black">
+              <p className="mt-1.5 whitespace-pre-wrap text-sm text-stone-200 print:text-black">
                 {note.body}
               </p>
               <div className="mt-2 flex items-center gap-3">

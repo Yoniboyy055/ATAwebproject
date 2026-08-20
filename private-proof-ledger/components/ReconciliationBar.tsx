@@ -29,16 +29,16 @@ export default function ReconciliationBar({
 
   return (
     <div
-      className={`grid grid-cols-2 gap-x-4 gap-y-3 rounded-xl border px-4 py-3 sm:grid-cols-5 ${
+      className={`grid grid-cols-2 gap-x-4 gap-y-3 rounded-2xl border px-4 py-3 shadow-[0_14px_40px_rgba(0,0,0,0.20)] sm:grid-cols-5 ${
         integrity.ok
-          ? 'border-slate-800 bg-slate-900/60'
-          : 'border-rose-800 bg-rose-950/50'
+          ? 'border-white/10 bg-zinc-950/72 ring-1 ring-cyan-200/10'
+          : 'border-rose-400/30 bg-rose-950/50'
       } print:border-slate-300 print:bg-white`}
     >
       {items.map((item) => (
         <div key={item.label}>
-          <p className="text-[10px] uppercase tracking-wide text-slate-500">{item.label}</p>
-          <p className="mt-0.5 truncate text-sm font-medium text-slate-200 print:text-black">
+          <p className="text-[10px] uppercase tracking-wide text-stone-500">{item.label}</p>
+          <p className="mt-0.5 truncate text-sm font-medium text-stone-200 print:text-black">
             {item.value}
           </p>
         </div>

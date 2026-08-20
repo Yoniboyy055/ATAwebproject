@@ -10,20 +10,20 @@ import { EvidenceLink, formatDisplayDate, Panel, Row, StatusBadge } from './prim
  */
 function WithdrawalCard({ view }: { view: WithdrawalView }) {
   return (
-    <article className="rounded-lg border border-slate-800 bg-slate-950/40 p-4 print:border-slate-300 print:bg-white">
+    <article className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 shadow-sm print:border-slate-300 print:bg-white">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-slate-100 print:text-black">
+          <p className="text-sm font-semibold text-stone-100 print:text-black">
             {view.transactionCode}
           </p>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-stone-500">
             WITHDRAWAL • {formatDisplayDate(view.date)}
           </p>
         </div>
         <StatusBadge status={view.status} />
       </header>
 
-      <div className="mt-3 divide-y divide-slate-800/80 print:divide-slate-300">
+      <div className="mt-3 divide-y divide-white/10 print:divide-slate-300">
         {view.hasAdjustments ? (
           <>
             {/* Corrections never rewrite the original record, so both the
@@ -53,7 +53,7 @@ function WithdrawalCard({ view }: { view: WithdrawalView }) {
         {view.overpaidCents > 0 ? <Row label="Overpaid" cents={view.overpaidCents} /> : null}
       </div>
 
-      <footer className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+      <footer className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-400">
         <span className="max-w-[70%] truncate print:text-slate-700">Reason: {view.reason}</span>
         <EvidenceLink evidenceId={view.evidenceId} />
       </footer>
@@ -63,11 +63,11 @@ function WithdrawalCard({ view }: { view: WithdrawalView }) {
 
 export function WithdrawalTotalsBlock({ totals }: { totals: WithdrawalTotals }) {
   return (
-    <div className="rounded-lg border-2 border-slate-700 bg-slate-950/70 p-4 print:border-slate-500 print:bg-white">
-      <p className="text-xs font-semibold uppercase tracking-wider text-slate-300 print:text-black">
+    <div className="rounded-2xl border border-cyan-200/15 bg-cyan-300/[0.06] p-4 print:border-slate-500 print:bg-white">
+      <p className="text-xs font-semibold uppercase tracking-wider text-cyan-100 print:text-black">
         Withdrawal Totals
       </p>
-      <div className="mt-3 divide-y divide-slate-800 print:divide-slate-300">
+      <div className="mt-3 divide-y divide-white/10 print:divide-slate-300">
         <Row
           label="Total Principal Withdrawn"
           cents={totals.totalPrincipalWithdrawnCents}
@@ -115,7 +115,9 @@ export default function WithdrawalsPanel({
       subtitle={`${totals.withdrawalCount} recorded • ${totals.openWithdrawalCount} still open`}
     >
       {newestFirst.length === 0 ? (
-        <p className="text-sm text-slate-500">No withdrawals recorded yet.</p>
+        <p className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-stone-500">
+          No withdrawals recorded yet.
+        </p>
       ) : (
         <div className="space-y-3">
           {newestFirst.map((view) => (
@@ -128,7 +130,7 @@ export default function WithdrawalsPanel({
         <WithdrawalTotalsBlock totals={totals} />
       </div>
 
-      <p className="mt-3 text-[11px] text-slate-600">
+      <p className="mt-3 text-[11px] text-stone-600">
         Total Extra Repayment Added is a historical figure. A withdrawal that has been fully repaid
         still counts toward it, but contributes nothing to the current outstanding balance.
       </p>
