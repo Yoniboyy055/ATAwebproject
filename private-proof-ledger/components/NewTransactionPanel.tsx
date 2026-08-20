@@ -56,6 +56,7 @@ export default function NewTransactionPanel() {
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
   const [instruction, setInstruction] = useState('')
+  const [evidenceName, setEvidenceName] = useState('')
   const [state, setState] = useState<AnalysisState>({ kind: 'IDLE' })
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -63,6 +64,7 @@ export default function NewTransactionPanel() {
   function reset() {
     setState({ kind: 'IDLE' })
     setInstruction('')
+    setEvidenceName('')
     setError(null)
     if (fileRef.current) fileRef.current.value = ''
   }
@@ -150,20 +152,41 @@ export default function NewTransactionPanel() {
       subtitle="Screenshot and explanation are analysed, then you confirm before anything is recorded."
     >
       <form onSubmit={analyze} className="space-y-3">
-        <label htmlFor="evidence" className="block text-xs text-slate-400">
+        <label htmlFor="evidence" className="block text-xs font-semibold uppercase tracking-wide text-stone-400">
           Screenshot proof
         </label>
-        <input
-          ref={fileRef}
-          id="evidence"
-          name="evidence"
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          capture="environment"
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2.5 text-sm text-slate-300 file:mr-3 file:rounded file:border-0 file:bg-slate-800 file:px-3 file:py-1.5 file:text-slate-200"
-        />
+        <div className="rounded-2xl border border-cyan-200/15 bg-cyan-300/[0.06] p-3">
+          <input
+            ref={fileRef}
+            id="evidence"
+            name="evidence"
+            type="file"
+            accept="image/*"
+            onChange={(event) => setEvidenceName(event.target.files?.[0]?.name ?? '')}
+            className="sr-only"
+          />
+          <label
+            htmlFor="evidence"
+            className="flex min-h-16 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-cyan-200/25 bg-zinc-950/80 px-4 py-4 text-center sm:flex-row sm:justify-between sm:text-left"
+          >
+            <span>
+              <span className="block text-sm font-semibold text-cyan-100">
+                Upload proof from phone
+              </span>
+              <span className="mt-1 block text-xs text-stone-500">
+                Choose a screenshot, photo, or image file.
+              </span>
+            </span>
+            <span className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-zinc-950">
+              Choose File
+            </span>
+          </label>
+          <p className="mt-2 truncate text-xs text-stone-400">
+            {evidenceName ? `Selected: ${evidenceName}` : 'No proof selected yet.'}
+          </p>
+        </div>
 
-        <label htmlFor="instruction" className="block text-xs text-slate-400">
+        <label htmlFor="instruction" className="block text-xs font-semibold uppercase tracking-wide text-stone-400">
           Tell Proof Ledger what happened…
         </label>
         <textarea
@@ -173,7 +196,7 @@ export default function NewTransactionPanel() {
           rows={4}
           maxLength={4000}
           placeholder="I withdrew CAD $100. I need to return CAD $120. Do not change the original obligation."
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+          className="w-full rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-stone-100"
         />
 
         {error ? (
@@ -186,7 +209,7 @@ export default function NewTransactionPanel() {
           <button
             type="submit"
             disabled={busy || !instruction.trim()}
-            className="rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-900 disabled:opacity-40"
+            className="rounded-lg bg-cyan-300 px-4 py-2.5 text-sm font-semibold text-zinc-950 disabled:opacity-40"
           >
             {busy ? 'Analysing…' : 'Analyze Record'}
           </button>
