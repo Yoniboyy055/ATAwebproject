@@ -195,7 +195,6 @@ export default function NewTransactionPanel() {
           onChange={(event) => setInstruction(event.target.value)}
           rows={4}
           maxLength={4000}
-          placeholder="I withdrew CAD $100. I need to return CAD $120. Do not change the original obligation."
           className="w-full rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-stone-100"
         />
 
