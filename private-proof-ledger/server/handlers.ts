@@ -56,9 +56,12 @@ import {
   viewerAccessSchema,
 } from '../schemas/proposal'
 import { EVIDENCE_PENDING_TTL_MS, isAiReadableMimeType, validateEvidence } from './evidence'
+import { normalizeEvidenceForAi } from './image-normalize'
 import { getLedgerSessionFromRequest } from './session'
 
 const NO_STORE = { 'cache-control': 'no-store', 'x-robots-tag': 'noindex, nofollow' }
+
+type AiReadableImage = { data: Buffer; mimeType: string; byteSize: number }
 
 function json(body: unknown, status = 200): NextResponse {
   return NextResponse.json(body, { status, headers: NO_STORE })
@@ -253,11 +256,13 @@ function analysisServiceErrorMessage(providerStatus?: number): string {
 
 function logAnalysisServiceError(
   providerStatus: number | undefined,
-  validation: { mimeType: string; byteSize: number }
+  validation: { mimeType: string; byteSize: number },
+  aiImage?: { mimeType: string; byteSize: number }
 ): void {
   const status = providerStatus ?? 'none'
+  const aiDetail = aiImage ? ` aiMime=${aiImage.mimeType} aiBytes=${aiImage.byteSize}` : ''
   console.error(
-    `[proof-ledger] analysis service rejected proof: status=${status} mime=${validation.mimeType} bytes=${validation.byteSize}`
+    `[proof-ledger] analysis service rejected proof: status=${status} mime=${validation.mimeType} bytes=${validation.byteSize}${aiDetail}`
   )
 }
 
@@ -300,9 +305,26 @@ async function handleAnalyzeImpl(
   const validation = validateEvidence(buffer, file.type)
   if (!validation.ok) return json({ error: validation.message }, 400)
 
-  if (!isAiReadableMimeType(validation.mimeType)) {
+  let aiImage: AiReadableImage
+  try {
+    aiImage = await normalizeEvidenceForAi(validation.data)
+  } catch {
+    if (!isAiReadableMimeType(validation.mimeType)) {
+      return json(
+        { error: 'Please upload a JPG, PNG or WebP screenshot so it can be read.' },
+        400
+      )
+    }
+    aiImage = {
+      data: validation.data,
+      mimeType: validation.mimeType,
+      byteSize: validation.byteSize,
+    }
+  }
+
+  if (!isAiReadableMimeType(aiImage.mimeType)) {
     return json(
-      { error: 'Please upload a PNG, JPEG or WebP screenshot so it can be read.' },
+      { error: 'Please upload a JPG, PNG or WebP screenshot so it can be read.' },
       400
     )
   }
@@ -326,8 +348,8 @@ async function handleAnalyzeImpl(
 
   const outcome = await analyzeEvidence(
     {
-      imageBase64: buffer.toString('base64'),
-      mimeType: validation.mimeType,
+      imageBase64: aiImage.data.toString('base64'),
+      mimeType: aiImage.mimeType,
       instruction,
       context: await buildAnalysisContext(repository),
     },
@@ -337,7 +359,7 @@ async function handleAnalyzeImpl(
   // Any outcome other than a clean proposal stops here. No evidence row, no
   // transaction, no change of any kind.
   if (outcome.status === 'ERROR') {
-    logAnalysisServiceError(outcome.providerStatus, validation)
+    logAnalysisServiceError(outcome.providerStatus, validation, aiImage)
     return json(
       { status: 'ERROR', error: analysisServiceErrorMessage(outcome.providerStatus) },
       502

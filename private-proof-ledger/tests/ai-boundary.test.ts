@@ -195,13 +195,55 @@ describe('analysis never mutates on an unusable result', () => {
       })
       expect(payload.error).not.toContain('status 400')
       expect(errorSpy).toHaveBeenCalledWith(
-        `[proof-ledger] analysis service rejected proof: status=400 mime=image/png bytes=${PNG_BYTES.byteLength}`
+        expect.stringMatching(
+          new RegExp(
+            `^\\[proof-ledger\\] analysis service rejected proof: status=400 mime=image/png bytes=${PNG_BYTES.byteLength} aiMime=image/jpeg aiBytes=\\d+$`
+          )
+        )
       )
       expect(await ledger.listTransactions()).toHaveLength(0)
       expect(await ledger.getEvidenceMeta('ev-0002')).toBeNull()
     } finally {
       errorSpy.mockRestore()
     }
+  })
+
+  it('sends a normalized JPEG copy to analysis while keeping original evidence unchanged', async () => {
+    const ledger = await seededLedger()
+    let requestBody: {
+      messages: Array<{ content: Array<{ source?: { media_type?: string; data?: string } }> }>
+    } | null = null
+    global.fetch = jest.fn(async (_url, init) => {
+      requestBody = JSON.parse(String(init?.body))
+      return toolReply({
+        type: 'WITHDRAWAL',
+        date: '2026-08-11',
+        amountCents: CAD(100),
+        reason: 'Withdrawal',
+        requiredRepaymentCents: CAD(120),
+        confidence: 'HIGH',
+        observations: 'Screenshot shows a CAD $100 withdrawal.',
+      })
+    }) as unknown as typeof fetch
+
+    const response = await handleAnalyze(
+      analyzeRequest('I withdrew CAD $100 and need to return CAD $120.'),
+      ledger
+    )
+    const payload = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(payload.status).toBe('PROPOSAL')
+    expect(requestBody?.messages[0]?.content[0]?.source?.media_type).toBe('image/jpeg')
+    expect(requestBody?.messages[0]?.content[0]?.source?.data).not.toBe(
+      PNG_BYTES.toString('base64')
+    )
+
+    const evidence = await ledger.getEvidenceMeta(payload.evidence.id)
+    expect(evidence).toMatchObject({
+      mimeType: 'image/png',
+      byteSize: PNG_BYTES.byteLength,
+    })
   })
 
   // Test 11
