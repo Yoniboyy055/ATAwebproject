@@ -171,6 +171,39 @@ describe('analysis never mutates on an unusable result', () => {
     expect(await ledger.listTransactions()).toHaveLength(0)
   })
 
+  it('returns a phone-friendly error and safe log when the analysis provider rejects the proof', async () => {
+    const ledger = await seededLedger()
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    global.fetch = jest.fn(async () => ({
+      ok: false,
+      status: 400,
+      json: async () => ({ error: 'not exposed' }),
+    })) as unknown as typeof fetch
+
+    try {
+      const response = await handleAnalyze(
+        analyzeRequest('Please analyse this proof screenshot.'),
+        ledger
+      )
+      const payload = await response.json()
+
+      expect(response.status).toBe(502)
+      expect(payload).toMatchObject({
+        status: 'ERROR',
+        error:
+          'This proof image could not be read by the analysis service. Try a smaller JPG, PNG or WebP screenshot. Nothing has been recorded.',
+      })
+      expect(payload.error).not.toContain('status 400')
+      expect(errorSpy).toHaveBeenCalledWith(
+        `[proof-ledger] analysis service rejected proof: status=400 mime=image/png bytes=${PNG_BYTES.byteLength}`
+      )
+      expect(await ledger.listTransactions()).toHaveLength(0)
+      expect(await ledger.getEvidenceMeta('ev-0002')).toBeNull()
+    } finally {
+      errorSpy.mockRestore()
+    }
+  })
+
   // Test 11
   it('stores no evidence row and no transaction when a conflict is detected', async () => {
     const ledger = await seededLedger()

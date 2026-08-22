@@ -241,6 +241,26 @@ async function buildAnalysisContext(repository: LedgerRepository): Promise<Analy
   }
 }
 
+function analysisServiceErrorMessage(providerStatus?: number): string {
+  if (providerStatus === 400) {
+    return (
+      'This proof image could not be read by the analysis service. Try a smaller ' +
+      'JPG, PNG or WebP screenshot. Nothing has been recorded.'
+    )
+  }
+  return 'The analysis service could not complete this request. Nothing has been recorded.'
+}
+
+function logAnalysisServiceError(
+  providerStatus: number | undefined,
+  validation: { mimeType: string; byteSize: number }
+): void {
+  const status = providerStatus ?? 'none'
+  console.error(
+    `[proof-ledger] analysis service rejected proof: status=${status} mime=${validation.mimeType} bytes=${validation.byteSize}`
+  )
+}
+
 /**
  * Analyse a screenshot plus an instruction and return the record that WOULD be
  * applied, together with a server-signed token binding that exact proposal.
@@ -316,7 +336,13 @@ async function handleAnalyzeImpl(
 
   // Any outcome other than a clean proposal stops here. No evidence row, no
   // transaction, no change of any kind.
-  if (outcome.status === 'ERROR') return json({ status: 'ERROR', error: outcome.message }, 502)
+  if (outcome.status === 'ERROR') {
+    logAnalysisServiceError(outcome.providerStatus, validation)
+    return json(
+      { status: 'ERROR', error: analysisServiceErrorMessage(outcome.providerStatus) },
+      502
+    )
+  }
   if (outcome.status === 'CONFLICT') {
     return json({
       status: 'CONFLICT',

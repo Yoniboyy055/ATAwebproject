@@ -23,7 +23,7 @@ export type AnalysisOutcome =
       observations: string
     }
   | { status: 'AMBIGUOUS'; message: string; observations: string }
-  | { status: 'ERROR'; message: string }
+  | { status: 'ERROR'; message: string; providerStatus?: number }
 
 export interface AnalyzeInput {
   imageBase64: string
@@ -154,6 +154,7 @@ export async function analyzeEvidence(
   if (!response.ok) {
     return {
       status: 'ERROR',
+      providerStatus: response.status,
       message: `The analysis service returned status ${response.status}. Nothing has been recorded.`,
     }
   }
