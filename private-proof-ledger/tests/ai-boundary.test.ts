@@ -10,6 +10,7 @@
 import { NextRequest } from 'next/server'
 
 import { analyzeEvidence, classifyProposal } from '../ai/analyze'
+import { PROPOSAL_TOOL_SCHEMA } from '../ai/prompt'
 import { LEDGER_SESSION_COOKIE, createSessionToken } from '../auth/session'
 import { handleAnalyze } from '../server/handlers'
 import { validateEvidence } from '../server/evidence'
@@ -65,6 +66,19 @@ beforeAll(async () => {
 })
 
 describe('proposal classification', () => {
+  it('keeps the provider tool schema in a simple Claude-compatible shape', () => {
+    expect(PROPOSAL_TOOL_SCHEMA).toMatchObject({
+      type: 'object',
+      additionalProperties: false,
+    })
+    expect(PROPOSAL_TOOL_SCHEMA.properties).toHaveProperty('adjustmentEffectCents')
+    expect(PROPOSAL_TOOL_SCHEMA.properties).not.toHaveProperty('baseEffectCents')
+    expect(JSON.stringify(PROPOSAL_TOOL_SCHEMA)).not.toContain('"minimum"')
+    expect(JSON.stringify(PROPOSAL_TOOL_SCHEMA)).not.toContain('["integer","null"]')
+    expect(JSON.stringify(PROPOSAL_TOOL_SCHEMA)).not.toContain('["string","null"]')
+    expect(JSON.stringify(PROPOSAL_TOOL_SCHEMA)).not.toContain('["object","null"]')
+  })
+
   it('accepts a confident, conflict-free proposal', () => {
     const outcome = classifyProposal({
       type: 'WITHDRAWAL',

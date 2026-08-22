@@ -32,34 +32,39 @@ export const PROPOSAL_TOOL_SCHEMA = {
     date: { type: 'string', description: 'Calendar date of the transaction as YYYY-MM-DD.' },
     amountCents: {
       type: 'integer',
-      minimum: 0,
       description:
         'Integer cents. For WITHDRAWAL this is the principal actually withdrawn, not the repayment.',
     },
     reason: { type: 'string', description: 'Short plain description of what the money was for.' },
     requiredRepaymentCents: {
-      type: ['integer', 'null'],
+      type: 'integer',
       description:
-        'WITHDRAWAL only. Total the owner explicitly said must be returned. Null when no extra was stated — never invent one.',
+        'WITHDRAWAL only. Total the owner explicitly said must be returned. Omit when no extra was stated — never invent one.',
     },
     linkedTransactionCode: {
-      type: ['string', 'null'],
+      type: 'string',
       description: 'WITHDRAWAL_REPAYMENT only. The TX code of the withdrawal being repaid.',
     },
-    baseEffectCents: {
-      type: ['integer', 'null'],
+    adjustmentScope: {
+      type: 'string',
+      enum: ['BASE_REMAINING', 'WITHDRAWAL_PRINCIPAL', 'EXTRA_REPAYMENT'],
       description:
-        'ADJUSTMENT only. Signed correction to Base Remaining. Null for every other type.',
+        'ADJUSTMENT only. What the correction applies to. Omit for every other type.',
+    },
+    adjustmentEffectCents: {
+      type: 'integer',
+      description:
+        'ADJUSTMENT only. Signed correction in cents. Omit for every other type.',
     },
     correctsTransactionCode: {
-      type: ['string', 'null'],
+      type: 'string',
       description: 'ADJUSTMENT only. The TX code being corrected.',
     },
     confidence: { type: 'string', enum: ['HIGH', 'MEDIUM', 'LOW'] },
     conflict: {
-      type: ['object', 'null'],
+      type: 'object',
       description:
-        'Set when the screenshot and the written instruction materially disagree. Null otherwise.',
+        'Set only when the screenshot and the written instruction materially disagree. Omit otherwise.',
       properties: {
         field: { type: 'string' },
         screenshotValue: { type: 'string' },
@@ -67,10 +72,12 @@ export const PROPOSAL_TOOL_SCHEMA = {
         detail: { type: 'string' },
       },
       required: ['field', 'screenshotValue', 'instructionValue', 'detail'],
+      additionalProperties: false,
     },
     observations: { type: 'string', description: 'What was read from the screenshot.' },
   },
   required: ['type', 'date', 'amountCents', 'reason', 'confidence', 'observations'],
+  additionalProperties: false,
 }
 
 export function buildSystemPrompt(context: AnalysisContext): string {
