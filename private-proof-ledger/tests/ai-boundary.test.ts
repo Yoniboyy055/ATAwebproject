@@ -185,6 +185,55 @@ describe('analysis never mutates on an unusable result', () => {
     expect(await ledger.listTransactions()).toHaveLength(0)
   })
 
+  it('retries with plain JSON when the provider rejects the tool request', async () => {
+    const ledger = await makeLedger()
+    const fetchImpl = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 400,
+        json: async () => ({ error: { type: 'invalid_request_error' } }),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify({
+                type: 'WITHDRAWAL',
+                date: '2026-08-11',
+                amountCents: CAD(100),
+                reason: 'Withdrawal',
+                requiredRepaymentCents: CAD(120),
+                confidence: 'HIGH',
+                observations: 'Screenshot shows a CAD $100 withdrawal.',
+              }),
+            },
+          ],
+        }),
+      } as unknown as Response)
+
+    const outcome = await analyzeEvidence(
+      {
+        imageBase64: PNG_BYTES.toString('base64'),
+        mimeType: 'image/jpeg',
+        instruction: 'I withdrew CAD $100 and need to return CAD $120.',
+        context: { todayIso: '2026-08-11', openWithdrawals: [] },
+      },
+      { apiKey: 'k', model: 'm', fetchImpl: fetchImpl as unknown as typeof fetch }
+    )
+
+    expect(fetchImpl).toHaveBeenCalledTimes(2)
+    expect(JSON.parse(String(fetchImpl.mock.calls[0][1]?.body))).toHaveProperty('tools')
+    expect(JSON.parse(String(fetchImpl.mock.calls[1][1]?.body))).not.toHaveProperty('tools')
+    expect(outcome.status).toBe('PROPOSAL')
+    if (outcome.status !== 'PROPOSAL') throw new Error('unreachable')
+    expect(outcome.proposal.requiredRepaymentCents).toBe(CAD(120))
+    expect(await ledger.listTransactions()).toHaveLength(0)
+  })
+
   it('returns a phone-friendly error and safe log when the analysis provider rejects the proof', async () => {
     const ledger = await seededLedger()
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})

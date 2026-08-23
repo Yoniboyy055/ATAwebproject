@@ -96,22 +96,46 @@ interface AnthropicContentBlock {
   text?: string
 }
 
+function buildUserContent(input: AnalyzeInput) {
+  return [
+    {
+      type: 'image',
+      source: {
+        type: 'base64',
+        media_type: input.mimeType,
+        data: input.imageBase64,
+      },
+    },
+    {
+      type: 'text',
+      text: `Owner instruction:\n${input.instruction}`,
+    },
+  ]
+}
+
+function extractJsonObject(text: string): unknown {
+  const trimmed = text.trim()
+  const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i)
+  return JSON.parse(fenced?.[1]?.trim() ?? trimmed)
+}
+
 export async function analyzeEvidence(
   input: AnalyzeInput,
   settings: AnthropicSettings
 ): Promise<AnalysisOutcome> {
   const doFetch = settings.fetchImpl ?? fetch
   const baseUrl = settings.baseUrl ?? 'https://api.anthropic.com'
+  const headers = {
+    'content-type': 'application/json',
+    'x-api-key': settings.apiKey,
+    'anthropic-version': '2023-06-01',
+  }
 
   let response: Response
   try {
     response = await doFetch(`${baseUrl}/v1/messages`, {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': settings.apiKey,
-        'anthropic-version': '2023-06-01',
-      },
+      headers,
       body: JSON.stringify({
         model: settings.model,
         max_tokens: 1500,
@@ -127,20 +151,7 @@ export async function analyzeEvidence(
         messages: [
           {
             role: 'user',
-            content: [
-              {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: input.mimeType,
-                  data: input.imageBase64,
-                },
-              },
-              {
-                type: 'text',
-                text: `Owner instruction:\n${input.instruction}`,
-              },
-            ],
+            content: buildUserContent(input),
           },
         ],
       }),
@@ -149,6 +160,34 @@ export async function analyzeEvidence(
     // Network detail is deliberately not surfaced or logged — it can carry
     // request content.
     return { status: 'ERROR', message: 'The analysis service could not be reached.' }
+  }
+
+  if (!response.ok && response.status === 400) {
+    try {
+      response = await doFetch(`${baseUrl}/v1/messages`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          model: settings.model,
+          max_tokens: 1500,
+          system: [
+            buildSystemPrompt(input.context),
+            '',
+            'Return only one JSON object. Do not include markdown, comments, balances, totals or status fields.',
+            'Allowed fields: type, date, amountCents, reason, requiredRepaymentCents, linkedTransactionCode, adjustmentScope, adjustmentEffectCents, correctsTransactionCode, confidence, conflict, observations.',
+            'Omit fields that do not apply. All money must be integer cents.',
+          ].join('\n'),
+          messages: [
+            {
+              role: 'user',
+              content: buildUserContent(input),
+            },
+          ],
+        }),
+      })
+    } catch {
+      return { status: 'ERROR', message: 'The analysis service could not be reached.' }
+    }
   }
 
   if (!response.ok) {
@@ -169,6 +208,27 @@ export async function analyzeEvidence(
   const toolBlock = (payload.content ?? []).find(
     (block) => block.type === 'tool_use' && block.name === PROPOSAL_TOOL_NAME
   )
+
+  if (!toolBlock) {
+    const text = (payload.content ?? [])
+      .filter((block) => block.type === 'text' && typeof block.text === 'string')
+      .map((block) => block.text)
+      .join('\n')
+      .trim()
+
+    if (text) {
+      try {
+        return classifyProposal(extractJsonObject(text))
+      } catch {
+        return {
+          status: 'AMBIGUOUS',
+          message:
+            'The analysis did not return a well-formed proposal. Nothing has been recorded.',
+          observations: '',
+        }
+      }
+    }
+  }
 
   if (!toolBlock) {
     return {
