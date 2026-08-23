@@ -117,6 +117,11 @@ function mapCredential(row: any): LedgerCredentialRecord {
   }
 }
 
+function isMissingTableError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') return false
+  return (error as { code?: string }).code === 'P2021'
+}
+
 export class PrismaLedgerRepository implements LedgerRepository {
   private get db() {
     return getLedgerPrisma()
@@ -160,11 +165,17 @@ export class PrismaLedgerRepository implements LedgerRepository {
     transactionIds: readonly string[]
   ): Promise<Map<string, LedgerTransactionEvidenceRecord[]>> {
     if (transactionIds.length === 0) return new Map()
-    const rows = await this.db.ledgerTransactionEvidence.findMany({
-      where: { transactionId: { in: [...transactionIds] } },
-      include: { evidence: true },
-      orderBy: [{ transactionId: 'asc' }, { position: 'asc' }],
-    })
+    let rows
+    try {
+      rows = await this.db.ledgerTransactionEvidence.findMany({
+        where: { transactionId: { in: [...transactionIds] } },
+        include: { evidence: true },
+        orderBy: [{ transactionId: 'asc' }, { position: 'asc' }],
+      })
+    } catch (error) {
+      if (isMissingTableError(error)) return new Map()
+      throw error
+    }
     const grouped = new Map<string, LedgerTransactionEvidenceRecord[]>()
     for (const row of rows) {
       const list = grouped.get(row.transactionId) ?? []
