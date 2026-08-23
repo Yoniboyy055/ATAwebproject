@@ -2,7 +2,7 @@
 
 import { TransactionRow } from '../server/view'
 import {
-  EvidenceLink,
+  EvidenceLinks,
   formatDisplayDate,
   Panel,
   Row,
@@ -64,7 +64,7 @@ function HistoryCard({ row }: { row: TransactionRow }) {
 
       <footer className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-stone-400">
         <span className="max-w-[70%] truncate print:text-slate-700">{row.reason}</span>
-        <EvidenceLink evidenceId={row.evidenceId} />
+        <EvidenceLinks evidenceId={row.evidenceId} evidenceItems={row.evidenceItems} />
       </footer>
     </article>
   )

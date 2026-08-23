@@ -41,6 +41,7 @@ import { LedgerDatabaseNotConfiguredError } from '../database/client'
 import { LedgerConflictError, LedgerRepository } from '../database/repository'
 import { LedgerRuleError, prepareRecord } from '../ledger/apply'
 import { computeWithdrawalViews } from '../ledger/engine'
+import { aggregateEvidenceSha256, EvidenceAttachment } from '../ledger/evidence-bundle'
 import { headHash, sha256Hex, verifyLedgerIntegrity } from '../ledger/hash-chain'
 import {
   DEFAULT_ORIGINAL_OBLIGATION_CENTS,
@@ -62,6 +63,16 @@ import { getLedgerSessionFromRequest } from './session'
 const NO_STORE = { 'cache-control': 'no-store', 'x-robots-tag': 'noindex, nofollow' }
 
 type AiReadableImage = { data: Buffer; mimeType: string; byteSize: number }
+type ValidatedEvidence = {
+  data: Buffer
+  mimeType: string
+  byteSize: number
+  sha256: string
+  aiImage: AiReadableImage
+}
+
+const MAX_EVIDENCE_FILES = 5
+const MAX_TOTAL_EVIDENCE_BYTES = 24 * 1024 * 1024
 
 function json(body: unknown, status = 200): NextResponse {
   return NextResponse.json(body, { status, headers: NO_STORE })
@@ -260,7 +271,9 @@ function logAnalysisServiceError(
   providerErrorCategory: string | undefined,
   providerAttempt: string | undefined,
   validation: { mimeType: string; byteSize: number },
-  aiImage?: { mimeType: string; byteSize: number }
+  aiImage?: { mimeType: string; byteSize: number },
+  fileCount = 1,
+  totalBytes = validation.byteSize
 ): void {
   const status = providerStatus ?? 'none'
   const type = providerErrorType ?? 'unknown'
@@ -268,7 +281,7 @@ function logAnalysisServiceError(
   const attempt = providerAttempt ?? 'unknown'
   const aiDetail = aiImage ? ` aiMime=${aiImage.mimeType} aiBytes=${aiImage.byteSize}` : ''
   console.error(
-    `[proof-ledger] analysis service rejected proof: status=${status} category=${category} providerType=${type} attempt=${attempt} mime=${validation.mimeType} bytes=${validation.byteSize}${aiDetail}`
+    `[proof-ledger] analysis service rejected proof: status=${status} category=${category} providerType=${type} attempt=${attempt} files=${fileCount} totalBytes=${totalBytes} mime=${validation.mimeType} bytes=${validation.byteSize}${aiDetail}`
   )
 }
 
@@ -302,38 +315,68 @@ async function handleAnalyzeImpl(
     return json({ error: 'That explanation is too long.' }, 400)
   }
 
-  const file = form.get('evidence')
-  if (!(file instanceof File)) {
+  const files = form.getAll('evidence').filter((item): item is File => item instanceof File)
+  if (files.length === 0) {
     return json({ error: 'A screenshot is required for every record.' }, 400)
   }
+  if (files.length > MAX_EVIDENCE_FILES) {
+    return json({ error: `Upload ${MAX_EVIDENCE_FILES} proof images or fewer at once.` }, 400)
+  }
 
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const validation = validateEvidence(buffer, file.type)
-  if (!validation.ok) return json({ error: validation.message }, 400)
+  const validations: ValidatedEvidence[] = []
+  let totalBytes = 0
 
-  let aiImage: AiReadableImage
-  try {
-    aiImage = await normalizeEvidenceForAi(validation.data)
-  } catch {
-    if (!isAiReadableMimeType(validation.mimeType)) {
+  for (const file of files) {
+    const buffer = Buffer.from(await file.arrayBuffer())
+    totalBytes += buffer.byteLength
+    if (totalBytes > MAX_TOTAL_EVIDENCE_BYTES) {
+      return json({ error: 'Upload 24 MB or less across all proof images.' }, 400)
+    }
+
+    const validation = validateEvidence(buffer, file.type)
+    if (!validation.ok) return json({ error: validation.message }, 400)
+
+    let aiImage: AiReadableImage
+    try {
+      aiImage = await normalizeEvidenceForAi(validation.data)
+    } catch {
+      if (!isAiReadableMimeType(validation.mimeType)) {
+        return json(
+          { error: 'Please upload JPG, PNG or WebP screenshots so they can be read.' },
+          400
+        )
+      }
+      aiImage = {
+        data: validation.data,
+        mimeType: validation.mimeType,
+        byteSize: validation.byteSize,
+      }
+    }
+
+    if (!isAiReadableMimeType(aiImage.mimeType)) {
       return json(
-        { error: 'Please upload a JPG, PNG or WebP screenshot so it can be read.' },
+        { error: 'Please upload JPG, PNG or WebP screenshots so they can be read.' },
         400
       )
     }
-    aiImage = {
+
+    validations.push({
       data: validation.data,
       mimeType: validation.mimeType,
       byteSize: validation.byteSize,
-    }
+      sha256: validation.sha256,
+      aiImage,
+    })
   }
 
-  if (!isAiReadableMimeType(aiImage.mimeType)) {
-    return json(
-      { error: 'Please upload a JPG, PNG or WebP screenshot so it can be read.' },
-      400
-    )
-  }
+  const pendingAttachments = validations.map((validation, index) => ({
+    evidenceId: `pending-${index + 1}`,
+    evidenceSha256: validation.sha256,
+  }))
+  const aggregateSha256 = aggregateEvidenceSha256(pendingAttachments)
+
+  const firstValidation = validations[0]
+  const firstAiImage = firstValidation.aiImage
 
   const proposalSecret = resolveProposalSecret()
   if (!proposalSecret) {
@@ -354,8 +397,12 @@ async function handleAnalyzeImpl(
 
   const outcome = await analyzeEvidence(
     {
-      imageBase64: aiImage.data.toString('base64'),
-      mimeType: aiImage.mimeType,
+      imageBase64: firstAiImage.data.toString('base64'),
+      mimeType: firstAiImage.mimeType,
+      images: validations.map((item) => ({
+        imageBase64: item.aiImage.data.toString('base64'),
+        mimeType: item.aiImage.mimeType,
+      })),
       instruction,
       context: await buildAnalysisContext(repository),
     },
@@ -370,8 +417,10 @@ async function handleAnalyzeImpl(
       outcome.providerErrorType,
       outcome.providerErrorCategory,
       outcome.providerAttempt,
-      validation,
-      aiImage
+      firstValidation,
+      firstAiImage,
+      validations.length,
+      totalBytes
     )
     return json(
       { status: 'ERROR', error: analysisServiceErrorMessage(outcome.providerStatus) },
@@ -411,8 +460,9 @@ async function handleAnalyzeImpl(
       adjustmentScope: proposal.adjustmentScope ?? null,
       adjustmentEffectCents: proposal.adjustmentEffectCents ?? null,
       correctsTransactionCode: proposal.correctsTransactionCode ?? null,
-      evidenceId: 'pending',
-      evidenceSha256: validation.sha256,
+      evidenceId: pendingAttachments[0].evidenceId,
+      evidenceSha256: aggregateSha256,
+      evidenceItems: pendingAttachments,
     })
   } catch (error) {
     if (error instanceof LedgerRuleError) {
@@ -423,13 +473,23 @@ async function handleAnalyzeImpl(
 
   // Only now — with a valid, confident, rule-passing proposal — is the
   // screenshot persisted, as PENDING, so the owner can confirm it.
-  const evidence = await repository.createEvidence({
-    data: validation.data,
-    mimeType: validation.mimeType,
-    byteSize: validation.byteSize,
-    sha256: validation.sha256,
-    expiresAt: new Date(Date.now() + EVIDENCE_PENDING_TTL_MS),
-  })
+  const evidence = []
+  for (const validation of validations) {
+    evidence.push(
+      await repository.createEvidence({
+        data: validation.data,
+        mimeType: validation.mimeType,
+        byteSize: validation.byteSize,
+        sha256: validation.sha256,
+        expiresAt: new Date(Date.now() + EVIDENCE_PENDING_TTL_MS),
+      })
+    )
+  }
+  const evidenceItems: EvidenceAttachment[] = evidence.map((item) => ({
+    evidenceId: item.id,
+    evidenceSha256: item.sha256,
+  }))
+  const evidenceSha256 = aggregateEvidenceSha256(evidenceItems)
 
   // The signature covers every transaction fact plus the evidence hash, the
   // instruction hash and the current chain head. "Apply Record" sends only
@@ -445,8 +505,9 @@ async function handleAnalyzeImpl(
       adjustmentScope: proposal.adjustmentScope ?? null,
       adjustmentEffectCents: proposal.adjustmentEffectCents ?? null,
       correctsTransactionCode: proposal.correctsTransactionCode ?? null,
-      evidenceId: evidence.id,
-      evidenceSha256: validation.sha256,
+      evidenceId: evidence[0].id,
+      evidenceSha256,
+      evidenceItems,
       originalInstruction: instruction,
       instructionSha256: preview.record.instructionSha256 as string,
       ledgerHeadHash: headHash(transactions),
@@ -458,7 +519,12 @@ async function handleAnalyzeImpl(
     status: 'PROPOSAL',
     proposalToken,
     expiresInSeconds: Math.floor(PROPOSAL_TTL_MS / 1000),
-    evidence: { id: evidence.id, mimeType: evidence.mimeType, byteSize: evidence.byteSize },
+    evidence: evidence.map((item, index) => ({
+      id: item.id,
+      mimeType: item.mimeType,
+      byteSize: item.byteSize,
+      position: index,
+    })),
     observations: proposal.observations,
     // Display only. None of this is trusted on the way back in.
     proposal: {
@@ -544,14 +610,27 @@ async function handleApplyRecordImpl(
     )
   }
 
-  // The screenshot must still exist and still be the same bytes. The stored
-  // hash column is not trusted here — the bytes themselves are re-hashed, so
-  // a direct database swap of the image is caught before anything is written.
-  const evidence = await repository.getEvidence(signed.evidenceId)
-  if (!evidence) {
-    return json({ error: 'The attached evidence could not be found. Re-run the analysis.' }, 400)
+  const signedEvidenceItems =
+    signed.evidenceItems && signed.evidenceItems.length > 0
+      ? signed.evidenceItems
+      : [{ evidenceId: signed.evidenceId, evidenceSha256: signed.evidenceSha256 }]
+
+  // The evidence must still exist and still be the same bytes. The stored hash
+  // column is not trusted here; the bytes themselves are re-hashed before any
+  // transaction is written.
+  const verifiedEvidenceItems: EvidenceAttachment[] = []
+  for (const item of signedEvidenceItems) {
+    const evidence = await repository.getEvidence(item.evidenceId)
+    if (!evidence) {
+      return json({ error: 'The attached evidence could not be found. Re-run the analysis.' }, 400)
+    }
+    verifiedEvidenceItems.push({
+      evidenceId: evidence.id,
+      evidenceSha256: sha256Hex(evidence.data),
+    })
   }
-  if (sha256Hex(evidence.data) !== signed.evidenceSha256) {
+  const verifiedEvidenceSha256 = aggregateEvidenceSha256(verifiedEvidenceItems)
+  if (verifiedEvidenceSha256 !== signed.evidenceSha256) {
     return json(
       { error: 'The attached evidence changed after analysis.', code: 'EVIDENCE_HASH_MISMATCH' },
       400
@@ -572,8 +651,9 @@ async function handleApplyRecordImpl(
       adjustmentScope: signed.adjustmentScope,
       adjustmentEffectCents: signed.adjustmentEffectCents,
       correctsTransactionCode: signed.correctsTransactionCode,
-      evidenceId: evidence.id,
+      evidenceId: verifiedEvidenceItems[0].evidenceId,
       evidenceSha256: signed.evidenceSha256,
+      evidenceItems: verifiedEvidenceItems,
     })
   } catch (error) {
     if (error instanceof LedgerRuleError) {

@@ -97,6 +97,11 @@ export interface LedgerEvidenceRecord {
   createdAt: string
 }
 
+export interface LedgerTransactionEvidenceRecord extends LedgerEvidenceRecord {
+  transactionId: string
+  position: number
+}
+
 export interface LedgerCredentialRecord {
   role: LedgerRole
   passwordHash: string
@@ -120,6 +125,7 @@ export interface WithdrawalView {
   date: string
   reason: string
   evidenceId: string | null
+  evidenceItems?: LedgerTransactionEvidenceRecord[]
   /** As originally recorded. Never changes. */
   originalPrincipalCents: number
   originalExtraRepaymentCents: number

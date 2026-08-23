@@ -35,6 +35,7 @@ export type AnalysisOutcome =
 export interface AnalyzeInput {
   imageBase64: string
   mimeType: string
+  images?: Array<{ imageBase64: string; mimeType: string }>
   instruction: string
   context: AnalysisContext
 }
@@ -155,18 +156,23 @@ async function readProviderErrorDetail(response: Response): Promise<ProviderErro
 }
 
 function buildUserContent(input: AnalyzeInput) {
+  const images =
+    input.images && input.images.length > 0
+      ? input.images
+      : [{ imageBase64: input.imageBase64, mimeType: input.mimeType }]
+
   return [
-    {
+    ...images.map((image) => ({
       type: 'image',
       source: {
         type: 'base64',
-        media_type: input.mimeType,
-        data: input.imageBase64,
+        media_type: image.mimeType,
+        data: image.imageBase64,
       },
-    },
+    })),
     {
       type: 'text',
-      text: `Owner instruction:\n${input.instruction}`,
+      text: `Owner instruction:\n${input.instruction}\n\nEvidence files attached: ${images.length}. Analyse all images together as one proof package.`,
     },
   ]
 }
