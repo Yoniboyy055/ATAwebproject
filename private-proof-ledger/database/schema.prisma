@@ -1,0 +1,123 @@
+// Proof Ledger — private persistence.
+//
+// This schema is completely separate from the ATA business schema. It has its
+// own datasource (LEDGER_DATABASE_URL), its own generated client, and no
+// relation, foreign key or join of any kind to ATA customers, bookings,
+// packages, requests, payments or admin records.
+
+generator ledgerClient {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/.prisma/proof-ledger-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("LEDGER_DATABASE_URL")
+}
+
+model LedgerConfig {
+  id                      String    @id @default(cuid())
+  currency                String    @default("CAD")
+  originalObligationCents Int
+  lockedAt                DateTime?
+  createdAt               DateTime  @default(now())
+
+  @@map("ledger_config")
+}
+
+model LedgerTransaction {
+  id                  String   @id @default(cuid())
+  sequence            Int      @unique
+  transactionCode     String   @unique
+  date                DateTime @db.Date
+  type                String
+  amountCents         Int
+  reason              String
+  originalInstruction String?
+  baseEffectCents     Int      @default(0)
+
+  linkedWithdrawalId       String?
+  withdrawalPrincipalCents Int?
+  extraRepaymentCents      Int?
+  requiredRepaymentCents   Int?
+
+  // Adjustments correct an earlier record without ever rewriting it.
+  // Scope is BASE, WITHDRAWAL_PRINCIPAL or WITHDRAWAL_EXTRA.
+  adjustmentScope       String?
+  adjustmentEffectCents Int?
+  correctsTransactionId String?
+
+  // Integrity bindings — both are part of the hashed payload, so replacing
+  // the screenshot bytes or the owner's original wording breaks the chain.
+  evidenceSha256    String?
+  instructionSha256 String?
+
+  // Denormalised caches. Never hashed; the engine derives the authoritative
+  // values from transaction history.
+  repaymentPaidCents Int?
+  status             String?
+
+  previousRecordHash String?
+  recordHash         String  @unique
+  evidenceId         String?
+
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([linkedWithdrawalId])
+  @@index([correctsTransactionId])
+  @@map("ledger_transactions")
+}
+
+model LedgerEvidence {
+  id        String   @id @default(cuid())
+  // Evidence bytes live in the private ledger database. There is no public
+  // object URL and no copy of any screenshot in git.
+  data      Bytes
+  mimeType  String
+  byteSize  Int
+  sha256    String
+  // PENDING until the owner applies the record it belongs to. Expired
+  // PENDING rows are cleaned up opportunistically; APPLIED rows never are.
+  status    String    @default("PENDING")
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([sha256])
+  @@index([status, expiresAt])
+  @@map("ledger_evidence")
+}
+
+// Runtime credential authority. Seeded once from the bootstrap environment
+// hashes, then owned by the database so a password change survives redeploys.
+model LedgerCredential {
+  id                String   @id @default(cuid())
+  role              String   @unique
+  passwordHash      String
+  credentialVersion Int      @default(1)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("ledger_credentials")
+}
+
+// Small key/value store for owner-controlled switches such as viewer access.
+model LedgerSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("ledger_settings")
+}
+
+model LedgerNote {
+  id            String    @id @default(cuid())
+  transactionId String?
+  authorRole    String
+  body          String
+  createdAt     DateTime  @default(now())
+  resolvedAt    DateTime?
+
+  @@index([transactionId])
+  @@map("ledger_notes")
+}

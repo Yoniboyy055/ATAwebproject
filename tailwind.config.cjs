@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./app/**/*.{ts,tsx,js,jsx}",
     "./components/**/*.{ts,tsx,js,jsx}",
+    "./private-proof-ledger/**/*.{ts,tsx,js,jsx}",
   ],
   theme: {
     extend: {
