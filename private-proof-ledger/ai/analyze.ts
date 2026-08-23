@@ -23,7 +23,14 @@ export type AnalysisOutcome =
       observations: string
     }
   | { status: 'AMBIGUOUS'; message: string; observations: string }
-  | { status: 'ERROR'; message: string; providerStatus?: number }
+  | {
+      status: 'ERROR'
+      message: string
+      providerStatus?: number
+      providerErrorType?: string
+      providerErrorCategory?: string
+      providerAttempt?: 'tool' | 'plain_json'
+    }
 
 export interface AnalyzeInput {
   imageBase64: string
@@ -96,6 +103,57 @@ interface AnthropicContentBlock {
   text?: string
 }
 
+interface ProviderErrorDetail {
+  type?: string
+  category?: string
+}
+
+function classifyProviderErrorMessage(message: string): string {
+  const value = message.toLowerCase()
+  if (value.includes('rate') || value.includes('quota') || value.includes('too many')) {
+    return 'rate_limit'
+  }
+  if (
+    value.includes('credit') ||
+    value.includes('billing') ||
+    value.includes('balance') ||
+    value.includes('payment')
+  ) {
+    return 'billing_or_credit'
+  }
+  if (
+    value.includes('api key') ||
+    value.includes('auth') ||
+    value.includes('permission') ||
+    value.includes('unauthorized')
+  ) {
+    return 'auth'
+  }
+  if (value.includes('model')) return 'model'
+  if (value.includes('schema') || value.includes('tool')) return 'schema'
+  if (value.includes('image') || value.includes('media') || value.includes('base64')) {
+    return 'image'
+  }
+  return 'unknown'
+}
+
+async function readProviderErrorDetail(response: Response): Promise<ProviderErrorDetail> {
+  try {
+    const payload = (await response.json()) as {
+      error?: { type?: unknown; message?: unknown }
+    }
+    const type = typeof payload.error?.type === 'string' ? payload.error.type : undefined
+    const message =
+      typeof payload.error?.message === 'string' ? payload.error.message : ''
+    return {
+      type,
+      category: message ? classifyProviderErrorMessage(message) : undefined,
+    }
+  } catch {
+    return {}
+  }
+}
+
 function buildUserContent(input: AnalyzeInput) {
   return [
     {
@@ -132,6 +190,8 @@ export async function analyzeEvidence(
   }
 
   let response: Response
+  let providerAttempt: 'tool' | 'plain_json' = 'tool'
+  let providerErrorDetail: ProviderErrorDetail = {}
   try {
     response = await doFetch(`${baseUrl}/v1/messages`, {
       method: 'POST',
@@ -163,7 +223,9 @@ export async function analyzeEvidence(
   }
 
   if (!response.ok && response.status === 400) {
+    providerErrorDetail = await readProviderErrorDetail(response)
     try {
+      providerAttempt = 'plain_json'
       response = await doFetch(`${baseUrl}/v1/messages`, {
         method: 'POST',
         headers,
@@ -191,9 +253,13 @@ export async function analyzeEvidence(
   }
 
   if (!response.ok) {
+    providerErrorDetail = await readProviderErrorDetail(response)
     return {
       status: 'ERROR',
       providerStatus: response.status,
+      providerErrorType: providerErrorDetail.type,
+      providerErrorCategory: providerErrorDetail.category,
+      providerAttempt,
       message: `The analysis service returned status ${response.status}. Nothing has been recorded.`,
     }
   }

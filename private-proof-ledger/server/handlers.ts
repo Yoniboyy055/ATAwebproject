@@ -256,13 +256,19 @@ function analysisServiceErrorMessage(providerStatus?: number): string {
 
 function logAnalysisServiceError(
   providerStatus: number | undefined,
+  providerErrorType: string | undefined,
+  providerErrorCategory: string | undefined,
+  providerAttempt: string | undefined,
   validation: { mimeType: string; byteSize: number },
   aiImage?: { mimeType: string; byteSize: number }
 ): void {
   const status = providerStatus ?? 'none'
+  const type = providerErrorType ?? 'unknown'
+  const category = providerErrorCategory ?? 'unknown'
+  const attempt = providerAttempt ?? 'unknown'
   const aiDetail = aiImage ? ` aiMime=${aiImage.mimeType} aiBytes=${aiImage.byteSize}` : ''
   console.error(
-    `[proof-ledger] analysis service rejected proof: status=${status} mime=${validation.mimeType} bytes=${validation.byteSize}${aiDetail}`
+    `[proof-ledger] analysis service rejected proof: status=${status} category=${category} providerType=${type} attempt=${attempt} mime=${validation.mimeType} bytes=${validation.byteSize}${aiDetail}`
   )
 }
 
@@ -359,7 +365,14 @@ async function handleAnalyzeImpl(
   // Any outcome other than a clean proposal stops here. No evidence row, no
   // transaction, no change of any kind.
   if (outcome.status === 'ERROR') {
-    logAnalysisServiceError(outcome.providerStatus, validation, aiImage)
+    logAnalysisServiceError(
+      outcome.providerStatus,
+      outcome.providerErrorType,
+      outcome.providerErrorCategory,
+      outcome.providerAttempt,
+      validation,
+      aiImage
+    )
     return json(
       { status: 'ERROR', error: analysisServiceErrorMessage(outcome.providerStatus) },
       502

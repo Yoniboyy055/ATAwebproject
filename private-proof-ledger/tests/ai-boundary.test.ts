@@ -240,7 +240,12 @@ describe('analysis never mutates on an unusable result', () => {
     global.fetch = jest.fn(async () => ({
       ok: false,
       status: 400,
-      json: async () => ({ error: 'not exposed' }),
+      json: async () => ({
+        error: {
+          type: 'invalid_request_error',
+          message: 'Image could not be processed.',
+        },
+      }),
     })) as unknown as typeof fetch
 
     try {
@@ -260,7 +265,7 @@ describe('analysis never mutates on an unusable result', () => {
       expect(errorSpy).toHaveBeenCalledWith(
         expect.stringMatching(
           new RegExp(
-            `^\\[proof-ledger\\] analysis service rejected proof: status=400 mime=image/png bytes=${PNG_BYTES.byteLength} aiMime=image/jpeg aiBytes=\\d+$`
+            `^\\[proof-ledger\\] analysis service rejected proof: status=400 category=image providerType=invalid_request_error attempt=plain_json mime=image/png bytes=${PNG_BYTES.byteLength} aiMime=image/jpeg aiBytes=\\d+$`
           )
         )
       )
