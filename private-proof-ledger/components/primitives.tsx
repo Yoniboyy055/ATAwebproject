@@ -108,6 +108,39 @@ export function EvidenceLink({ evidenceId }: { evidenceId: string | null }) {
   )
 }
 
+export function EvidenceLinks({
+  evidenceId,
+  evidenceItems = [],
+}: {
+  evidenceId: string | null
+  evidenceItems?: readonly { id: string; position: number }[]
+}) {
+  const items =
+    evidenceItems.length > 0
+      ? [...evidenceItems].sort((a, b) => a.position - b.position)
+      : evidenceId
+        ? [{ id: evidenceId, position: 0 }]
+        : []
+
+  if (items.length === 0) return <span className="text-xs text-stone-500">No proof attached</span>
+
+  return (
+    <span className="flex flex-wrap justify-end gap-2">
+      {items.map((item, index) => (
+        <a
+          key={item.id}
+          href={`/api/proof-ledger/evidence/${item.id}`}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="text-xs font-medium text-cyan-300 underline underline-offset-2 print:hidden"
+        >
+          Proof {items.length === 1 ? '' : index + 1}
+        </a>
+      ))}
+    </span>
+  )
+}
+
 export function formatDisplayDate(isoDate: string): string {
   const [year, month, day] = isoDate.split('-').map(Number)
   const months = [

@@ -10,6 +10,7 @@ import {
   LedgerConfigRecord,
   LedgerCredentialRecord,
   LedgerEvidenceRecord,
+  LedgerTransactionEvidenceRecord,
   LedgerNoteRecord,
   LedgerRole,
   LedgerTransactionRecord,
@@ -37,6 +38,9 @@ export interface LedgerRepository {
 
   listTransactions(): Promise<LedgerTransactionRecord[]>
   appendTransaction(record: PreparedRecord): Promise<LedgerTransactionRecord>
+  listEvidenceForTransactions(
+    transactionIds: readonly string[]
+  ): Promise<Map<string, LedgerTransactionEvidenceRecord[]>>
 
   listNotes(): Promise<LedgerNoteRecord[]>
   createNote(input: {

@@ -265,7 +265,7 @@ describe('analysis never mutates on an unusable result', () => {
       expect(errorSpy).toHaveBeenCalledWith(
         expect.stringMatching(
           new RegExp(
-            `^\\[proof-ledger\\] analysis service rejected proof: status=400 category=image providerType=invalid_request_error attempt=plain_json mime=image/png bytes=${PNG_BYTES.byteLength} aiMime=image/jpeg aiBytes=\\d+$`
+            `^\\[proof-ledger\\] analysis service rejected proof: status=400 category=image providerType=invalid_request_error attempt=plain_json files=1 totalBytes=${PNG_BYTES.byteLength} mime=image/png bytes=${PNG_BYTES.byteLength} aiMime=image/jpeg aiBytes=\\d+$`
           )
         )
       )
@@ -307,7 +307,8 @@ describe('analysis never mutates on an unusable result', () => {
       PNG_BYTES.toString('base64')
     )
 
-    const evidence = await ledger.getEvidenceMeta(payload.evidence.id)
+    expect(payload.evidence).toHaveLength(1)
+    const evidence = await ledger.getEvidenceMeta(payload.evidence[0].id)
     expect(evidence).toMatchObject({
       mimeType: 'image/png',
       byteSize: PNG_BYTES.byteLength,

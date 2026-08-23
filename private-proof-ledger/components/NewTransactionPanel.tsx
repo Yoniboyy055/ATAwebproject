@@ -13,6 +13,13 @@ interface Proposal {
   reason: string
 }
 
+interface EvidencePreview {
+  id: string
+  mimeType: string
+  byteSize: number
+  position: number
+}
+
 interface Preview {
   transactionCode: string
   withdrawalPrincipalCents: number | null
@@ -37,6 +44,7 @@ type AnalysisState =
       preview: Preview
       proposalToken: string
       observations: string
+      evidence: EvidencePreview[]
     }
   | {
       kind: 'CONFLICT'
@@ -56,7 +64,7 @@ export default function NewTransactionPanel() {
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
   const [instruction, setInstruction] = useState('')
-  const [evidenceName, setEvidenceName] = useState('')
+  const [evidenceNames, setEvidenceNames] = useState<string[]>([])
   const [state, setState] = useState<AnalysisState>({ kind: 'IDLE' })
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -64,16 +72,16 @@ export default function NewTransactionPanel() {
   function reset() {
     setState({ kind: 'IDLE' })
     setInstruction('')
-    setEvidenceName('')
+    setEvidenceNames([])
     setError(null)
     if (fileRef.current) fileRef.current.value = ''
   }
 
   async function analyze(event: React.FormEvent) {
     event.preventDefault()
-    const file = fileRef.current?.files?.[0]
-    if (!file) {
-      setError('Attach the screenshot that proves this transaction.')
+    const files = Array.from(fileRef.current?.files ?? [])
+    if (files.length === 0) {
+      setError('Attach the proof images that support this transaction.')
       return
     }
     setBusy(true)
@@ -82,7 +90,7 @@ export default function NewTransactionPanel() {
 
     try {
       const form = new FormData()
-      form.append('evidence', file)
+      files.forEach((file) => form.append('evidence', file))
       form.append('instruction', instruction)
 
       const response = await fetch('/api/proof-ledger/analyze', { method: 'POST', body: form })
@@ -113,6 +121,7 @@ export default function NewTransactionPanel() {
         // The server signed this exact proposal. It is the only thing sent back.
         proposalToken: payload.proposalToken,
         observations: payload.observations ?? '',
+        evidence: Array.isArray(payload.evidence) ? payload.evidence : [],
       })
     } catch {
       setError('Could not reach the server.')
@@ -162,7 +171,10 @@ export default function NewTransactionPanel() {
             name="evidence"
             type="file"
             accept="image/*"
-            onChange={(event) => setEvidenceName(event.target.files?.[0]?.name ?? '')}
+            multiple
+            onChange={(event) =>
+              setEvidenceNames(Array.from(event.target.files ?? []).map((file) => file.name))
+            }
             className="sr-only"
           />
           <label
@@ -174,16 +186,27 @@ export default function NewTransactionPanel() {
                 Upload proof from phone
               </span>
               <span className="mt-1 block text-xs text-stone-500">
-                Choose a screenshot, photo, or image file.
+                Choose up to 5 screenshot, photo, or image files.
               </span>
             </span>
             <span className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-zinc-950">
-              Choose File
+              Choose Files
             </span>
           </label>
-          <p className="mt-2 truncate text-xs text-stone-400">
-            {evidenceName ? `Selected: ${evidenceName}` : 'No proof selected yet.'}
-          </p>
+          {evidenceNames.length > 0 ? (
+            <div className="mt-2 space-y-1 text-xs text-stone-400">
+              <p>{evidenceNames.length} proof file{evidenceNames.length === 1 ? '' : 's'} selected</p>
+              <ul className="space-y-0.5">
+                {evidenceNames.slice(0, 5).map((name) => (
+                  <li key={name} className="truncate">
+                    {name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="mt-2 truncate text-xs text-stone-400">No proof selected yet.</p>
+          )}
         </div>
 
         <label htmlFor="instruction" className="block text-xs font-semibold uppercase tracking-wide text-stone-400">
@@ -320,7 +343,9 @@ export default function NewTransactionPanel() {
             </div>
             <div className="flex justify-between gap-4 py-1.5 text-sm">
               <span className="text-slate-400">Evidence</span>
-              <span className="text-slate-100">Attached</span>
+              <span className="text-slate-100">
+                {state.evidence.length || 1} proof file{(state.evidence.length || 1) === 1 ? '' : 's'} attached
+              </span>
             </div>
           </div>
 

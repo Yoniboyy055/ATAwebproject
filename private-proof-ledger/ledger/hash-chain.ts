@@ -15,6 +15,7 @@
 import { createHash } from 'crypto'
 
 import { canonicalJson } from '../utils/canonical-json'
+import { aggregateEvidenceSha256, EvidenceAttachment } from './evidence-bundle'
 import { AdjustmentScope, LedgerTransactionRecord } from './types'
 
 export const GENESIS_HASH = 'GENESIS'
@@ -193,13 +194,18 @@ export interface EvidenceBytesLoader {
   (evidenceId: string): Promise<{ data: Buffer } | null>
 }
 
+export interface EvidenceAttachmentLoader {
+  (transactionId: string): Promise<readonly EvidenceAttachment[]>
+}
+
 /**
  * Full integrity check: the chain, plus re-hashing the actual screenshot bytes
  * of every record that carries evidence.
  */
 export async function verifyLedgerIntegrity(
   transactions: readonly LedgerTransactionRecord[],
-  loadEvidence: EvidenceBytesLoader
+  loadEvidence: EvidenceBytesLoader,
+  loadEvidenceAttachments?: EvidenceAttachmentLoader
 ): Promise<IntegrityResult> {
   const base = verifyChain(transactions)
   const failures = [...base.failures]
@@ -207,23 +213,43 @@ export async function verifyLedgerIntegrity(
 
   for (const record of transactions) {
     if (!record.evidenceId || !record.evidenceSha256) continue
-    const evidence = await loadEvidence(record.evidenceId)
-    if (!evidence) {
-      failures.push({
-        sequence: record.sequence,
-        transactionCode: record.transactionCode,
-        reason: 'EVIDENCE_MISSING',
-        detail: 'the screenshot recorded with this transaction is no longer stored',
+
+    const linked = loadEvidenceAttachments
+      ? await loadEvidenceAttachments(record.id)
+      : []
+    const expectedAttachments =
+      linked.length > 0
+        ? linked
+        : [{ evidenceId: record.evidenceId, evidenceSha256: record.evidenceSha256 }]
+
+    const actualAttachments: EvidenceAttachment[] = []
+    for (const item of expectedAttachments) {
+      const evidence = await loadEvidence(item.evidenceId)
+      if (!evidence) {
+        failures.push({
+          sequence: record.sequence,
+          transactionCode: record.transactionCode,
+          reason: 'EVIDENCE_MISSING',
+          detail: 'evidence recorded with this transaction is no longer stored',
+        })
+        continue
+      }
+      evidenceChecked += 1
+      actualAttachments.push({
+        evidenceId: item.evidenceId,
+        evidenceSha256: sha256Hex(evidence.data),
       })
-      continue
     }
-    evidenceChecked += 1
-    if (sha256Hex(evidence.data) !== record.evidenceSha256) {
+
+    if (
+      actualAttachments.length !== expectedAttachments.length ||
+      aggregateEvidenceSha256(actualAttachments) !== record.evidenceSha256
+    ) {
       failures.push({
         sequence: record.sequence,
         transactionCode: record.transactionCode,
         reason: 'EVIDENCE_HASH_MISMATCH',
-        detail: 'the stored screenshot does not match the hash recorded with it',
+        detail: 'stored evidence does not match the hash recorded with this transaction',
       })
     }
   }

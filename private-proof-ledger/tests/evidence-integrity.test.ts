@@ -6,6 +6,7 @@
  */
 
 import { prepareRecord } from '../ledger/apply'
+import { aggregateEvidenceSha256 } from '../ledger/evidence-bundle'
 import { sha256Hex, verifyLedgerIntegrity } from '../ledger/hash-chain'
 import { addEvidence, applyRecord, CAD, makeLedger } from './helpers'
 
@@ -120,6 +121,47 @@ describe('full integrity verification', () => {
       reason: 'EVIDENCE_MISSING',
       transactionCode: record.transactionCode,
     })
+  })
+
+  it('binds multiple proof images into one transaction hash', async () => {
+    const ledger = await makeLedger()
+    const config = await ledger.getConfig()
+    if (!config) throw new Error('missing config')
+
+    const first = await addEvidence(ledger, Buffer.from('first-proof'))
+    const second = await addEvidence(ledger, Buffer.from('second-proof'))
+    const evidenceItems = [first, second]
+    const transactions = await ledger.listTransactions()
+
+    const preview = prepareRecord(config, transactions, {
+      type: 'BASE_DEPOSIT',
+      date: '2026-08-11',
+      amountCents: CAD(500),
+      reason: 'Deposit',
+      evidenceId: first.evidenceId,
+      evidenceSha256: aggregateEvidenceSha256(evidenceItems),
+      evidenceItems,
+    })
+
+    const record = await ledger.appendTransaction(preview.record)
+    const linked = await ledger.listEvidenceForTransactions([record.id])
+    const result = await verifyLedgerIntegrity(
+      await ledger.listTransactions(),
+      (id) => ledger.getEvidence(id),
+      async (transactionId) =>
+        (linked.get(transactionId) ?? []).map((item) => ({
+          evidenceId: item.id,
+          evidenceSha256: item.sha256,
+        }))
+    )
+
+    expect(record.evidenceId).toBe(first.evidenceId)
+    expect(record.evidenceSha256).toBe(aggregateEvidenceSha256(evidenceItems))
+    expect(linked.get(record.id)).toHaveLength(2)
+    expect((await ledger.getEvidenceMeta(first.evidenceId))?.status).toBe('APPLIED')
+    expect((await ledger.getEvidenceMeta(second.evidenceId))?.status).toBe('APPLIED')
+    expect(result.ok).toBe(true)
+    expect(result.evidenceChecked).toBe(2)
   })
 
   it('reports INSTRUCTION_HASH_MISMATCH when the stored instruction is reworded', async () => {

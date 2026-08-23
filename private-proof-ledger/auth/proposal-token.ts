@@ -12,6 +12,7 @@
 
 import { createHmac, randomBytes, timingSafeEqual } from 'crypto'
 
+import { EvidenceAttachment } from '../ledger/evidence-bundle'
 import { AdjustmentScope, TransactionType } from '../ledger/types'
 
 export const PROPOSAL_TTL_MS = 20 * 60 * 1000
@@ -29,6 +30,7 @@ export interface SignedProposalPayload {
   correctsTransactionCode: string | null
   evidenceId: string
   evidenceSha256: string
+  evidenceItems?: EvidenceAttachment[]
   /** The owner's own words, preserved verbatim with the record. */
   originalInstruction: string
   instructionSha256: string
@@ -111,6 +113,19 @@ export function verifyProposal(
   }
 
   if (typeof payload?.expiresAt !== 'number' || typeof payload?.evidenceId !== 'string') {
+    return { ok: false, reason: 'MALFORMED' }
+  }
+  if (
+    payload.evidenceItems !== undefined &&
+    (!Array.isArray(payload.evidenceItems) ||
+      payload.evidenceItems.length === 0 ||
+      payload.evidenceItems.some(
+        (item) =>
+          !item ||
+          typeof item.evidenceId !== 'string' ||
+          typeof item.evidenceSha256 !== 'string'
+      ))
+  ) {
     return { ok: false, reason: 'MALFORMED' }
   }
   if (payload.expiresAt <= now) return { ok: false, reason: 'EXPIRED' }

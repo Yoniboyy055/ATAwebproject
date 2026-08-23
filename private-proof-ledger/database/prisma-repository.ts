@@ -16,6 +16,7 @@ import {
   LedgerNoteRecord,
   LedgerRole,
   LedgerTransactionRecord,
+  LedgerTransactionEvidenceRecord,
   TransactionType,
   WithdrawalStatus,
 } from '../ledger/types'
@@ -99,6 +100,14 @@ function mapEvidence(row: any): LedgerEvidenceRecord {
   }
 }
 
+function mapTransactionEvidence(row: any): LedgerTransactionEvidenceRecord {
+  return {
+    ...mapEvidence(row.evidence),
+    transactionId: row.transactionId,
+    position: row.position,
+  }
+}
+
 function mapCredential(row: any): LedgerCredentialRecord {
   return {
     role: row.role as LedgerRole,
@@ -147,6 +156,24 @@ export class PrismaLedgerRepository implements LedgerRepository {
     return rows.map(mapTransaction)
   }
 
+  async listEvidenceForTransactions(
+    transactionIds: readonly string[]
+  ): Promise<Map<string, LedgerTransactionEvidenceRecord[]>> {
+    if (transactionIds.length === 0) return new Map()
+    const rows = await this.db.ledgerTransactionEvidence.findMany({
+      where: { transactionId: { in: [...transactionIds] } },
+      include: { evidence: true },
+      orderBy: [{ transactionId: 'asc' }, { position: 'asc' }],
+    })
+    const grouped = new Map<string, LedgerTransactionEvidenceRecord[]>()
+    for (const row of rows) {
+      const list = grouped.get(row.transactionId) ?? []
+      list.push(mapTransactionEvidence(row))
+      grouped.set(row.transactionId, list)
+    }
+    return grouped
+  }
+
   async appendTransaction(record: PreparedRecord): Promise<LedgerTransactionRecord> {
     return this.db.$transaction(async (tx: any) => {
       const head = await tx.ledgerTransaction.findFirst({ orderBy: { sequence: 'desc' } })
@@ -187,10 +214,23 @@ export class PrismaLedgerRepository implements LedgerRepository {
         },
       })
 
+      const evidenceItems =
+        record.evidenceItems && record.evidenceItems.length > 0
+          ? record.evidenceItems
+          : [{ evidenceId: record.evidenceId, evidenceSha256: record.evidenceSha256 }]
+
+      await tx.ledgerTransactionEvidence.createMany({
+        data: evidenceItems.map((item, index) => ({
+          transactionId: created.id,
+          evidenceId: item.evidenceId,
+          position: index,
+        })),
+      })
+
       // The screenshot behind an applied record is permanent proof and is
       // never eligible for pending cleanup again.
       await tx.ledgerEvidence.updateMany({
-        where: { id: record.evidenceId },
+        where: { id: { in: evidenceItems.map((item) => item.evidenceId) } },
         data: { status: 'APPLIED', expiresAt: null },
       })
 

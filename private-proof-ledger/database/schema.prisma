@@ -60,6 +60,7 @@ model LedgerTransaction {
   previousRecordHash String?
   recordHash         String  @unique
   evidenceId         String?
+  evidenceItems      LedgerTransactionEvidence[]
 
   createdAt DateTime @default(now())
 
@@ -82,10 +83,26 @@ model LedgerEvidence {
   status    String    @default("PENDING")
   expiresAt DateTime?
   createdAt DateTime  @default(now())
+  transactionLinks LedgerTransactionEvidence[]
 
   @@index([sha256])
   @@index([status, expiresAt])
   @@map("ledger_evidence")
+}
+
+model LedgerTransactionEvidence {
+  id            String   @id @default(cuid())
+  transactionId String
+  evidenceId    String
+  position      Int
+  createdAt     DateTime @default(now())
+  transaction   LedgerTransaction @relation(fields: [transactionId], references: [id])
+  evidence      LedgerEvidence @relation(fields: [evidenceId], references: [id])
+
+  @@unique([transactionId, position])
+  @@unique([transactionId, evidenceId])
+  @@index([evidenceId])
+  @@map("ledger_transaction_evidence")
 }
 
 // Runtime credential authority. Seeded once from the bootstrap environment

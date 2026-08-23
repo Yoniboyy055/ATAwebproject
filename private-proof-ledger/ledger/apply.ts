@@ -8,6 +8,7 @@
 
 import { formatTransactionCode, parseTransactionCode } from './codes'
 import { computeSummary, computeWithdrawalViews, requiredBaseEffectCents } from './engine'
+import { EvidenceAttachment } from './evidence-bundle'
 import { computeRecordHash, HashableRecord, sha256Hex } from './hash-chain'
 import {
   AdjustmentScope,
@@ -40,6 +41,7 @@ export interface PrepareRecordInput {
   correctsTransactionCode?: string | null
   evidenceId: string
   evidenceSha256: string
+  evidenceItems?: EvidenceAttachment[]
 }
 
 /** Everything needed to persist a record, minus the database identity. */
@@ -61,6 +63,7 @@ export interface PreparedRecord {
   correctsTransactionId: string | null
   evidenceId: string
   evidenceSha256: string
+  evidenceItems?: EvidenceAttachment[]
   instructionSha256: string | null
   previousRecordHash: string | null
   recordHash: string
@@ -290,6 +293,7 @@ export function prepareRecord(
     ...hashable,
     evidenceId: input.evidenceId,
     evidenceSha256: input.evidenceSha256,
+    evidenceItems: input.evidenceItems,
     originalInstruction,
     previousRecordHash,
     recordHash: computeRecordHash(hashable, previousRecordHash),

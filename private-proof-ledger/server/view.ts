@@ -21,6 +21,7 @@ import {
   LedgerRole,
   LedgerSummary,
   LedgerTransactionRecord,
+  LedgerTransactionEvidenceRecord,
   ReconciliationSnapshot,
   TransactionType,
   WithdrawalStatus,
@@ -45,6 +46,7 @@ export interface TransactionRow {
   correctsTransactionCode: string | null
   status: WithdrawalStatus | null
   evidenceId: string | null
+  evidenceItems: LedgerTransactionEvidenceRecord[]
   createdAt: string
 }
 
@@ -66,6 +68,7 @@ export interface LedgerView {
 function toRows(
   transactions: readonly LedgerTransactionRecord[],
   withdrawals: readonly WithdrawalView[],
+  evidenceByTransaction: Map<string, LedgerTransactionEvidenceRecord[]>,
   originalObligationCents: number
 ): TransactionRow[] {
   const timeline = computeBaseRemainingTimeline(originalObligationCents, transactions)
@@ -101,6 +104,7 @@ function toRows(
             ? statusById.get(tx.linkedWithdrawalId) ?? null
             : null,
       evidenceId: tx.evidenceId,
+      evidenceItems: evidenceByTransaction.get(tx.id) ?? [],
       createdAt: tx.createdAt,
     }))
 }
@@ -115,6 +119,9 @@ export async function loadLedgerView(
     repository.listTransactions(),
     repository.listNotes(),
   ])
+  const evidenceByTransaction = await repository.listEvidenceForTransactions(
+    transactions.map((tx) => tx.id)
+  )
 
   const effectiveConfig = config ?? {
     id: 'unconfigured',
@@ -124,7 +131,10 @@ export async function loadLedgerView(
     createdAt: generatedAt,
   }
 
-  const withdrawals = computeWithdrawalViews(transactions)
+  const withdrawals = computeWithdrawalViews(transactions).map((view) => ({
+    ...view,
+    evidenceItems: evidenceByTransaction.get(view.id) ?? [],
+  }))
   const summary = computeSummary(effectiveConfig, transactions)
 
   return {
@@ -134,11 +144,24 @@ export async function loadLedgerView(
     obligationLocked: Boolean(effectiveConfig.lockedAt),
     proposedObligationCents: effectiveConfig.originalObligationCents,
     summary,
-    transactions: toRows(transactions, withdrawals, effectiveConfig.originalObligationCents),
+    transactions: toRows(
+      transactions,
+      withdrawals,
+      evidenceByTransaction,
+      effectiveConfig.originalObligationCents
+    ),
     withdrawals,
     notes,
     reconciliation: computeReconciliation(transactions, notes),
-    integrity: await verifyLedgerIntegrity(transactions, (id) => repository.getEvidence(id)),
+    integrity: await verifyLedgerIntegrity(
+      transactions,
+      (id) => repository.getEvidence(id),
+      async (transactionId) =>
+        (evidenceByTransaction.get(transactionId) ?? []).map((item) => ({
+          evidenceId: item.id,
+          evidenceSha256: item.sha256,
+        }))
+    ),
     generatedAt,
   }
 }

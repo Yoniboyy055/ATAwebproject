@@ -16,6 +16,7 @@ import {
   LedgerNoteRecord,
   LedgerRole,
   LedgerTransactionRecord,
+  LedgerTransactionEvidenceRecord,
 } from '../ledger/types'
 import {
   EvidencePayload,
@@ -39,6 +40,7 @@ function stripBytes(payload: EvidencePayload): LedgerEvidenceRecord {
 export class MemoryLedgerRepository implements LedgerRepository {
   private config: LedgerConfigRecord | null = null
   private transactions: LedgerTransactionRecord[] = []
+  private transactionEvidence = new Map<string, LedgerTransactionEvidenceRecord[]>()
   private notes: LedgerNoteRecord[] = []
   private evidence = new Map<string, EvidencePayload>()
   private credentials = new Map<LedgerRole, LedgerCredentialRecord>()
@@ -91,6 +93,17 @@ export class MemoryLedgerRepository implements LedgerRepository {
     return [...this.transactions].sort((a, b) => a.sequence - b.sequence)
   }
 
+  async listEvidenceForTransactions(
+    transactionIds: readonly string[]
+  ): Promise<Map<string, LedgerTransactionEvidenceRecord[]>> {
+    const result = new Map<string, LedgerTransactionEvidenceRecord[]>()
+    for (const id of transactionIds) {
+      const linked = this.transactionEvidence.get(id)
+      if (linked) result.set(id, [...linked].sort((a, b) => a.position - b.position))
+    }
+    return result
+  }
+
   async appendTransaction(record: PreparedRecord): Promise<LedgerTransactionRecord> {
     const head = this.transactions[this.transactions.length - 1] ?? null
     if ((record.previousRecordHash ?? null) !== (head?.recordHash ?? null)) {
@@ -109,14 +122,30 @@ export class MemoryLedgerRepository implements LedgerRepository {
     }
     this.transactions.push(created)
 
+    const evidenceItems =
+      record.evidenceItems && record.evidenceItems.length > 0
+        ? record.evidenceItems
+        : [{ evidenceId: record.evidenceId, evidenceSha256: record.evidenceSha256 }]
+
+    const linked: LedgerTransactionEvidenceRecord[] = []
     // The screenshot is now permanent proof and can never be cleaned up.
-    const evidence = this.evidence.get(record.evidenceId)
-    if (evidence) {
-      this.evidence.set(record.evidenceId, {
+    evidenceItems.forEach((item, position) => {
+      const evidence = this.evidence.get(item.evidenceId)
+      if (!evidence) return
+      const applied = {
         ...evidence,
-        status: 'APPLIED',
+        status: 'APPLIED' as const,
         expiresAt: null,
+      }
+      this.evidence.set(item.evidenceId, applied)
+      linked.push({
+        ...stripBytes(applied),
+        transactionId: created.id,
+        position,
       })
+    })
+    if (linked.length > 0) {
+      this.transactionEvidence.set(created.id, linked)
     }
 
     if (record.linkedWithdrawalId) {
