@@ -21,6 +21,28 @@ If private HQ cannot be read, this baseline still applies. Do not guess a materi
 
 Local ATA rules may be stricter, but may not weaken HQ. Do not copy HQ secrets, credentials, client-confidential data, or unrelated internal content into this repository.
 
+## Shared simulation tool — MiroFish
+
+MiroFish is a registered **shared YK Systems synthetic-audience and multi-agent scenario-simulation tool**. It is not a dependency to install inside this project by default.
+
+Automatically consider MiroFish when material work depends on likely customer/audience/stakeholder reactions, objections, adoption behavior, pricing or offer response, onboarding/flow response, launch/message response, or second-order multi-actor effects.
+
+If using MiroFish would materially reduce uncertainty or expose failure modes, route the scenario through the shared YK Systems MiroFish capability when available. The owner does not need to remember to request it.
+
+Rules:
+
+- label MiroFish output as **synthetic evidence**;
+- never present it as proof of demand, willingness to pay, conversion, retention, or statistically representative customer behavior;
+- use real-user/customer/payment evidence for consequential commercial validation;
+- do not copy secrets, credentials, unnecessary PII, or confidential client data into a simulation seed;
+- do not embed/fork MiroFish into this project without a separate owner-approved technical/licensing decision.
+
+If MiroFish is materially required but unavailable in the active runtime, report:
+
+`MIROFISH_REQUIRED_BUT_UNAVAILABLE`
+
+Do not silently replace it with one model pretending to be a multi-agent simulation.
+
 ## Immediate activation — no grandfathering
 
 This governance is **effective immediately for all open and in-progress YK Systems work in this repository**, including tasks, branches, pull requests, work items, release candidates, client deliverables, reviews and deployment plans that started before this bootstrap was installed.
