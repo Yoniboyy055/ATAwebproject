@@ -21,6 +21,23 @@ If private HQ cannot be read, this baseline still applies. Do not guess a materi
 
 Local ATA rules may be stricter, but may not weaken HQ. Do not copy HQ secrets, credentials, client-confidential data, or unrelated internal content into this repository.
 
+## Immediate activation — no grandfathering
+
+This governance is **effective immediately for all open and in-progress YK Systems work in this repository**, including tasks, branches, pull requests, work items, release candidates, client deliverables, reviews and deployment plans that started before this bootstrap was installed.
+
+Before the next material edit, review, merge, release, delivery, production authorization or completion claim:
+
+1. re-read this `YK_SYSTEMS_HQ.md` and the current local project instructions;
+2. re-evaluate the active work against the applicable mandatory operating systems and the six-question completion gate;
+3. correct material gaps before proceeding;
+4. record any N/A gate, blocker, known debt or owner-authorized exception explicitly.
+
+Open work is not grandfathered by its start date or by an earlier review/approval.
+
+Finally closed historical work does not need to be reopened solely because of this rule. If it is reactivated, modified, re-released or used as the active basis for new work, current governance applies from that point forward.
+
+A model/agent session already running when this rule changed does not receive Git updates automatically. It must reload/re-read current repository instructions before its next material action. If current governance cannot be verified, stop/escalate rather than continue from stale instructions.
+
 ## Six-question completion gate
 
 Before material work is called **done**, **ready**, **approved**, **launch-ready**, or **production-ready**, the executor/reviewer must determine which of the five operating systems apply and provide evidence for the applicable gates.
