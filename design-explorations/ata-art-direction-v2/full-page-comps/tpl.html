@@ -1,0 +1,69 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATA full page — {{name}}</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..500,100;1,9..144,300..500,100&family=Figtree:wght@400;500;600&display=swap">
+<style>
+:root{--ink:#17140f;--bone:#f4ead8;--brass:#e0b26a;--clay:#a26351;--stone:#cdb58e;--dark:#24120a;--sea:#4b7886;--d:"Fraunces",Georgia,serif;--u:"Figtree",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}body{font-family:var(--u);background:#f4ead8;color:var(--ink);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--d);font-weight:300;font-variation-settings:"SOFT" 100,"opsz" 144;letter-spacing:-.02em;line-height:1}
+em{font-style:italic;color:#9a5b3a}
+.hero{position:relative;min-height:100vh;color:var(--bone);background:#140c07 url(img/{{img}}) {{pos}}/cover}
+.hero:before{content:"";position:absolute;inset:0;background:{{shade}}}
+.top{position:absolute;z-index:3;left:5vw;right:5vw;top:34px;display:flex;justify-content:space-between;align-items:center}
+.mark{font-family:var(--d);font-size:24px}.mark small{display:block;font:500 10px var(--u);letter-spacing:.3em;text-transform:uppercase;opacity:.8}
+.nav{display:flex;gap:30px;font-size:14.5px}
+.copy{position:absolute;z-index:3;left:5vw;bottom:11vh;max-width:620px}
+.eyebrow{font-size:12.5px;letter-spacing:.26em;text-transform:uppercase;color:#ffe2a8;margin-bottom:20px}
+.hero h1{font-size:clamp(46px,6.6vw,96px);color:var(--bone)}.hero em{color:#f6dca8}
+.sub{font-size:19px;line-height:1.5;max-width:460px;margin:22px 0 32px}
+.btn{display:inline-flex;gap:10px;background:linear-gradient(180deg,#f9f1e1,#eadcc2);color:var(--ink);font-weight:600;padding:16px 28px;border-radius:99px;box-shadow:0 16px 28px -14px rgba(20,12,6,.8)}
+.link{margin-left:26px;font-size:15px}
+.tag{position:absolute;z-index:3;right:5vw;bottom:28px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;background:rgba(15,10,6,.72);border:1px solid rgba(255,255,255,.18);border-radius:99px;padding:6px 12px;color:#f3d9a8}
+section{padding:110px 5vw}
+.wrap{max-width:1180px;margin:auto}
+.kick{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--clay);margin-bottom:18px}
+h2{font-size:clamp(34px,4.2vw,58px);max-width:760px}
+.lead{font-size:19px;line-height:1.55;max-width:620px;margin-top:22px;color:#4a3d2f}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:56px}
+.card{background:#fbf5e8;border-radius:22px;padding:34px;box-shadow:0 30px 50px -30px rgba(36,18,10,.35),inset 0 1px 0 #fff}
+.card b{font:italic 300 40px var(--d);color:var(--clay);display:block;margin-bottom:14px}
+.card h3{font-size:25px;margin-bottom:10px}.card p{line-height:1.55;color:#4a3d2f;font-size:16px}
+.journey{background:var(--dark);color:var(--bone)}.journey .kick{color:var(--brass)}.journey em{color:var(--brass)}.journey .lead{color:#d9c8a8}
+.route{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+.route .ph{aspect-ratio:4/5;border-radius:24px;background:url(img/land_tall.jpg) center/cover;box-shadow:0 40px 70px -30px #000;position:relative}
+.stops{list-style:none;padding:0;margin-top:36px;border-left:1px solid rgba(224,178,106,.5)}
+.stops li{padding:0 0 28px 26px;position:relative;font-size:17px}.stops li:before{content:"";position:absolute;left:-5px;top:7px;width:9px;height:9px;border-radius:50%;background:var(--brass)}
+.stops small{display:block;color:#bfa987;font-size:14px;margin-top:3px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:50px}
+.step{border-top:2px solid var(--clay);padding-top:18px}.step i{font:italic 300 30px var(--d);color:var(--clay)}.step h3{font-size:21px;margin:8px 0}.step p{font-size:15px;line-height:1.5;color:#4a3d2f}
+.gal{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:48px}
+.gal div{border-radius:20px;height:420px;min-width:0;background-size:cover;background-position:center;box-shadow:0 30px 50px -30px rgba(36,18,10,.5)}
+.contact{background:linear-gradient(180deg,#e9d9b9,#dcc79c)}
+.form{background:#fbf5e8;border-radius:26px;padding:38px;display:grid;gap:14px;box-shadow:0 40px 70px -40px rgba(36,18,10,.5)}
+.f{border:1px solid #cdb58e;border-radius:12px;padding:15px 16px;color:#8a7a62;font-size:15px;background:#fff9ee}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.ph2{font-size:14px;color:#6a5640;line-height:1.7;margin-top:22px;border-left:2px solid var(--clay);padding-left:16px}
+footer{background:#140c07;color:#bfa987;padding:60px 5vw;font-size:14px;line-height:1.7}
+footer b{color:var(--bone);font-family:var(--d);font-size:22px;font-weight:300}
+.note{display:inline-block;margin-top:14px;font-size:12px;letter-spacing:.08em;color:#e0b26a;border:1px dashed #6b5636;padding:6px 10px;border-radius:8px}
+@media(max-width:760px){.trio,.steps,.route,.two,.gal{grid-template-columns:1fr}.nav{display:none}.copy{bottom:14vh}.tag{left:5vw;right:auto;bottom:14px}section{padding:72px 6vw}}
+</style>
+<div class="hero"><div class="top"><div class="mark">Amanuel Travel<small>Eritrea</small></div><div class="nav"><span>Journeys</span><span>Asmara &amp; Massawa</span><span>Why ATA</span><span>Contact</span></div></div>
+<div class="copy"><div class="eyebrow">{{eyebrow}}</div><h1>{{h}}</h1><p class="sub">{{sub}}</p><span class="btn">Request a consultation →</span><span class="link">Explore the journey ↓</span></div>
+<div class="tag">AI-generated concept · not a photograph · not ATA-approved</div></div>
+
+<section><div class="wrap"><div class="kick">Why travel with us</div><h2>Arranged by people, <em>not by a form.</em></h2><p class="lead">Every enquiry is answered by a person. Nothing is booked until you have spoken with us and confirmed the details together.</p>
+<div class="trio"><div class="card"><b>01</b><h3>A named person replies</h3><p>You share who is travelling and when. A member of the team writes back to discuss it.</p></div><div class="card"><b>02</b><h3>Based in Asmara</h3><p>Our office is on Waray Street in Asmara. <span style="opacity:.7">[Address to be confirmed by ATA]</span></p></div><div class="card"><b>03</b><h3>Clear about what is confirmed</h3><p>Itinerary, inclusions and travel requirements are stated plainly and checked with you before you decide.</p></div></div></div></section>
+
+<section class="journey"><div class="wrap route"><div><div class="kick">The journey</div><h2>Asmara <em>to Massawa</em></h2><p class="lead">The road leaves the high plateau and descends toward the Red Sea coast. The route below is an outline for discussion, not a fixed itinerary.</p>
+<ul class="stops"><li>Asmara<small>Modernist city on the plateau</small></li><li>The escarpment road<small>Switchbacks down to the lowlands</small></li><li>Massawa<small>Port city on the Red Sea</small></li></ul><span class="btn" style="margin-top:10px">Ask about this journey →</span></div><div class="ph"><span class="tag" style="left:14px;right:auto;bottom:14px">Concept image</span></div></div></section>
+
+<section><div class="wrap"><div class="kick">How it works</div><h2>Four steps, <em>one conversation.</em></h2>
+<div class="steps"><div class="step"><i>1</i><h3>Enquire</h3><p>Tell us who is travelling and roughly when.</p></div><div class="step"><i>2</i><h3>Talk</h3><p>We reply personally and ask what matters to you.</p></div><div class="step"><i>3</i><h3>Confirm</h3><p>We agree the plan and the details together.</p></div><div class="step"><i>4</i><h3>Travel</h3><p>You go with a plan you understand.</p></div></div>
+<div class="gal"><div style="background-image:url(img/B1.jpg)"></div><div style="background-image:url(img/land_hero.jpg)"></div><div style="background-image:url(img/land_tall.jpg)"></div></div></div></section>
+
+<section class="contact"><div class="wrap two"><div><div class="kick">Talk to us</div><h2>Start with a <em>conversation.</em></h2><p class="lead">No booking, no payment. Tell us a little and we will reply.</p>
+<p class="ph2">Contact details to be confirmed by ATA before use.<br>Phone / WhatsApp: [to be confirmed]<br>Email: [to be confirmed]<br>Office: Waray Street, Asmara</p></div>
+<div class="form"><div class="f">Your name</div><div class="f">How should we reach you? (email or WhatsApp)</div><div class="f">Who is travelling, and roughly when?</div><span class="btn" style="justify-self:start">Send my enquiry →</span></div></div></section>
+
+<footer><b>Amanuel Travel</b><br>Asmara, Eritrea<br>Concept comp for design review. Images are AI-generated concept art, not photography. Not approved for publication.<br><span class="note">Prices, itinerary, claims and contacts are placeholders pending ATA sign-off.</span></footer>
+</html>
