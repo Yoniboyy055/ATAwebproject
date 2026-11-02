@@ -1,0 +1,208 @@
+<title>ATA Tourism Concept Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout concept: a review desk. Three concept cards with links, one score matrix, then recommendation, owner questions, and evidence. */
+:root{
+  --bg:#f3f1ec; --surface:#fffdf9; --fg:#1f1d24; --dim:#5e5a66; --line:#ddd8cd; --accent:#9a4b2a; --accent-soft:#f0ddd2; --ok:#2f6b4f; --warn:#8a6414; --warn-soft:#f6ebcf;
+  --h:#b4562f; --j:#2f6b8f; --e:#6b5d3a;
+  --display:"Fraunces",Georgia,serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15141a;--surface:#1e1d25;--fg:#efece6;--dim:#a9a5b0;--line:#34323d;--accent:#e0875f;--accent-soft:#3a2a24;--ok:#7fcaa2;--warn:#e3b95a;--warn-soft:#352c14;--h:#e0875f;--j:#6fb2dd;--e:#cdb77a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15141a;--surface:#1e1d25;--fg:#efece6;--dim:#a9a5b0;--line:#34323d;--accent:#e0875f;--accent-soft:#3a2a24;--ok:#7fcaa2;--warn:#e3b95a;--warn-soft:#352c14;--h:#e0875f;--j:#6fb2dd;--e:#cdb77a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1040px;margin-inline:auto}
+.notice{margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:var(--warn-soft);color:var(--warn);font-weight:600;font-size:14px;border-bottom:1px solid var(--line)}
+h1,h2,h3{font-family:var(--display);font-weight:500;line-height:1.1;margin:0 0 .5em;text-wrap:balance}
+h1{font-size:clamp(34px,6vw,60px);margin-top:36px}
+h2{font-size:clamp(26px,3.6vw,36px);margin-top:56px}
+h3{font-size:22px}
+p{margin:0 0 1em;max-width:68ch}
+.dim{color:var(--dim)}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 8px}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.cc{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.cc h3{color:var(--c);margin-bottom:2px}
+.cc dl{margin:6px 0 0;display:grid;gap:8px;font-size:14.5px}
+.cc dt{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--dim)}
+.cc dd{margin:0}
+.open{margin-top:auto;padding-top:12px}
+.open a{display:inline-block;background:var(--c);color:#fff;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px}
+:root[data-theme="dark"] .open a,:root:not([data-theme="light"]) .open a{color:#16151a}
+@media (prefers-color-scheme:light){.open a{color:#fff}}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+td.n,th.n{text-align:center;font-variant-numeric:tabular-nums}
+.dots{display:inline-flex;gap:3px;vertical-align:middle}
+.dots i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--dim);display:block}
+.dots i.f{background:var(--c);border-color:var(--c)}
+tr.tot td{font-weight:700;border-bottom:0}
+.sc{font-weight:700;margin-left:6px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.box ul,.box ol{margin:0;padding-left:20px;display:grid;gap:8px}
+.reco{border:2px solid var(--accent);background:var(--accent-soft);border-radius:16px;padding:24px}
+.chk{width:100%;border-collapse:collapse;font-size:14.5px}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:2px 9px;border:1px solid currentColor}
+.pill.ok{color:var(--ok)} .pill.na{color:var(--dim)} .pill.w{color:var(--warn)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="notice">Design exploration for owner selection. Not implementation approval, not launch-ready. No production site, code or data was changed.</div>
+<div class="wrap">
+  <p class="eyebrow" style="margin-top:36px">ATA · Eritrea tourism · issue #24</p>
+  <h1>Three scroll-story concepts, side by side</h1>
+  <p class="dim" style="font-size:18px">Each prototype below is a working, scrollable page with desktop and phone layouts, keyboard access and reduced-motion support. Every enquiry button is a demo that sends and stores nothing. Open each in a new tab, scroll slowly, then use the scores and questions here to choose.</p>
+
+  <h2 style="margin-top:36px">The concepts</h2>
+  <div class="cards">
+    <article class="cc" style="--c:var(--h)">
+      <h3>HOMEComing</h3>
+      <p class="dim" style="margin:0">Belonging, memory and return</p>
+      <dl>
+        <div><dt>Audience</dt><dd>Eritrean diaspora: first return in years, families with children, people meeting relatives.</dd></div>
+        <div><dt>Differentiator</dt><dd>The sky is the story. It moves from night flight to Red Sea evening as you scroll, and a "who is coming home" choice changes the copy.</dd></div>
+        <div><dt>Strengths</dt><dd>Strongest emotional pull. Light to run. Natural fit with the diaspora market named as the first audience.</dd></div>
+        <div><dt>Weaknesses</dt><dd>Least destination detail. The ATA photographs now carry the place, but people and voices are still missing.</dd></div>
+        <div><dt>Feasibility</dt><dd>Low risk: SVG and CSS only. Needs real imagery and personal stories to land.</dd></div>
+        <div><dt>Conversion hypothesis</dt><dd>Visitors who see themselves in the opening choice will start a conversation sooner.</dd></div>
+      </dl>
+      <div class="open"><a href="homecoming.html" >Open HOMEComing</a></div>
+    </article>
+    <article class="cc" style="--c:var(--j)">
+      <h3>Journey Through Eritrea</h3>
+      <p class="dim" style="margin:0">Destination-first, map-like progression</p>
+      <dl>
+        <div><dt>Audience</dt><dd>Planners and first-time visitors, including the diaspora, who decide on place before emotion.</dd></div>
+        <div><dt>Differentiator</dt><dd>A live elevation instrument. The altimeter falls from 2,325 m to sea level and the temperature bar shifts as you scroll the descent. A seasons strip shows two rain calendars.</dd></div>
+        <div><dt>Strengths</dt><dd>Most tourism-relevant and most fact-grounded. Fastest and lightest. Makes the highlands-to-coast contrast the product.</dd></div>
+        <div><dt>Weaknesses</dt><dd>Cooler emotionally. Consultation call-to-action sits late. The profile is schematic and not a real map.</dd></div>
+        <div><dt>Feasibility</dt><dd>Low risk. A real map or route data would need ATA input and licensing.</dd></div>
+        <div><dt>Conversion hypothesis</dt><dd>Visitors who grasp the route and seasons ask better, more qualified questions.</dd></div>
+      </dl>
+      <div class="open"><a href="journey.html" >Open Journey Through Eritrea</a></div>
+    </article>
+    <article class="cc" style="--c:var(--e)">
+      <h3>Cultural Escape</h3>
+      <p class="dim" style="margin:0">Premium editorial, soft 3D, human-led</p>
+      <dl>
+        <div><dt>Audience</dt><dd>Higher-spend cultural travellers who expect a private, guided experience.</dd></div>
+        <div><dt>Differentiator</dt><dd>A pinned gallery of three rooms where soft, tactile 3D objects re-form as you scroll. The "How a conversation works" steps put a person in front.</dd></div>
+        <div><dt>Strengths</dt><dd>Closest to the supplied "3D Soft Realism" direction as described. Distinct and memorable. Calm, premium tone.</dd></div>
+        <div><dt>Weaknesses</dt><dd>Abstract objects do not say Eritrea on their own. Heaviest on low-end phones. Pinned scroll is the hardest to make accessible.</dd></div>
+        <div><dt>Feasibility</dt><dd>Medium: needs real photographed or modelled assets and performance tuning.</dd></div>
+        <div><dt>Conversion hypothesis</dt><dd>A calm, premium frame plus a visible human step raises enquiry quality, with fewer but better leads.</dd></div>
+      </dl>
+      <div class="open"><a href="escape.html" >Open Cultural Escape</a></div>
+    </article>
+  </div>
+
+  <h2>Scorecard</h2>
+  <p class="dim">My assessment from reviewing and testing the prototypes, 1 (weak) to 5 (strong). It is a judgement, not user research. Performance reflects design weight, not device measurements.</p>
+  <div class="tbl"><table id="tbl" aria-label="Concept scores"></table></div>
+
+  <h2>Recommendation: a hybrid</h2>
+  <div class="reco">
+    <p style="margin-bottom:12px"><b>Use Journey Through Eritrea as the spine, open with HOMEComing's chooser, and borrow Cultural Escape's restraint and its human-led enquiry steps. Leave out the pinned 3D gallery.</b></p>
+    <ul style="margin:0;padding-left:20px;display:grid;gap:6px">
+      <li>The elevation instrument gives the site a single idea no competitor page needs to explain: one country, two climates, 2,300 m apart.</li>
+      <li>A short "who is coming home" opener keeps the diaspora emotion without making the whole page about it.</li>
+      <li>The calm typography, spacing and four plain enquiry steps carry the premium feel at far lower accessibility and performance cost than pinned 3D.</li>
+      <li>Trade-off: the hybrid depends on real photography, real voices and an ATA-named responder. Without them it will feel thinner than any single concept here.</li>
+    </ul>
+  </div>
+
+  <h2>Questions for the ATA owner</h2>
+  <div class="two">
+    <div class="box"><ol>
+      <li>Is the diaspora and homecoming market still the first audience, as the source note says is pending final confirmation?</li>
+      <li>Can ATA supply photography and film with cleared rights, and people willing to appear?</li>
+      <li>Who answers enquiries, by name, and how quickly can ATA promise it?</li>
+      <li>May the site state the Massawa condition openly (parts remain ruins) as a reason to go?</li>
+    </ol></div>
+    <div class="box"><ol start="5">
+      <li>Is the travel permit for the coastal leg real, and does ATA handle it? Research flagged this as unverified and must not be published until confirmed.</li>
+      <li>What exact UNESCO wording does ATA want, confirmed at whc.unesco.org?</li>
+      <li>Should the colonial-era history be told, and who reviews the tone?</li>
+      <li>Should flights stay off the page entirely, as this brief says?</li>
+    </ol></div>
+  </div>
+  <p class="dim" style="margin-top:14px"><b>Not seen:</b> the "3D Soft Realism" Instagram reference was not available to me in this session. I worked from the written description in the issue only. Please re-share it if the look should be tuned.</p>
+
+  <h2>Evidence and limits</h2>
+  <div class="two">
+    <div class="box">
+      <h3>What was tested</h3>
+      <ul>
+        <li>Each prototype opened in headless Chromium at 1440×900 and 390×844, scrolled at five positions, with a screenshot reviewed at each.</li>
+        <li>Reduced-motion emulation at phone width on all three.</li>
+        <li>Interactions exercised: chooser chips, expanding cards, month and segment controls, room switcher, and demo form submission.</li>
+        <li>No console errors. Page width equals screen width on every run after fixes.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>What failed, and was fixed</h3>
+      <ul>
+        <li>Cultural Escape: room switcher buttons were covered by the text layer and could not be clicked.</li>
+        <li>Cultural Escape: a 20 px sideways overflow on phones from the spotlight glow.</li>
+        <li>Journey: the sticky instrument slid under the top bar on phones.</li>
+      </ul>
+      <h3 style="margin-top:14px">Not verified</h3>
+      <ul>
+        <li>Real devices, Safari and Firefox, screen readers, and throttled-network performance.</li>
+        <li>Any user or customer reaction. All conversion lines above are hypotheses.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Images used, and their status</h2>
+  <div class="box">
+    <p>All three pages now read as customer-facing sites: Amanuel Travel navigation, plain customer copy, real photographs and no status tags on the page. Review disclosures sit in one "Review notes" button at the bottom left of each page. Images come only from ATA's own site folder; nothing was downloaded from elsewhere.</p>
+    <ul>
+      <li><b>Rights:</b> no credit, licence or release is on file for any of them. They are for private owner review only and must not be published until ATA completes its media rights record.</li>
+      <li><b>Dahlak (held back):</b> the file is labelled Dahlak on ATA's site but shows desert ruins. It is left out until ATA confirms the location.</li>
+      <li><b>Keren:</b> shown with its name only in HOMEComing and Cultural Escape, and left out of Journey. No facts about it have been researched.</li>
+      <li><b>Panorama (held back):</b> the wide sky-and-church image looks like a composite and may be synthetic, so it is no longer used.</li>
+      <li><b>Owner-supplied images:</b> two Google Earth screenshots and two web photographs (Fiat Tagliero, a switchback road) are used. Their sources and licences are unknown. Google imagery normally needs Google's permission or a licensed imagery provider before a commercial site can use it, so treat these as review-only.</li>
+      <li><b>3D place miniatures:</b> five AI-generated models built from real photographs (Fiat Tagliero, Cinema Impero, the hairpin road, Massawa harbour, El-Safi House). They replace the generic icons and are labelled as illustrations.</li>
+      <li><b>Real 3D terrain (Journey):</b> built from open elevation data (Terrain Tiles on AWS, including SRTM) and the road route from OpenStreetMap, with heights exaggerated 2.6 times. Readouts come from that model and can differ from quoted figures such as 2,325 m by a few tens of metres.</li>
+      <li><b>Asmara and Massawa:</b> shown without naming the specific building, because no source names it.</li>
+    </ul>
+  </div>
+
+  <h2>YK completion gates</h2>
+  <div class="tbl"><table class="chk">
+    <tr><th>Gate</th><th>Status</th><th>Basis</th></tr>
+    <tr><td>1 Business and authority</td><td><span class="pill ok">Met</span></td><td>Matches issue #24: tourism-first, no ticketing UI, owner selects, no implementation approval.</td></tr>
+    <tr><td>2 Execution</td><td><span class="pill ok">Met</span></td><td>Three working prototypes plus this comparison, each with demo-only enquiry.</td></tr>
+    <tr><td>3 Security and reliability</td><td><span class="pill na">N/A</span></td><td>No data collected, no network calls, no integrations, no production system touched.</td></tr>
+    <tr><td>4 Design and UX</td><td><span class="pill w">Partial</span></td><td>Responsive, keyboard and reduced-motion handled, real ATA images in place. Real devices, screen readers and rights clearance outstanding.</td></tr>
+    <tr><td>5 Path efficiency</td><td><span class="pill ok">Met</span></td><td>Each page has a skip link to the enquiry and a one-step demo form with a clear next step.</td></tr>
+    <tr><td>6 Evidence</td><td><span class="pill ok">Met</span></td><td>As listed above, with failures and gaps stated.</td></tr>
+  </table></div>
+  <p class="dim" style="margin-top:14px">Shared simulation tool: a synthetic-audience run was considered and not made, since the shared tool is not available in this session. Once the owner picks a direction, a synthetic run on diaspora reactions would help, and its output would be labelled synthetic evidence, never proof of demand.</p>
+  <p class="dim">Media: photographs are ATA site assets with unconfirmed rights (see above); all other visuals are original illustrations and CSS studies. Claims follow the ATA WP-03 research registers; items marked "ATA to confirm" are not approved. No price, date, duration, capacity or availability is stated anywhere.</p>
+</div>
+
+<script>
+(function(){
+  var rows=[['Emotional connection',5,3,4],['Eritrea authenticity',3,4,2],['Tourism relevance',3,5,3],['Trust',4,4,4],['Conversion clarity',4,3,4],['UX and accessibility',4,4,3],['Performance',4,5,3],['Feasibility',4,4,3]];
+  var names=['HOMEComing','Journey','Cultural Escape'],cols=['var(--h)','var(--j)','var(--e)'];
+  var t=document.getElementById('tbl'),tot=[0,0,0];
+  var html='<thead><tr><th>Criterion</th>'+names.map(function(n){return '<th class="n">'+n+'</th>'}).join('')+'</tr></thead><tbody>';
+  rows.forEach(function(r){
+    html+='<tr><td>'+r[0]+'</td>';
+    for(var i=0;i<3;i++){tot[i]+=r[i+1];var d='';for(var k=1;k<=5;k++)d+='<i class="'+(k<=r[i+1]?'f':'')+'"></i>';
+      html+='<td class="n" style="--c:'+cols[i]+'"><span class="dots" role="img" aria-label="'+r[i+1]+' out of 5">'+d+'</span><span class="sc">'+r[i+1]+'</span></td>'}
+    html+='</tr>';
+  });
+  html+='<tr class="tot"><td>Total (of 40)</td>'+tot.map(function(v,i){return '<td class="n" style="color:'+cols[i]+'">'+v+'</td>'}).join('')+'</tr></tbody>';
+  t.innerHTML=html;
+})();
+</script>
