@@ -1,0 +1,359 @@
+<title>HOMEComing</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,50;1,9..144,300..700,50&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout concept: Amanuel Travel's "Come home to Eritrea" story. Full-screen cinematic scenes change from night flight to highlands, escarpment and Red Sea coast as photographs and short chapters carry the visitor to an enquiry. */
+:root{
+  --ink:#1b1630; --night:#14122b; --paper:#f7ecda; --paper-dim:#dccdb4; --sun:#ffc46b; --sun-hot:#ff9a4d;
+  --panel:rgba(22,15,36,.66); --line:rgba(247,236,218,.2);
+  --display:"Fraunces",Georgia,"Times New Roman",serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --sky-a:#14122b; --sky-b:#2a1d44; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--night);color:var(--paper);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sky{position:fixed;inset:0;z-index:0;background:linear-gradient(180deg,var(--sky-a),var(--sky-b));pointer-events:none}
+.bgl{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s ease}.bgl.on{opacity:1}
+.scrim{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(10,8,24,.66),rgba(10,8,24,.55) 45%,rgba(10,8,24,.78))}
+.ic{display:block;width:56px;height:56px;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+
+main,header.nav,footer{position:relative;z-index:2}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;justify-content:space-between;gap:16px;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.nav.solid{background:rgba(16,11,30,.86);backdrop-filter:blur(10px);border-color:var(--line)}
+.brand{font-family:var(--display);font-size:22px;font-weight:500;letter-spacing:.01em;color:var(--paper);text-decoration:none}
+.brand small{display:block;font-family:var(--body);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--sun);margin-top:-2px}
+.nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0;font-size:15px}
+.nav ul a{color:var(--paper);text-decoration:none;opacity:.88}
+.nav ul a:hover{opacity:1;color:var(--sun)}
+.wrap{max-width:1120px;margin-inline:auto}
+section{min-height:90vh;display:flex;align-items:center;padding-block:72px}
+.panel{background:var(--panel);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:30px;padding:clamp(22px,4vw,46px);max-width:660px;box-shadow:0 36px 70px -34px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.12)}
+.panel.r{margin-left:auto}.panel.wide{max-width:920px}
+.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--sun);font-weight:700;margin:0 0 10px}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:1.06;margin:0 0 .5em;text-wrap:balance;color:var(--paper)}
+h1{font-size:clamp(46px,7.6vw,104px);letter-spacing:-.025em;font-weight:300}
+h1 em{font-style:italic;color:var(--sun)}
+h2{font-size:clamp(30px,4.6vw,52px)}
+h3{font-size:21px}
+p{margin:0 0 1em;max-width:62ch}
+.lede{font-size:clamp(18px,2.2vw,22px)}
+.muted{color:var(--paper-dim)}
+.btn{font:inherit;font-weight:700;display:inline-block;background:var(--sun);color:#2a1706;border:0;border-radius:99px;padding:14px 28px;cursor:pointer;text-decoration:none;box-shadow:0 12px 28px -12px var(--sun-hot)}
+.btn:hover{background:#ffd48f}
+.btn.ghost{background:transparent;color:var(--paper);border:1px solid var(--paper-dim);box-shadow:none}
+.btn.sm{padding:9px 18px;font-size:14px}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(24px,5vw,64px);align-items:center;min-height:86vh;padding-block:40px 56px}
+.hero .lede{max-width:34ch}
+.photo{position:relative;margin:0;border-radius:30px;overflow:hidden;box-shadow:0 40px 80px -30px rgba(0,0,0,.8);border:1px solid var(--line)}
+.photo img{display:block;width:100%;height:100%;object-fit:cover}
+.photo .pl{position:absolute;left:14px;bottom:14px;background:rgba(14,10,26,.72);backdrop-filter:blur(6px);border-radius:99px;padding:6px 14px;font-size:13px;font-weight:600}
+.hero .photo{aspect-ratio:4/4.4}
+.hero .photo.float{transform:rotate(1.2deg)}
+.badge{position:absolute;right:14px;top:14px;background:rgba(255,196,107,.95);color:#2a1706;border-radius:18px;padding:8px 14px;text-align:center;line-height:1.1;font-weight:700}
+.badge b{display:block;font-family:var(--display);font-size:26px;font-weight:500}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:0 0 40px}
+.strip div{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:18px;padding:14px 18px;font-size:14.5px}
+.strip b{display:block;color:var(--sun);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.chip{font:inherit;cursor:pointer;background:transparent;color:var(--paper);border:1px solid var(--line);border-radius:18px;padding:12px 16px;text-align:left;max-width:100%}
+.chip[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.dyn{border-left:3px solid var(--sun);padding-left:16px;min-height:5.5em}
+.photo.in{margin-top:18px;border-radius:20px}.photo.in img{height:min(34vw,300px)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:18px}
+.card{border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.05)}
+.card>button{font:inherit;cursor:pointer;width:100%;text-align:left;background:none;border:0;color:inherit;padding:14px 18px;border-radius:20px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.card h3{font-size:18px;margin:0}.card .more{padding:0 18px 16px;font-size:15px;color:var(--paper-dim)}
+.plus{font-size:20px;line-height:1;color:var(--sun)}
+.altimeter{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin:6px 0 16px}
+.altimeter .n{font-family:var(--display);font-size:clamp(54px,9vw,96px);line-height:1;font-variant-numeric:tabular-nums;color:var(--sun)}
+.steps{list-style:none;margin:20px 0;padding:0;display:grid;gap:10px}
+.steps button{font:inherit;cursor:pointer;width:100%;display:grid;grid-template-columns:34px 1fr;gap:12px;text-align:left;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.05);color:var(--paper);padding:14px 16px}
+.steps button[aria-expanded="true"]{background:rgba(255,196,107,.14);border-color:var(--sun)}
+.steps .i{font-family:var(--display);font-size:24px;color:var(--sun)}
+.steps small{display:block;color:var(--paper-dim);font-size:14px}
+.steps .det{grid-column:2;margin-top:8px;font-size:15px}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
+.pair .photo{border-radius:22px}.pair .photo img{height:240px}
+.commit{display:grid;gap:14px;margin:20px 0}.commit div{border-top:1px solid var(--line);padding-top:12px}
+form{display:grid;gap:14px;margin-top:18px}
+label{display:grid;gap:6px;font-size:14px;color:var(--paper-dim)}
+input,select,textarea{font:inherit;background:rgba(255,255,255,.09);color:var(--paper);border:1px solid var(--line);border-radius:14px;padding:13px 15px;width:100%}
+select option{color:#1b1630}
+.result{border:1px solid var(--sun);background:rgba(255,196,107,.1);border-radius:18px;padding:16px;margin-top:16px}
+.result p{margin:6px 0 0}
+.fine{font-size:13px;color:var(--paper-dim)}
+footer{background:rgba(10,8,22,.92);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:44px max(16px,env(safe-area-inset-right,0px)) 80px max(16px,env(safe-area-inset-left,0px));font-size:14px;color:var(--paper-dim)}
+footer .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+footer .legal{grid-column:1/-1;border-top:1px solid var(--line);padding-top:14px}
+.progress{position:fixed;right:max(10px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);z-index:15;display:flex;flex-direction:column;gap:10px}
+.progress a{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--paper);display:block}
+.progress a.on{background:var(--sun);border-color:var(--sun)}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}.hero .photo{aspect-ratio:16/11}.nav ul{display:none}.progress{display:none}.panel.r{margin-left:0}section{padding-block:48px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}.hero .photo.float{transform:none}}
+.btn.sm{white-space:nowrap}.brand{white-space:nowrap}.btn .sh{display:none}
+@media (max-width:560px){.btn .lg{display:none}.btn .sh{display:inline}.brand{font-size:18px}.brand small{display:none}}
+
+/* Glass that fades into the scene, with crisp type */
+.panel{position:relative;isolation:isolate;background:none;border:0;border-radius:0;box-shadow:none;padding:clamp(30px,5vw,56px) clamp(26px,5vw,56px)}
+.panel::before{content:"";position:absolute;inset:-14px;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(12,9,26,.5),rgba(12,9,26,.64) 55%,rgba(12,9,26,.5));
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent),linear-gradient(to bottom,transparent,#000 10%,#000 90%,transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent),linear-gradient(to bottom,transparent,#000 10%,#000 90%,transparent);mask-composite:intersect}
+.panel h2,.panel h3{color:#fff8ea;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.panel p,.panel .dyn,.panel label{text-shadow:0 1px 3px rgba(0,0,0,.55)}
+.panel .eyebrow{text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.panel .muted{color:#eadcc3}
+.altimeter .n{color:#ffcf7a;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.panel .photo{box-shadow:0 26px 46px -18px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.14)}
+.panel .card,.panel .steps button,.panel .chip,.panel input,.panel select,.panel textarea{background:rgba(255,255,255,.1)}
+@media (max-width:860px){.panel::before{inset:-10px}.panel{padding:30px 22px}}
+
+.dio3d{display:block;width:100%;height:150px;background:transparent;--poster-color:transparent;margin:-4px auto 8px;--progress-bar-color:transparent}
+.objmv{position:absolute;left:-4%;top:0;width:108%;height:100%;background:transparent;--poster-color:transparent;--progress-bar-color:transparent}
+.orbmv{position:absolute;z-index:2;background:transparent;--poster-color:transparent;--progress-bar-color:transparent}
+.orbmv.a{width:clamp(130px,17vw,240px);height:clamp(130px,17vw,240px);left:clamp(-60px,-3vw,-20px);bottom:-52px}
+.orbmv.b{width:clamp(110px,13vw,190px);height:clamp(110px,13vw,190px);right:clamp(-44px,-2vw,-12px);top:-58px}
+.minimv{display:block;width:100%;height:190px;background:transparent;--poster-color:transparent;--progress-bar-color:transparent}
+.rig{transform:none!important}
+.strip a{display:block;text-decoration:none;color:inherit;text-align:center}
+.trust{font-size:14px;max-width:70ch;margin:14px 0 30px;opacity:.85}
+.strip a{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:18px;padding:14px 18px 16px;font-size:14.5px}
+.strip a b{display:block;color:var(--sun);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.dio3d{height:190px!important}
+.m3d{position:relative}
+.m3d canvas,.m3d .poster{position:absolute;inset:0;width:100%;height:100%;display:block}
+.m3d .poster{object-fit:contain;transition:opacity .5s;pointer-events:none}.m3d.ready .poster{opacity:0}
+.rv-btn{position:fixed;left:calc(env(safe-area-inset-left,0px) + 12px);bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:90;font:600 12.5px/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.02em;background:#17161c;color:#f1ede4;border:1px solid rgba(241,237,228,.35);border-radius:99px;padding:10px 14px;cursor:pointer;box-shadow:0 8px 24px -8px rgba(0,0,0,.6)}
+.rv-btn:focus-visible{outline:3px solid #ffc46b;outline-offset:2px}
+.rv-panel{position:fixed;left:calc(env(safe-area-inset-left,0px) + 12px);bottom:calc(env(safe-area-inset-bottom,0px) + 58px);z-index:91;width:min(440px,calc(100vw - 24px));max-height:min(72vh,640px);overflow:auto;background:#17161c;color:#f1ede4;border:1px solid rgba(241,237,228,.3);border-radius:16px;padding:18px 18px 16px;font:14px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 24px 60px -16px rgba(0,0,0,.7)}
+.rv-panel[hidden]{display:none}
+.rv-panel h2{font:700 15px/1.3 system-ui,sans-serif;margin:0 0 6px;color:#ffc46b;letter-spacing:0}
+.rv-panel h3{font:700 11px/1.3 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin:14px 0 6px;color:#b9b3a6}
+.rv-panel p{margin:0 0 8px;max-width:none}
+.rv-panel ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.rv-panel b{color:#fff}
+.rv-x{float:right;background:none;border:1px solid rgba(241,237,228,.3);color:#f1ede4;border-radius:8px;padding:3px 9px;cursor:pointer;font:inherit}
+.legal{font-size:12.5px;opacity:.8}
+
+.credits{grid-column:1/-1;font-size:12.5px;line-height:1.75;opacity:.85}.credits a{color:inherit}
+html,body{overflow-x:clip}
+
+</style>
+
+<div class="sky" aria-hidden="true">
+  <div class="bgl on" data-k="0" style="background-image:url(real/night.webp)"></div>
+  <div class="bgl" data-k="1" style="background-image:url(own/photo-tagliero.webp)"></div>
+  <div class="bgl" data-k="2" style="background-image:url(real/valley.webp)"></div>
+  <div class="bgl" data-k="3" style="background-image:url(real/harbour.webp)"></div>
+</div>
+<div class="scrim" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top">Amanuel Travel<small>Eritrea</small></a>
+  <ul><li><a href="#c2">Asmara</a></li><li><a href="#c3">The road</a></li><li><a href="#c4">Massawa</a></li><li><a href="#c6">Why ATA</a></li></ul>
+  <a class="btn sm" href="#c7"><span class="lg">Request a consultation</span><span class="sh">Enquire</span></a>
+</header>
+<nav class="progress" aria-label="Chapters" id="dots"></nav>
+
+<main class="wrap" id="top">
+  <section class="hero hero-s" id="c0" data-ch="Home">
+    <div>
+      <p class="eyebrow">Guided journeys to Eritrea</p>
+      <h1>Come home to <em>Eritrea</em></h1>
+      <p class="lede">One journey, arranged end to end by people who know the road, and confirmed with you personally.</p>
+      <p><a class="btn" href="#c1">Start your journey</a> &nbsp; <a class="btn ghost" href="#c7">Request a consultation</a></p>
+    </div>
+    <figure class="photo float"><img src="real/harnet.webp" alt="Harnet Avenue in Asmara: palm trees and mid-century buildings under a bright blue sky" style="object-position:50% 40%"><span class="pl">Harnet Avenue, Asmara</span><span class="badge"><b>2,325 m</b>above the sea</span></figure>
+  </section>
+  <div class="strip places" aria-label="Places on the journey"><a href="#c2"><div class="m3d dio3d" data-spin data-seq="tagliero" role="img" aria-label="3D model of the Fiat Tagliero building in Asmara"><img class="poster" src="own/dio-tagliero.webp" alt=""><canvas></canvas></div><b>Asmara</b>A modernist city on the highland plateau.</a><a href="#c3"><div class="m3d dio3d" data-spin data-seq="road" role="img" aria-label="3D model of the hairpin road down the escarpment"><img class="poster" src="own/dio-road.webp" alt=""><canvas></canvas></div><b>The road down</b>About 2,300 metres of descent in switchbacks.</a><a href="#c4"><div class="m3d dio3d" data-spin data-seq="safi" role="img" aria-label="3D model of a historic arcaded house in Massawa"><img class="poster" src="own/dio-safi.webp" alt=""><canvas></canvas></div><b>Massawa</b>A coral-stone port on the Red Sea.</a></div>
+<p class="trust">Request-based, with no automatic charges. Your journey is arranged only when someone at ATA confirms it to you. No payment is taken through this website.</p>
+
+  <section id="c1" data-ch="Who is coming">
+    <div class="panel">
+      <p class="eyebrow">Before you land</p>
+      <h2>Who is coming home this time?</h2>
+      <p class="muted">A return is never the same twice. Choose the one closest to yours and this page leans toward it.</p>
+      <div class="chips" role="group" aria-label="Type of return">
+        <button class="chip" data-k="years" aria-pressed="true">Returning after many years</button>
+        <button class="chip" data-k="kids" aria-pressed="false">Bringing my children for the first time</button>
+        <button class="chip" data-k="family" aria-pressed="false">Meeting family I only know by phone</button>
+      </div>
+      <div class="dyn" id="dyn" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="c2" data-ch="Asmara">
+    <div class="panel r wide">
+      <p class="eyebrow">Morning · Asmara</p>
+      <h2>A planned modernist city, built to be walked</h2>
+      <p>Asmara sits on Eritrea's central highland plateau at about 2,325 metres, where the air stays cool even in the sun. Its historic centre is a near-complete early modernist city, laid out between 1893 and 1941 and inscribed on the UNESCO World Heritage List in 2017 as <i>Asmara: A Modernist African City</i>.</p>
+      <figure class="photo in"><img src="own/photo-tagliero.webp" alt="The Fiat Tagliero building in Asmara: a futurist concrete service station with wide canopy wings and a tall tower" style="object-position:50% 55%"><span class="pl">Fiat Tagliero, Asmara</span></figure>
+      <div class="cards" id="asmara"></div>
+    </div>
+  </section>
+
+  <section id="c3" data-ch="The road down">
+    <div class="panel">
+      <p class="eyebrow">Midday · The escarpment</p>
+      <div class="altimeter"><span class="n" id="alt">2,325</span><span class="muted">metres, falling as the<br>land opens to the sea</span></div>
+      <h2>About 2,300 metres of descent</h2>
+      <p>Between Asmara and Massawa the road falls from the highland plateau to sea level in switchbacks. The country changes as you go, from highland terraces to dry slopes to the coastal plain and the salt light of the sea.</p>
+      <p class="muted">It is a long stretch in the vehicle, with continuous curves. ATA will talk you through the day.</p>
+      <figure class="photo in"><img src="own/photo-switchbacks.webp" alt="A curving mountain road beside a stone arched railway bridge on the descent from Asmara to the coast" style="object-position:50% 50%"><span class="pl">On the road down to the coast</span></figure>
+    </div>
+  </section>
+
+  <section id="c4" data-ch="Massawa">
+    <div class="panel r wide">
+      <p class="eyebrow">Evening · Massawa</p>
+      <h2>Coral stone, salt air, and a harbour with many layers</h2>
+      <p>Massawa is Eritrea's Red Sea port, and its old town sits on a coral island. Ottoman, Egyptian and Italian builders each left their mark, much of it cut from reef coral. The independence war left its mark too, and parts of the old town still stand as ruins. It is hot, quiet and close to the opposite of Asmara.</p>
+      <figure class="photo in"><img src="real/safi.webp" alt="A white arcaded historic house in Massawa with carved arches along an upper gallery" style="object-position:50% 40%"><span class="pl">Massawa old town</span></figure>
+    </div>
+  </section>
+
+  <section id="c4b" data-ch="Keren">
+    <div class="panel wide">
+      <p class="eyebrow">Ask us about</p>
+      <h2>More of Eritrea, if you have the time</h2>
+      <p class="muted">Many returns include a day or two beyond the main route. Tell us what you remember or have been told about, and we will talk it through.</p>
+      <div class="pair"><figure class="photo"><img src="real/keren.webp" alt="Rooftops and market buildings in Keren, with a minaret and hills beyond" style="object-position:50% 50%"><span class="pl">Keren</span></figure></div>
+    </div>
+  </section>
+
+  <section id="c5" data-ch="The journey">
+    <div class="panel wide">
+      <p class="eyebrow">Your journey in outline</p>
+      <h2>How a guided return could unfold</h2>
+      <p class="muted">Tap a step to open it. Dates, prices and inclusions are shared personally by ATA once we know who is travelling.</p>
+      <ul class="steps" id="steps"></ul>
+    </div>
+  </section>
+
+  <section id="c6" data-ch="Why ATA">
+    <div class="panel r">
+      <p class="eyebrow">Who you are dealing with</p>
+      <h2>Plain commitments, in plain words</h2>
+      <div class="commit">
+        <div><h3>A person replies to you</h3><p class="muted">Every request is answered by someone at ATA, not an automated system.</p></div>
+        <div><h3>Sending a request books nothing</h3><p class="muted">Your journey is arranged only when someone at ATA confirms it to you directly.</p></div>
+        <div><h3>No payment through the website</h3><p class="muted">Price on request: ATA prepares a personal quote. Travel dates are confirmed personally.</p></div>
+      </div>
+      <a class="btn" href="#c7">Request a consultation</a>
+    </div>
+  </section>
+
+  <section id="c7" data-ch="Enquire">
+    <div class="panel wide">
+      <p class="eyebrow">Start the conversation</p>
+      <h2>Tell us about your return</h2>
+      <p class="muted">It costs nothing and books nothing. A person at ATA replies to you directly.</p>
+      <form id="f" novalidate>
+        <label for="fn">Your first name<input id="fn" autocomplete="off" placeholder="Selam"></label>
+        <label for="who">Who is travelling<select id="who"><option>Returning after many years</option><option>Bringing my children for the first time</option><option>Meeting family I only know by phone</option></select></label>
+        <label for="msg">What matters most to you on this trip?<textarea id="msg" rows="3" placeholder="Seeing the street my mother grew up on"></textarea></label>
+        <div><button class="btn" type="submit">Send my request</button></div>
+        <p class="fine">Preview build: this form does not send or store anything.</p>
+      </form>
+      <div class="result" id="res" hidden aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b style="color:var(--paper);font-family:var(--display);font-size:20px">Amanuel Travel</b><br>Guided journeys to Eritrea.</div>
+    <div>Journey<br>Asmara · The road down · Massawa</div>
+    <div>Enquire<br><a href="#c7" style="color:var(--sun)">Request a consultation</a></div>
+    <div class="credits"><b>Photo credits</b> (Wikimedia Commons, cropped and resized): <a href="https://commons.wikimedia.org/wiki/File:Asmara_by_Night.jpg" target="_blank" rel="noopener">Asmara by night</a>, Martin Schibbye, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> · <a href="https://commons.wikimedia.org/wiki/File:Fiat_tagliero,_01.JPG" target="_blank" rel="noopener">Fiat Tagliero, Asmara</a>, Sailko, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener">CC BY-SA 3.0</a> · <a href="https://commons.wikimedia.org/wiki/File:On_the_main_road_from_Asmara_to_Massawa_(30145192993).jpg" target="_blank" rel="noopener">On the main road from Asmara to Massawa</a>, Clay Gilliland, <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener">CC BY-SA 2.0</a> · <a href="https://commons.wikimedia.org/wiki/File:Massawa_harbour.JPG" target="_blank" rel="noopener">Massawa harbour</a>, Reinhard Dietrich, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a> · <a href="https://commons.wikimedia.org/wiki/File:Asmara,_harnet_avenue_01.JPG" target="_blank" rel="noopener">Harnet Avenue, Asmara</a>, Sailko, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a> · <a href="https://commons.wikimedia.org/wiki/File:Rly_line_Massawa-Asmara_04.JPG" target="_blank" rel="noopener">Road and rail between Massawa and Asmara</a>, Reinhard Dietrich, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a> · <a href="https://commons.wikimedia.org/wiki/File:Massawa_-_el-Safi_House.jpg" target="_blank" rel="noopener">El-Safi House, Massawa</a>, Reinhard Dietrich, <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener">CC0</a> · <a href="https://commons.wikimedia.org/wiki/File:Keren,_Eritrea,_2024.jpg" target="_blank" rel="noopener">Keren</a>, Mheidegger, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. · Also shown: photographs supplied by the ATA owner (source and licence to be confirmed). 3D models are AI-generated from real photographs and rendered in Blender.</div>
+    <p class="legal">Preview for ATA review · Concept demonstration — tour details require ATA approval · Photographs credited above.</p>
+  </div>
+</footer>
+
+<script>
+window.__REVIEW={
+  confirm:['Exact UNESCO wording for Asmara, to be checked at whc.unesco.org/en/list/1550/','Who at ATA replies, and how quickly. The page promises a personal reply','The opening line "arranged end to end by people who know the road"','Prices, currencies, travel dates, inclusions and who is covered','Site access, opening status and current conditions in Massawa','Guiding, vehicle and drive length for the escarpment day','Whether ATA can support family visits within a journey','Altitude note: needs professional wording before it can appear'],
+  images:['3D models that rotate with scroll are AI-generated meshes rendered in Blender (Cycles) from the miniature images. They are stylised illustrations of the real places, not surveyed models, and the sides you cannot see in a photo are inferred.','Two Google Earth screenshots and two web photographs (Fiat Tagliero, switchback road) were supplied by the owner. Their sources and licences are unknown. Google imagery normally needs Google\'s permission or a licensed imagery provider before use on a commercial site.','3D miniatures are AI-generated from real photographs and kept faithful to the real buildings and roads. They are illustrations, not photographs.','Photographs are openly licensed images from Wikimedia Commons (CC0, CC BY or CC BY-SA), credited in the footer, taken from the original high-resolution files and colour-graded and sharpened. They are real places, but some are older snapshots, so ATA should commission its own photography.','Photo descriptions and place names come from the Commons records. ATA should confirm each place is shown accurately.','Sculptural objects and icons are AI-generated artwork, not photographs.']
+};
+</script>
+<script>
+(function(){
+  var d=window.__REVIEW||{};
+  var b=document.createElement('button');b.className='rv-btn';b.type='button';b.textContent='Review notes';b.setAttribute('aria-expanded','false');b.setAttribute('aria-controls','rvp');
+  var p=document.createElement('div');p.className='rv-panel';p.id='rvp';p.hidden=true;p.setAttribute('role','dialog');p.setAttribute('aria-label','Review notes for ATA');
+  function li(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'}
+  p.innerHTML='<button class="rv-x" type="button">Close</button><h2>Concept demonstration — tour details require ATA approval</h2>'
+   +'<p>This is a design exploration for owner selection. Enquiry forms send and store nothing. It is not launch-ready and not approval to build.</p>'
+   +'<h3>Awaiting ATA confirmation</h3>'+li(d.confirm||[])
+   +'<h3>Images</h3>'+li(d.images||[])
+   +'<h3>Not stated anywhere</h3><p>Prices, dates, durations, capacity, availability and inclusions. The page says they are shared personally by ATA.</p>';
+  document.body.appendChild(p);document.body.appendChild(b);
+  function set(o){p.hidden=!o;b.setAttribute('aria-expanded',String(o));if(o)p.querySelector('.rv-x').focus()}
+  b.addEventListener('click',function(){set(p.hidden)});
+  p.querySelector('.rv-x').addEventListener('click',function(){set(false);b.focus()});
+  addEventListener('keydown',function(e){if(e.key==='Escape'&&!p.hidden){set(false);b.focus()}});
+})();
+
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,root=document.documentElement;
+  var layers=[].slice.call(document.querySelectorAll(".bgl")),map=[0,0,1,2,3,3,3,3,3];
+  function setLayer(i){layers.forEach(function(l,j){l.classList.toggle("on",j===i)})}
+  var alt=document.getElementById('alt'),nav=document.getElementById('nav');
+  var secs=[].slice.call(document.querySelectorAll('section[data-ch]')),dn=document.getElementById('dots');
+  secs.forEach(function(s){var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label',s.dataset.ch);a.title=s.dataset.ch;dn.appendChild(a)});
+  function frame(){
+    var h=document.documentElement.scrollHeight-innerHeight,p=h>0?Math.min(1,Math.max(0,scrollY/h)):0;
+    var c=document.getElementById('c3').getBoundingClientRect(),q=Math.min(1,Math.max(0,(innerHeight*0.85-c.top)/(innerHeight*0.9)));
+    alt.textContent=(reduce?2325:Math.round(2325*(1-q))).toLocaleString('en-US');
+    nav.classList.toggle('solid',scrollY>40);
+    var mid=innerHeight/2,cur=0;secs.forEach(function(s,i){if(s.getBoundingClientRect().top<mid)cur=i});[].forEach.call(dn.children,function(a,i){a.classList.toggle('on',i===cur)});setLayer(map[Math.min(cur,map.length-1)]);
+  }
+  var tk=false;addEventListener('scroll',function(){if(!tk){tk=true;requestAnimationFrame(function(){tk=false;frame()})}},{passive:true});addEventListener('resize',frame);
+
+  var copy={years:'It has been a long time. The streets may have changed and so have you. A guided return leaves room for the places you carry in memory, not only the ones in a brochure.',kids:'Your children know Eritrea from your stories. A guided return can balance the things worth seeing with the pace of a family, and leave space for their questions.',family:'Meeting relatives in person is the point of the trip. We can build the plan around your family visits, with the travel between them looked after.'};
+  var order=['years','kids','family'],sel=document.getElementById('who');
+  function pick(k){[].forEach.call(document.querySelectorAll('.chip'),function(b){b.setAttribute('aria-pressed',String(b.dataset.k===k))});document.getElementById('dyn').textContent=copy[k];sel.selectedIndex=order.indexOf(k)}
+  document.querySelectorAll('.chip').forEach(function(b){b.addEventListener('click',function(){pick(b.dataset.k)})});pick('years');
+
+  var places=[['Fiat Tagliero','A former service station from 1938 by Giuseppe Pettazzi, built in reinforced concrete in the shape of an aeroplane, wings outstretched over the forecourt.'],['Cinema Impero','An Art Deco cinema from 1937 by Mario Messina on Harnet Avenue.'],['Harnet Avenue','Asmara\'s palm-lined main avenue and the spine of the historic centre.'],['Medeber','A working quarter where craftspeople turn scrap metal into tools, pots and furniture. A place of work, visited with respect.']];
+  var ca=document.getElementById('asmara');
+  places.forEach(function(p,i){var d=document.createElement('div');d.className='card';
+    d.innerHTML='<button aria-expanded="false" aria-controls="pl'+i+'"><h3></h3><span class="plus" aria-hidden="true">+</span></button><div class="more" id="pl'+i+'" hidden></div>';
+    d.querySelector('h3').textContent=p[0];d.querySelector('.more').textContent=p[1];
+    d.querySelector('button').addEventListener('click',function(e){var b=e.currentTarget,m=d.querySelector('.more'),o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!o));m.hidden=o;b.querySelector('.plus').textContent=o?'+':'−'});ca.appendChild(d)});
+
+  var steps=[['Arrive and settle in Asmara','Time to adjust to the altitude and the pace, with a first walk along Harnet Avenue.'],['Asmara on foot','Modernist architecture, cafés and the Medeber workshops, with a guide who can add the history.'],['Time for family','Space in the plan for the visits that matter most to you. Tell us who you want to see.'],['Down the escarpment','The long descent to the coast, about 2,300 metres in switchbacks.'],['Massawa and the Red Sea','The coral-stone old town and the harbour.']];
+  var ul=document.getElementById('steps');
+  steps.forEach(function(s,i){var li=document.createElement('li');
+    li.innerHTML='<button aria-expanded="false"><span class="i">'+(i+1)+'</span><span><b></b><small>Tap to open</small><span class="det" hidden></span></span></button>';
+    li.querySelector('b').textContent=s[0];var det=li.querySelector('.det');det.textContent=s[1];
+    li.querySelector('button').addEventListener('click',function(e){var b=e.currentTarget,o=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!o));det.hidden=o;li.querySelector('small').textContent=o?'Tap to open':'Tap to close'});ul.appendChild(li)});
+
+  document.getElementById('f').addEventListener('submit',function(e){e.preventDefault();
+    var r=document.getElementById('res'),n=document.getElementById('fn').value.trim();r.textContent='';
+    var h=document.createElement('b');h.textContent='Thank you'+(n?', '+n:'')+'.';r.appendChild(h);
+    var p=document.createElement('p');p.textContent='A person at ATA will reply to you directly. Nothing is booked or paid until ATA confirms your journey with you.';r.appendChild(p);
+    var q=document.createElement('p');q.className='fine';q.textContent='Preview build: nothing was sent or saved.';r.appendChild(q);r.hidden=false;r.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'})});
+  frame();
+})();
+</script>
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,els=[].slice.call(document.querySelectorAll('.m3d')),N=24,SEQ={"tagliero": [459, 390], "cinema": [454, 378], "safi": [516, 438], "road": [469, 325]};
+  if(!els.length)return;
+  function setup(el){
+    if(el._ok)return;el._ok=true;var cv=el.querySelector('canvas'),ctx=cv.getContext('2d'),name=el.dataset.seq,cw=SEQ[name][0],ch=SEQ[name][1],sheet=new Image(),cur=-1,dpr=Math.min(window.devicePixelRatio||1,2);
+    function size(){var w=el.clientWidth,h=el.clientHeight;if(!w||!h)return;cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cur=-2;draw(el._i||0)}
+    function draw(i){i=Math.max(0,Math.min(N-1,i));if(!sheet.complete||!sheet.naturalWidth||i===cur)return;cur=i;var w=cv.width,h=cv.height,s=Math.min(w/cw,h/ch),dw=cw*s,dh=ch*s;ctx.clearRect(0,0,w,h);ctx.imageSmoothingQuality='high';ctx.drawImage(sheet,(i%6)*cw,Math.floor(i/6)*ch,cw,ch,(w-dw)/2,(h-dh)/2,dw,dh);el.classList.add('ready')}
+    sheet.decoding='async';sheet.onload=function(){draw(el._i||0)};sheet.src='own/seq/'+name+'.webp';
+    el._draw=function(i){el._i=i;draw(i)};
+    if(window.ResizeObserver)new ResizeObserver(size).observe(el);else addEventListener('resize',size);size();
+  }
+  if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)setup(e.target)})},{rootMargin:'600px'});els.forEach(function(e){io.observe(e)})}else els.forEach(setup);
+  window.m3dSet=function(el,deg){if(!el)return;var i=Math.round((deg+80)/180*(N-1));i=Math.max(0,Math.min(N-1,i));el._i=i;if(el._draw)el._draw(i)};
+  var spin=els.filter(function(e){return e.hasAttribute('data-spin')});
+  function upd(){var vh=innerHeight;spin.forEach(function(m){var r=m.getBoundingClientRect();if(r.bottom<-80||r.top>vh+80)return;var p=1-(r.top+r.height)/(vh+r.height);p=Math.max(0,Math.min(1,p));window.m3dSet(m,reduce?-30:(-80+180*p))})}
+  var tk=false;addEventListener('scroll',function(){if(!tk){tk=true;requestAnimationFrame(function(){tk=false;upd()})}},{passive:true});addEventListener('resize',upd);upd();
+})();
+</script>
